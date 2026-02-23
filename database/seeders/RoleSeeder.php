@@ -9,22 +9,28 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::create([
-            'name' => 'Administrador',
-            'slug' => 'admin',
-            'description' => 'Usuario con control total del sistema'
-        ]);
+        Role::updateOrCreate(
+            ['slug' => 'admin'],
+            [
+                'name' => 'Administrador',
+                'description' => 'Usuario con control total del sistema'
+            ]
+        );
 
-        Role::create([
-            'name' => 'Docente',
-            'slug' => 'teacher',
-            'description' => 'Docente encargado de un curso'
-        ]);
+        Role::updateOrCreate(
+            ['slug' => 'teacher'],
+            [
+                'name' => 'Docente',
+                'description' => 'Docente encargado de un curso'
+            ]
+        );
 
-        Role::create([
-            'name' => 'Estudiante',
-            'slug' => 'student',
-            'description' => 'Usuario estudiante que accede a OVA asignados'
-        ]);
+        Role::updateOrCreate(
+            ['slug' => 'student'],
+            [
+                'name' => 'Estudiante',
+                'description' => 'Usuario estudiante que accede a OVA asignados'
+            ]
+        );
     }
 }
