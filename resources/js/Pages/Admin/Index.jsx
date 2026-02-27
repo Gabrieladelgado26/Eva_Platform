@@ -1,26 +1,54 @@
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import Dropdown from '@/Components/Dropdown';
 import {
     UserPlus, Edit2, Trash2, Mail, User, Shield, Users, Search, Filter, X,
     RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
     LayoutDashboard, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home,
-    Calendar, ClipboardList, BarChart3, HelpCircle, ChevronDown, Eye, Copy, Check
+    Calendar, ClipboardList, BarChart3, HelpCircle, ChevronDown, Eye, Copy, Check,
+    UsersRound
 } from "lucide-react";
 
 export default function Index({ users = [], section = "users" }) {
-    const { props } = usePage();
-    const user = props.auth.user;
-    const flash = usePage().props.flash || {};
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const { props } = usePage();
+    const flash = props.flash || {};
+    const { auth } = usePage().props;
+    const user = auth?.user ?? { name: "Usuario" };
+
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("all");
+    const [filterStatus, setFilterStatus] = useState("all");
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
     const [credentials, setCredentials] = useState(null);
+
+    const [showActivateModal, setShowActivateModal] = useState(false);
+    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+    const [userToActivate, setUserToActivate] = useState(null);
+    const [userToDeactivate, setUserToDeactivate] = useState(null);
+
+    const [showUniqueAdminWarning, setShowUniqueAdminWarning] = useState(false);
+    const [uniqueAdminName, setUniqueAdminName] = useState('');
+    const [warningAction, setWarningAction] = useState('');
+
     const [copied, setCopied] = useState({ username: false, pin: false });
+
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("sidebarOpen") === "true";
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        localStorage.setItem("sidebarOpen", String(sidebarOpen));
+    }, [sidebarOpen]);
 
     useEffect(() => {
         if (flash?.credentials) {
@@ -29,34 +57,18 @@ export default function Index({ users = [], section = "users" }) {
         }
     }, [flash?.credentials]);
 
-    const roles = [...new Set(users.map(u => u.role?.slug))].filter(Boolean);
+    useEffect(() => {
+        if (flash?.unique_admin_error) {
+            setUniqueAdminName(flash.unique_admin_name);
+            setWarningAction(flash.unique_admin_action);
+            setShowUniqueAdminWarning(true);
+        }
+    }, [flash]);
+
     const normalize = (value) => (value ?? "").toLowerCase();
 
-    const filteredUsers = users.filter(u =>
-        (
-            normalize(u.name).includes(searchTerm.toLowerCase()) ||
-            normalize(u.email).includes(searchTerm.toLowerCase()) ||
-            normalize(u.username).includes(searchTerm.toLowerCase())
-        ) &&
-        (filterRole === "all" || u.role?.slug === filterRole)
-    );
-
-    const clearFilters = () => { setSearchTerm(""); setFilterRole("all"); };
-    const hasActiveFilters = searchTerm || filterRole !== "all";
-
-    const handleDeleteClick = (user) => { setUserToDelete(user); setShowDeleteModal(true); };
-    
-    const handleConfirmDelete = () => {
-        router.delete(route("admin.users.destroy", userToDelete.id), {
-            preserveScroll: true,
-            onSuccess: () => { setShowDeleteModal(false); setUserToDelete(null); }
-        });
-    };
-
-    const toggleUserStatus = (user) => {
-        if (!confirm(`¿Está seguro de ${isUserActive(user) ? "desactivar" : "activar"} a ${user.name}?`)) return;
-        router.patch(route("admin.users.toggleStatus", user.id), {}, { preserveScroll: true, preserveState: true });
-    };
+    const usersData = users?.data ?? [];
+    const roles = [...new Set(usersData.map(u => u.role?.slug))].filter(Boolean);
 
     const isUserActive = (user) => {
         if (typeof user.is_active === "boolean") return user.is_active;
@@ -64,19 +76,143 @@ export default function Index({ users = [], section = "users" }) {
         return user.is_active === "1" || user.is_active === "true";
     };
 
+    const handleActivateClick = (user) => {
+        setUserToActivate(user);
+        setShowActivateModal(true);
+    };
+
+    const handleDeactivateClick = (user) => {
+        setUserToDeactivate(user);
+        setShowDeactivateModal(true);
+    };
+
+    const confirmActivateUser = () => {
+        router.patch(
+            route("admin.users.toggleStatus", userToActivate.id),
+            {},
+            { preserveScroll: true, preserveState: true }
+        );
+        setShowActivateModal(false);
+        setUserToActivate(null);
+    };
+
+    const confirmDeactivateUser = () => {
+        router.patch(
+            route("admin.users.toggleStatus", userToDeactivate.id),
+            {},
+            { preserveScroll: true, preserveState: true }
+        );
+        setShowDeactivateModal(false);
+        setUserToDeactivate(null);
+    };
+
+    const roleLabels = {
+        admin: "Administrador",
+        teacher: "Docente",
+        student: "Estudiante"
+    };
+
+    const getRoleLabel = (slug) => roleLabels[slug] ?? slug;
+
+    const filteredUsers = usersData.filter((u) => {
+        const matchesSearch =
+            normalize(u.name).includes(searchTerm.toLowerCase()) ||
+            normalize(u.email).includes(searchTerm.toLowerCase()) ||
+            normalize(u.username).includes(searchTerm.toLowerCase());
+
+        const matchesRole =
+            filterRole === "all" || u.role?.slug === filterRole;
+
+        const matchesStatus =
+            filterStatus === "all" ||
+            (filterStatus === "active" && isUserActive(u)) ||
+            (filterStatus === "inactive" && !isUserActive(u));
+
+        return matchesSearch && matchesRole && matchesStatus;
+    });
+
+    const hasActiveFilters =
+        searchTerm ||
+        filterRole !== "all" ||
+        filterStatus !== "all";
+
+    const clearFilters = () => {
+        setSearchTerm("");
+        setFilterRole("all");
+        setFilterStatus("all");
+    };
+
+    const handleDeleteClick = (user) => {
+        setUserToDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        router.delete(route("admin.users.destroy", userToDelete.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowDeleteModal(false);
+                setUserToDelete(null);
+            }
+        });
+    };
+
+    const toggleUserStatus = (user) => {
+        const action = isUserActive(user) ? "desactivar" : "activar";
+
+        if (!confirm(`¿Está seguro de ${action} a ${user.name}?`)) return;
+
+        router.patch(
+            route("admin.users.toggleStatus", user.id),
+            {},
+            { preserveScroll: true, preserveState: true }
+        );
+    };
+
     const copyToClipboard = (text, type) => {
         navigator.clipboard.writeText(text);
-        setCopied({ ...copied, [type]: true });
-        setTimeout(() => setCopied({ ...copied, [type]: false }), 2000);
+
+        setCopied((prev) => ({ ...prev, [type]: true }));
+
+        setTimeout(() => {
+            setCopied((prev) => ({ ...prev, [type]: false }));
+        }, 2000);
     };
 
     const navigation = {
-        principal: [{ name: "Usuarios", href: route("admin.index", { section: "users" }), icon: Users, current: section === "users" }],
+        principal: [
+            {
+                name: "Usuarios",
+                href: route("admin.index", { section: "users" }),
+                icon: Users,
+                current: section === "users"
+            }
+        ],
         academic: [
-            { name: "Cursos", href: route("admin.index", { section: "courses" }), icon: BookOpen, current: section === "courses" },
-            { name: "Calendario", href: route("admin.index", { section: "calendar" }), icon: Calendar, current: section === "calendar" },
-            { name: "Evaluaciones", href: route("admin.index", { section: "evaluations" }), icon: ClipboardList, current: section === "evaluations" },
-            { name: "Reportes", href: route("admin.index", { section: "reports" }), icon: BarChart3, current: section === "reports" }
+            {
+                name: "Cursos",
+                href: route("admin.index", { section: "courses" }),
+                icon: BookOpen,
+                current: section === "courses"
+            },
+            {
+                name: "Calendario",
+                href: route("admin.index", { section: "calendar" }),
+                icon: Calendar,
+                current: section === "calendar"
+            },
+            {
+                name: "Evaluaciones",
+                href: route("admin.index", { section: "evaluations" }),
+                icon: ClipboardList,
+                current: section === "evaluations"
+            },
+            {
+                name: "Reportes",
+                href: route("admin.index", { section: "reports" }),
+                icon: BarChart3,
+                current: section === "reports"
+            }
         ]
     };
 
@@ -136,9 +272,9 @@ export default function Index({ users = [], section = "users" }) {
                             {/* Stats Cards */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                                 {[
-                                    { icon: Users, bg: "#F3E8FF", color: "#540D6E", label: "Total Usuarios", desc: "Registrados en el sistema", value: users.length },
-                                    { icon: CheckCircle, bg: "#E8F5F0", color: "#0EAD69", label: "Usuarios Activos", desc: "Con acceso habilitado", value: users.filter(isUserActive).length },
-                                    { icon: Shield, bg: "#F3E8FF", color: "#540D6E", label: "Roles Asignados", desc: "Perfiles diferentes", value: new Set(users.map(u => u.role)).size }
+                                    { icon: UsersRound, bg: "#F3E8FF", color: "#540D6E", label: "Total Usuarios", desc: "Registrados en el sistema", value: usersData.length },
+                                    { icon: CheckCircle, bg: "#E8F5F0", color: "#0EAD69", label: "Usuarios Activos", desc: "Con acceso habilitado", value: usersData.filter(isUserActive).length },
+                                    { icon: Shield, bg: "#F3E8FF", color: "#540D6E", label: "Roles Asignados", desc: "Perfiles diferentes", value: new Set(usersData.map(u => u.role)).size }
                                 ].map((stat, i) => (
                                     <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                                         <div className="flex items-start justify-between">
@@ -181,7 +317,24 @@ export default function Index({ users = [], section = "users" }) {
                                             onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                             onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}>
                                             <option value="all">Todos los roles</option>
-                                            {roles.map(role => <option key={role} value={role}>{role}</option>)}
+                                            {roles.map((role) => (<option key={role} value={role}> {getRoleLabel(role)}</option>))}
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                                        </div>
+                                    </div>
+                                    <div className="relative">
+                                        <select
+                                            value={filterStatus}
+                                            onChange={e => setFilterStatus(e.target.value)}
+                                            className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                            style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
+                                            onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
+                                            onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
+                                        >
+                                            <option value="all">Todos los estados</option>
+                                            <option value="active">Activos</option>
+                                            <option value="inactive">Inactivos</option>
                                         </select>
                                         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                             <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -215,6 +368,20 @@ export default function Index({ users = [], section = "users" }) {
                                                             style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                             Rol: {filterRole}
                                                             <button onClick={() => setFilterRole("all")} className="hover:bg-white/50 p-0.5 rounded">
+                                                                <X className="w-3 h-3" />
+                                                            </button>
+                                                        </span>
+                                                    )}
+                                                    {filterStatus !== "all" && (
+                                                        <span
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                            style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}
+                                                        >
+                                                            Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
+                                                            <button
+                                                                onClick={() => setFilterStatus("all")}
+                                                                className="hover:bg-white/50 p-0.5 rounded"
+                                                            >
                                                                 <X className="w-3 h-3" />
                                                             </button>
                                                         </span>
@@ -292,7 +459,7 @@ export default function Index({ users = [], section = "users" }) {
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-right">
                                                                 <div className="flex items-center justify-end gap-2">
-                                                                    <button onClick={() => toggleUserStatus(u)}
+                                                                    <button onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
                                                                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
                                                                         style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
                                                                         onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
@@ -353,13 +520,13 @@ export default function Index({ users = [], section = "users" }) {
                             </div>
 
                             {/* Info adicional */}
-                            {users.length > 0 && (
+                            {usersData.length > 0 && (
                                 <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
                                     <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-600">
                                         <div className="flex items-center gap-2">
                                             <span>Mostrando <span className="font-bold" style={{ color: "#540D6E" }}>{filteredUsers.length}</span> de <span className="font-bold text-gray-900">{users.length}</span> usuarios</span>
                                             <span className="mx-2">•</span>
-                                            <span className="font-bold" style={{ color: "#0EAD69" }}>{users.filter(isUserActive).length}</span> activos
+                                            <span className="font-bold" style={{ color: "#0EAD69" }}>{usersData.filter(isUserActive).length}</span> activos
                                         </div>
                                         <div className="text-gray-500">
                                             Actualizado: {new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
@@ -501,6 +668,156 @@ export default function Index({ users = [], section = "users" }) {
                 </div>
             )}
 
+            {/* Modal de Confirmación para Activar Usuario */}
+            {showActivateModal && userToActivate && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowActivateModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #0EAD69, #3BCEAC)" }} />
+                        
+                        <div className="p-6">
+                            <button onClick={() => setShowActivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#E8F5F0" }}>
+                                    <Power className="w-6 h-6" style={{ color: "#0EAD69" }} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Activar Usuario</h3>
+                            </div>
+
+                            <p className="text-gray-600 mb-4">
+                                ¿Estás seguro de activar a <span className="font-semibold text-gray-900">{userToActivate.name}</span>?
+                            </p>
+
+                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: "#E8F5F0", borderLeft: "4px solid #0EAD69" }}>
+                                <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#0EAD69" }} />
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
+                                    <p className="text-xs text-gray-600">El usuario podrá acceder al sistema y realizar las acciones permitidas según su rol.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowActivateModal(false)} className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
+                                    Cancelar
+                                </button>
+                                <button onClick={confirmActivateUser} className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md" style={{ backgroundColor: "#0EAD69" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#059669"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#0EAD69"}>
+                                    Activar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Confirmación para Desactivar Usuario */}
+            {showDeactivateModal && userToDeactivate && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeactivateModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #DC2F55)" }} />
+                        
+                        <div className="p-6">
+                            <button onClick={() => setShowDeactivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
+                                    <EyeOff className="w-6 h-6" style={{ color: "#EE4266" }} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Desactivar Usuario</h3>
+                            </div>
+
+                            <p className="text-gray-600 mb-4">
+                                ¿Estás seguro de desactivar a <span className="font-semibold text-gray-900">{userToDeactivate.name}</span>?
+                            </p>
+
+                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: "#FEE2E2", borderLeft: "4px solid #EE4266" }}>
+                                <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#EE4266" }} />
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
+                                    <p className="text-xs text-gray-600">El usuario perderá acceso al sistema inmediatamente. No podrá iniciar sesión hasta que sea reactivado.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowDeactivateModal(false)} className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
+                                    Cancelar
+                                </button>
+                                <button onClick={confirmDeactivateUser} className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md" style={{ backgroundColor: "#EE4266" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
+                                    Desactivar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Advertencia - Único Administrador */}
+            {showUniqueAdminWarning && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowUniqueAdminWarning(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #FFD23F)" }} />
+                        
+                        <div className="p-6">
+                            <button onClick={() => setShowUniqueAdminWarning(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FEF2F2" }}>
+                                    <AlertCircle className="w-6 h-6" style={{ color: "#EE4266" }} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Acción no permitida</h3>
+                            </div>
+
+                            <div className="mb-4">
+                                <p className="text-gray-700 mb-2">
+                                    No se puede <span className="font-semibold">{warningAction}</span> a <span className="font-semibold text-gray-900">{uniqueAdminName}</span>.
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Es el <span className="font-semibold text-purple-700">único administrador activo</span> en el sistema.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-lg mb-6 bg-amber-50 border border-amber-200">
+                                <div className="flex gap-3">
+                                    <Shield className="w-5 h-5 flex-shrink-0" style={{ color: "#D97706" }} />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900 mb-1">Requisito del sistema</p>
+                                        <p className="text-xs text-gray-600">
+                                            Debe existir al menos un administrador activo. Puedes:
+                                        </p>
+                                        <ul className="mt-2 space-y-1.5">
+                                            <li className="flex items-start gap-2 text-xs">
+                                                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#D97706" }} />
+                                                <span className="text-gray-600">Asignar rol de administrador a otro usuario primero</span>
+                                            </li>
+                                            <li className="flex items-start gap-2 text-xs">
+                                                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#D97706" }} />
+                                                <span className="text-gray-600">Activar otro administrador si hay uno inactivo</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onClick={() => setShowUniqueAdminWarning(false)} 
+                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                                style={{ backgroundColor: "#540D6E" }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Fondo académico */}
             <div className="fixed inset-0 -z-10 overflow-hidden bg-gray-50">
                 <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(84, 13, 110, 0.08) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
@@ -530,7 +847,7 @@ export default function Index({ users = [], section = "users" }) {
                         </button>
                     </div>
 
-                    <nav className="flex-1 overflow-y-auto py-4 px-2">
+                    <nav className="flex-1 overflow-visible py-4 px-2">
                         {Object.entries(navigation).map(([key, items]) => (
                             <div key={key} className="mb-4">
                                 {sidebarOpen && <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">{key === 'principal' ? 'Gestión de Usuarios' : 'Académico'}</p>}
@@ -560,22 +877,26 @@ export default function Index({ users = [], section = "users" }) {
 
                     <div className="border-t border-gray-200 p-2">
                         <ul className="space-y-1">
-                            {bottomNavigation.map(item => {
-                                const Icon = item.icon;
-                                return (
-                                    <li key={item.name}>
-                                        <Link href={item.href} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all group">
-                                            <Icon className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                            {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
-                                            {!sidebarOpen && (
-                                                <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                                    {item.name}
-                                                </span>
-                                            )}
-                                        </Link>
-                                    </li>
-                                );
-                            })}
+                            <li>
+                                <div className="w-full flex items-center gap-3 px-3 py-2.5">
+                                    <div
+                                        className={`w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold text-gray-700 ${!sidebarOpen && "mx-auto"}`}
+                                    >
+                                        {user?.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+
+                                    {sidebarOpen && (
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium text-gray-800 truncate">
+                                                {user?.name}
+                                            </span>
+                                            <span className="text-xs text-gray-400 truncate">
+                                                {user?.email}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </li>
                             <li>
                                 <Link href={route("logout")} method="post" as="button"
                                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all group">

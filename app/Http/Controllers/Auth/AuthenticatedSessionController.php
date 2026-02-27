@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+use App\Models\LoginLog;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -30,66 +34,112 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        /* Login estudiante (username + pin) */
-        if ($request->filled('username') && $request->filled('pin')) {
+        $isStudentLogin = $request->filled('username') && $request->filled('pin');
+        $field = $isStudentLogin ? 'username' : 'email';
+
+        // Construir clave única (usuario + IP)
+        $key = Str::lower($request->input($field)) . '|' . $request->ip();
+
+        // Verificar bloqueo previo
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+
+            $seconds = RateLimiter::availableIn($key);
+            $minutes = floor($seconds / 60);
+            $remainingSeconds = $seconds % 60;
+
+            $message = "Demasiados intentos! Intente nuevamente en ";
+
+            if ($minutes > 0) {
+                $message .= "{$minutes} minuto(s)";
+                if ($remainingSeconds > 0) {
+                    $message .= " y {$remainingSeconds} segundo(s)";
+                }
+            } else {
+                $message .= "{$remainingSeconds} segundo(s)";
+            }
+
+            throw ValidationException::withMessages([
+                $field => $message
+            ]);
+        }
+
+        // Validaciones según tipo de login
+        if ($isStudentLogin) {
 
             $request->validate([
                 'username' => ['required', 'string'],
-                'pin' => ['required', 'digits:4'], // opcional: forzar 4 dígitos
+                'pin' => ['required', 'digits:4'],
             ]);
 
             $user = User::where('username', $request->username)
-                ->whereHas('role', function ($q) {
-                    $q->where('slug', 'student');
-                })
+                ->whereHas('role', fn($q) => $q->where('slug', 'student'))
                 ->first();
 
-            if (!$user || !$user->pin || !Hash::check($request->pin, $user->pin)) {
-                return back()->withErrors([
-                    'username' => 'Credenciales incorrectas.',
-                ]);
-            }
-
-            if (!$user->is_active) {
-                return back()->withErrors([
-                    'username' => 'Su cuenta está inactiva.',
-                ]);
-            }
-
-            Auth::login($user);
-        }
-
-        /* Login docente / admin (email + password) */ else {
+            $credentialsValid = $user
+                && $user->pin
+                && Hash::check($request->pin, $user->pin);
+        } else {
 
             $request->validate([
                 'email' => ['required', 'email'],
                 'password' => ['required'],
             ]);
 
-            if (!Auth::attempt(
+            $credentialsValid = Auth::attempt(
                 $request->only('email', 'password'),
                 $request->boolean('remember')
-            )) {
-                return back()->withErrors([
-                    'email' => 'Credenciales incorrectas.',
-                ]);
-            }
+            );
 
-            $user = Auth::user();
-
-            if (!$user->is_active) {
-                Auth::logout();
-
-                return back()->withErrors([
-                    'email' => 'Su cuenta está inactiva.',
-                ]);
-            }
+            $user = $credentialsValid ? Auth::user() : null;
         }
 
+        // Si credenciales incorrectas
+        if (!$credentialsValid) {
+
+            RateLimiter::hit($key, 300);
+
+            $attempts = RateLimiter::attempts($key);
+            $remainingAttempts = 5 - $attempts;
+
+            if ($remainingAttempts <= 0) {
+
+                $seconds = RateLimiter::availableIn($key);
+                $minutes = ceil($seconds / 60);
+
+                return back()->withErrors([
+                    $field => "Demasiados intentos! Intente nuevamente en {$minutes} minuto(s)."
+                ]);
+            }
+
+            return back()->withErrors([
+                $field => "Credenciales incorrectas. Le quedan {$remainingAttempts} intento(s)."
+            ]);
+        }
+
+        // Usuario inactivo
+        if (!$user->is_active) {
+
+            Auth::logout();
+
+            return back()->withErrors([
+                $field => 'Su cuenta está inactiva.',
+            ]);
+        }
+
+        // Login exitoso
+        if ($isStudentLogin) {
+            Auth::login($user);
+        }
+
+        RateLimiter::clear($key);
         $request->session()->regenerate();
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        LoginLog::create([
+            'user_id'    => $user->id,
+            'login_at'   => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         return redirect()->route($user->redirectRoute());
     }
@@ -99,9 +149,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->session()->put('manual_logout', true);
+        $user = Auth::user();
 
-        Auth::guard('web')->logout();
+        if ($user) {
+            LoginLog::where('user_id', $user->id)
+                ->whereNull('logout_at')
+                ->latest('login_at')
+                ->first()
+                ?->update([
+                    'logout_at' => now(),
+                ]);
+        }
+
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

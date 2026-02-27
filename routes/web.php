@@ -54,6 +54,10 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('Student/Index');
     })->name('student.index');
 
+    Route::get('/teacher', function () {
+        return Inertia::render('Teacher/Index');
+    })->name('teacher.index');
+
 });
 
 Route::post('/admin/users/{user}/regenerate-pin', 

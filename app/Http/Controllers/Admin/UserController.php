@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Mail\UserCreatedMail;
+use App\Mail\UserEmailUpdatedMail;
+use App\Mail\UserActivatedMail;
+use App\Mail\UserDeactivatedMail;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
-use App\Models\AuditLog;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $section = $request->get('section', 'users');
-
         $users = User::with('role')
             ->orderBy('id', 'desc')
-            ->get()
-            ->map(function ($user) {
+            ->paginate(10)
+            ->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -39,10 +40,6 @@ class UserController extends Controller
 
         return Inertia::render('Admin/Index', [
             'users' => $users,
-            'section' => $section,
-            'auth' => [
-                'user' => Auth::user()
-            ]
         ]);
     }
 
@@ -57,25 +54,27 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'role_id' => ['required', 'exists:roles,id'],
+        ]);
+
         $role = Role::findOrFail($request->role_id);
 
+        // Crear estudiante
         if ($role->slug === 'student') {
 
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
             ]);
 
-            // Generar username automático
             $baseUsername = Str::slug($request->name);
             $username = $baseUsername;
             $counter = 1;
 
             while (User::where('username', $username)->exists()) {
-                $username = $baseUsername . $counter;
-                $counter++;
+                $username = $baseUsername . $counter++;
             }
 
-            // Generar PIN aleatorio de 4 dígitos
             $generatedPin = random_int(1000, 9999);
 
             $user = User::create([
@@ -86,6 +85,8 @@ class UserController extends Controller
                 'is_active' => true,
             ]);
 
+            audit('created_user', $user, null, $user->toArray());
+
             return redirect()
                 ->route('admin.index', ['section' => 'users'])
                 ->with('credentials', [
@@ -94,21 +95,33 @@ class UserController extends Controller
                 ]);
         }
 
+        // Crear admin o docente
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
         ]);
 
-        User::create([
+        $password = $request->password;
+
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($password),
             'role_id' => $role->id,
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.index', ['section' => 'users'])
+        audit('created_user', $user, null, $user->toArray());
+
+        if (in_array($role->slug, ['admin', 'teacher'])) {
+            Mail::to($user->email)->queue(
+                new UserCreatedMail($user, $password)
+            );
+        }
+
+        return redirect()
+            ->route('admin.index', ['section' => 'users'])
             ->with('success', 'Usuario creado correctamente.');
     }
 
@@ -124,19 +137,44 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $role = Role::findOrFail($request->role_id);
-
-        // Validación base
         $request->validate([
+            'role_id' => ['required', 'exists:roles,id'],
             'name' => 'required|string|max:255',
         ]);
 
-        // Si es estudiante
+        $old = $user->getOriginal();
+        $oldEmail = $user->email;
+        $oldStatus = $user->is_active;
+
+        $role = Role::findOrFail($request->role_id);
+
+        $isCurrentlyAdmin = $user->role && $user->role->slug === 'admin';
+        $isDeactivating = $request->has('is_active') && !$request->boolean('is_active');
+
+        if ($isCurrentlyAdmin && $isDeactivating) {
+            $activeAdmins = User::whereHas('role', function ($q) {
+                $q->where('slug', 'admin');
+            })
+                ->where('is_active', true)
+                ->count();
+
+            if ($activeAdmins <= 1) {
+                return back()->with([
+                    'unique_admin_error' => true,
+                    'unique_admin_name' => $user->name,
+                    'unique_admin_action' => 'desactivar'
+                ]);
+            }
+        }
+
         if ($role->slug === 'student') {
 
             $user->update([
                 'name' => $request->name,
                 'role_id' => $role->id,
+                'is_active' => $request->has('is_active')
+                    ? $request->boolean('is_active')
+                    : $user->is_active,
             ]);
         } else {
 
@@ -149,6 +187,9 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'role_id' => $role->id,
+                'is_active' => $request->has('is_active')
+                    ? $request->boolean('is_active')
+                    : $user->is_active,
             ];
 
             if ($request->filled('password')) {
@@ -158,6 +199,26 @@ class UserController extends Controller
             $user->update($data);
         }
 
+        if ($user->wasChanged('email')) {
+            Mail::to($user->email)->queue(
+                new UserEmailUpdatedMail($user, $oldEmail)
+            );
+        }
+
+        if ($oldStatus === true && $user->is_active === false) {
+            Mail::to($user->email)->queue(
+                new UserDeactivatedMail($user)
+            );
+        }
+
+        if ($oldStatus === false && $user->is_active === true) {
+            Mail::to($user->email)->queue(
+                new UserActivatedMail($user)
+            );
+        }
+
+        audit('updated_user', $user, $old, $user->getChanges());
+
         return redirect()
             ->route('admin.index', ['section' => 'users'])
             ->with('success', 'Usuario actualizado correctamente');
@@ -165,23 +226,59 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        // Validación: No eliminar último admin activo
+
+        $isAdmin = $user->role && $user->role->slug === 'admin';
+
+        if ($isAdmin && $user->is_active) {
+
+            $activeAdmins = User::whereHas('role', function ($q) {
+                $q->where('slug', 'admin');
+            })
+                ->where('is_active', true)
+                ->count();
+
+            if ($activeAdmins <= 1) {
+                return back()->with([
+                    'unique_admin_error' => true,
+                    'unique_admin_name' => $user->name,
+                    'unique_admin_action' => 'eliminar'
+                ]);
+            }
+        }
+
+        // Eliminar usuario
+
+        audit('deleted_user', $user, $user->toArray(), null);
+
         $user->delete();
 
-        return redirect()->route('admin.index', ['section' => 'users'])->with('success', 'Usuario eliminado correctamente.');
+        return redirect()
+            ->route('admin.index', ['section' => 'users'])
+            ->with('success', 'Usuario eliminado correctamente.');
     }
 
     public function toggleStatus(User $user)
     {
         $oldStatus = $user->is_active;
 
-        if ($user->id === Auth::id() && $user->is_active) {
+        $isAdmin = $user->role && $user->role->slug === 'admin';
+        $isDeactivating = $oldStatus === true;
+
+        if ($isAdmin && $isDeactivating) {
 
             $activeAdmins = User::whereHas('role', function ($q) {
                 $q->where('slug', 'admin');
-            })->where('is_active', true)->count();
+            })
+                ->where('is_active', true)
+                ->count();
 
             if ($activeAdmins <= 1) {
-                return back()->with('error', 'No puedes desactivar el único administrador activo del sistema.');
+                return back()->with([
+                    'unique_admin_error' => true,
+                    'unique_admin_name' => $user->name,
+                    'unique_admin_action' => 'desactivar'
+                ]);
             }
         }
 
@@ -190,17 +287,25 @@ class UserController extends Controller
         }
 
         $user->update([
-            'is_active' => !$user->is_active
+            'is_active' => !$oldStatus
         ]);
 
-        AuditLog::create([
-            'user_id' => $user->id,
-            'performed_by' => Auth::id(),
-            'action' => $oldStatus ? 'user_deactivated' : 'user_activated',
-            'description' => $oldStatus
-                ? "Usuario desactivado: {$user->email}"
-                : "Usuario activado: {$user->email}",
-        ]);
+        if ($oldStatus === true) {
+            Mail::to($user->email)->queue(
+                new UserDeactivatedMail($user)
+            );
+        } else {
+            Mail::to($user->email)->queue(
+                new UserActivatedMail($user)
+            );
+        }
+
+        audit(
+            $oldStatus ? 'user_deactivated' : 'user_activated',
+            $user,
+            ['is_active' => $oldStatus],
+            ['is_active' => $user->is_active]
+        );
 
         return back()->with('success', 'Estado del usuario actualizado correctamente');
     }
@@ -213,18 +318,16 @@ class UserController extends Controller
             'pin' => Hash::make($generatedPin)
         ]);
 
-        AuditLog::create([
-            'user_id' => $user->id,
-            'performed_by' => Auth::id(),
-            'action' => 'pin_regenerated',
-            'description' => "PIN regenerado para el usuario {$user->username}",
-        ]);
+        audit(
+            'pin_regenerated',
+            $user,
+            null,
+            ['pin_regenerated' => true]
+        );
 
-        return redirect()
-            ->route('admin.index', ['section' => 'users'])
-            ->with('credentials', [
-                'username' => $user->username,
-                'pin' => $generatedPin,
-            ]);
+        return back()->with('credentials', [
+            'username' => $user->username,
+            'pin' => $generatedPin,
+        ]);
     }
 }

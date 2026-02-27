@@ -4,12 +4,7 @@ import { ArrowLeft, User, Mail, Lock, Shield, Check, AlertTriangle, KeyRound, Gr
 import { useState, useEffect } from "react";
 
 export default function Edit({ user, roles }) {
-    const adminRole = roles.find((role) => role.slug === "admin");
-    const adminRoleId = adminRole ? adminRole.id : null;
-    const [generatedCredentials, setGeneratedCredentials] = useState(null);
-    const [showPinModal, setShowPinModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [copied, setCopied] = useState(false);
 
     const { data, setData, put, errors, processing } = useForm({
         name: user.name ?? "",
@@ -21,24 +16,22 @@ export default function Edit({ user, roles }) {
 
     const selectedRole = roles.find(r => r.id == data.role_id);
     const isStudentRole = selectedRole?.slug === "student";
-    const { props } = usePage();
-    const flash = props.flash || {};
+    const { credentials } = usePage().props.flash;
+    const { flash } = usePage().props;
+    const [showCredentialsModal, setShowCredentialsModal] = useState(false);
 
     useEffect(() => {
         if (flash?.credentials) {
-            setGeneratedCredentials(flash.credentials);
-            setShowPinModal(true);
+            setShowCredentialsModal(true);
         }
     }, [flash]);
 
     const [focusedField, setFocusedField] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
-
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+    const [copied, setCopied] = useState({
+        username: false,
+        pin: false
+    });
 
     const handleRegeneratePin = () => {
         setShowConfirmModal(true);
@@ -46,8 +39,9 @@ export default function Edit({ user, roles }) {
 
     const confirmRegeneratePin = () => {
         setShowConfirmModal(false);
-        router.post(route('admin.users.regeneratePin', user.id), {}, { 
-            preserveScroll: true
+
+        router.post(route('admin.users.regeneratePin', user.id), {}, {
+            preserveScroll: true,
         });
     };
 
@@ -56,9 +50,6 @@ export default function Edit({ user, roles }) {
 
         put(route("admin.users.update", user.id), {
             preserveScroll: true,
-            onSuccess: () => {
-                setGeneratedCredentials(null);
-            }
         });
     }
 
@@ -77,6 +68,28 @@ export default function Edit({ user, roles }) {
         if (field === 'email') return data.email.includes('@') && data.email.includes('.');
         if (field === 'password') return !data.password || data.password.length >= 8;
         return true;
+    };
+
+    const copyToClipboard = async (text, field) => {
+        try {
+            await navigator.clipboard.writeText(text);
+
+            setCopied(prev => ({
+                ...prev,
+                [field]: true
+            }));
+
+            // Quitar el estado después de 2 segundos
+            setTimeout(() => {
+                setCopied(prev => ({
+                    ...prev,
+                    [field]: false
+                }));
+            }, 2000);
+
+        } catch (err) {
+            console.error("Error al copiar:", err);
+        }
     };
 
     return (
@@ -583,6 +596,64 @@ export default function Edit({ user, roles }) {
                                     Regenerar
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Nuevo PIN Regenerado */}
+            {showCredentialsModal && flash?.credentials && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCredentialsModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        {/* Barra superior delgada como la de la página principal - con los colores originales */}
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+                        
+                        <div className="p-6">
+                            {/* Header con icono al lado del título - icono más grande */}
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
+                                    <KeyRound className="w-8 h-8" style={{ color: "#540D6E" }} />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-900">PIN Regenerado</h2>
+                                    <p className="text-sm text-gray-600">Nuevo PIN de acceso para el estudiante</p>
+                                </div>
+                            </div>
+
+                            {/* PIN */}
+                            <div className="mb-6">
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Nuevo PIN</label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
+                                        <KeyRound className="w-4 h-4 text-gray-400" />
+                                        <span className="text-gray-800 text-lg tracking-wider font-bold">{credentials.pin}</span>
+                                    </div>
+                                    <button onClick={() => copyToClipboard(credentials.pin, 'pin')}
+                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
+                                        style={{ borderColor: copied.pin ? "#0EAD69" : "#540D6E", backgroundColor: copied.pin ? "#E8F5F0" : "white" }}>
+                                        {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
+                                    </button>
+                                </div>
+                                {copied.pin && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ PIN copiado</p>}
+                            </div>
+
+                            {/* Nota de seguridad actualizada */}
+                            <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
+                                <p className="text-xs text-gray-700 flex items-start gap-2">
+                                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
+                                    <span>El PIN anterior ya no funciona, comparte este nuevo PIN de forma segura con el estudiante.</span>
+                                </p>
+                            </div>
+
+                            {/* Botón */}
+                            <button onClick={() => setShowCredentialsModal(false)}
+                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                                style={{ backgroundColor: "#540D6E" }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
+                                Entendido
+                            </button>
                         </div>
                     </div>
                 </div>

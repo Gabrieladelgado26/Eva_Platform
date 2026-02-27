@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
                 'credentials' => fn() => $request->session()->get('credentials'),
+                'unique_admin_error' => fn () => $request->session()->get('unique_admin_error'),
+                'unique_admin_name' => fn () => $request->session()->get('unique_admin_name'),
+                'unique_admin_action' => fn () => $request->session()->get('unique_admin_action'),
             ],
         ];
     }
