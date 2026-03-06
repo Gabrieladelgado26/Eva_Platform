@@ -196,5 +196,9 @@ return [
         'date' => 'fecha',
         'start_date' => 'fecha de inicio',
         'end_date' => 'fecha de finalización',
+        'grade' => 'grado',
+        'section' => 'sección',
+        'school_year' => 'año escolar',
+        'description' => 'descripción',
     ],
 ];

@@ -57,4 +57,9 @@ class User extends Authenticatable
             default   => 'dashboard',
         };
     }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'teacher_id');
+    }
 }

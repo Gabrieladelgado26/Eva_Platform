@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Teacher\CourseController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -54,11 +55,22 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('Student/Index');
     })->name('student.index');
 
-    Route::get('/teacher', function () {
-        return Inertia::render('Teacher/Index');
-    })->name('teacher.index');
-
 });
+
+Route::middleware(['auth', 'role:teacher'])
+    ->prefix('teacher')
+    ->name('teacher.')
+    ->group(function () {
+
+        Route::get('/', [CourseController::class, 'index'])
+            ->name('index');
+
+        Route::resource('courses', CourseController::class)
+            ->except(['index']);
+
+        Route::patch('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])
+            ->name('courses.toggleStatus');
+    });
 
 Route::post('/admin/users/{user}/regenerate-pin', 
     [UserController::class, 'regeneratePin']
