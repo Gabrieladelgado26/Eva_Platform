@@ -482,10 +482,7 @@ export default function Index({ courses = [], teacher = null }) {
                                             {filteredCourses.map((course, index) => {
                                                 const gradient = courseGradients[index % courseGradients.length];
                                                 return (
-                                                    <div 
-                                                        key={course.id} 
-                                                        className="group bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 animate-fade-in relative"
-                                                    >
+                                                    <div key={course.id} className="group bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 animate-fade-in relative">
                                                         {/* Badge de estado flotante */}
                                                         <div className="absolute top-8 right-4 z-10">
                                                             <div className={`px-3 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-1.5
@@ -500,65 +497,71 @@ export default function Index({ courses = [], teacher = null }) {
 
                                                         {/* Contenido de la tarjeta - Estilo modal */}
                                                         <div className="p-6">
-                                                            {/* Header con icono y título */}
-                                                            <div className="flex items-center gap-4 mb-4">
-                                                                <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                                                                    <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
+                                                            {/* Header con icono y título - AHORA ES EL ENLACE */}
+                                                            <Link href={route("teacher.courses.show", course.id)} className="block cursor-pointer">
+                                                                <div className="flex items-center gap-4 mb-4">
+                                                                    <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
+                                                                        <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h2 className="text-2xl font-bold text-gray-900 capitalize">
+                                                                            {getGradeLabel(course.grade)}
+                                                                        </h2>
+                                                                        <p className="text-sm text-gray-600">Sección {course.section}</p>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <h2 className="text-2xl font-bold text-gray-900 capitalize">
-                                                                        {getGradeLabel(course.grade)}
-                                                                    </h2>
-                                                                    <p className="text-sm text-gray-600">Sección {course.section}</p>
-                                                                </div>
-                                                            </div>
 
-                                                            {/* Descripción */}
-                                                            {course.description ? (
-                                                                <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
-                                                                    <p className="text-xs text-gray-600 flex items-center gap-2">
-                                                                        <BookOpen className="w-4 h-4 text-gray-400" />
-                                                                        {course.description}
-                                                                    </p>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
-                                                                    <p className="text-xs text-gray-400 italic flex items-center gap-2">
-                                                                        <BookOpen className="w-4 h-4 text-gray-400" />
-                                                                        Sin descripción
-                                                                    </p>
-                                                                </div>
-                                                            )}
+                                                                {/* Descripción */}
+                                                                {course.description ? (
+                                                                    <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
+                                                                        <p className="text-xs text-gray-600 flex items-center gap-2">
+                                                                            <BookOpen className="w-4 h-4 text-gray-400" />
+                                                                            {course.description}
+                                                                        </p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
+                                                                        <p className="text-xs text-gray-400 italic flex items-center gap-2">
+                                                                            <BookOpen className="w-4 h-4 text-gray-400" />
+                                                                            Sin descripción
+                                                                        </p>
+                                                                    </div>
+                                                                )}
 
-                                                            {/* Estadísticas */}
-                                                            <div className="grid grid-cols-2 gap-3 mb-4">
-                                                                <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
-                                                                    <Users className="w-4 h-4 mx-auto mb-1 text-gray-600" />
-                                                                    <p className="text-xs text-gray-500">Estudiantes</p>
-                                                                    <p className="text-lg font-bold text-gray-900">{course.students_count || 0}</p>
+                                                                {/* Estadísticas */}
+                                                                <div className="grid grid-cols-2 gap-3 mb-4">
+                                                                    <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                                                                        <Users className="w-4 h-4 mx-auto mb-1 text-gray-600" />
+                                                                        <p className="text-xs text-gray-500">Estudiantes</p>
+                                                                        <p className="text-lg font-bold text-gray-900">{course.students_count || 0}</p>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                                                                        <BookMarked className="w-4 h-4 mx-auto mb-1 text-gray-600" />
+                                                                        <p className="text-xs text-gray-500">Materias</p>
+                                                                        <p className="text-lg font-bold text-gray-900">6</p>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
-                                                                    <BookMarked className="w-4 h-4 mx-auto mb-1 text-gray-600" />
-                                                                    <p className="text-xs text-gray-500">Materias</p>
-                                                                    <p className="text-lg font-bold text-gray-900">6</p>
-                                                                </div>
-                                                            </div>
 
-                                                            {/* Progreso */}
-                                                            <div className="mb-4">
-                                                                <div className="flex items-center justify-between text-xs mb-1">
-                                                                    <span className="text-gray-600">Progreso del período</span>
-                                                                    <span className="font-semibold text-gray-900">65%</span>
+                                                                {/* Progreso */}
+                                                                <div className="mb-4">
+                                                                    <div className="flex items-center justify-between text-xs mb-1">
+                                                                        <span className="text-gray-600">Progreso del período</span>
+                                                                        <span className="font-semibold text-gray-900">65%</span>
+                                                                    </div>
+                                                                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                                        <div className="h-full rounded-full" style={{ width: "65%", background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+                                                                    </div>
                                                                 </div>
-                                                                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                                                    <div className="h-full rounded-full" style={{ width: "65%", background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
-                                                                </div>
-                                                            </div>
+                                                            </Link>
 
-                                                            {/* Acciones - botón estilo modal */}
+                                                            {/* Acciones - botón estilo modal (AHORA FUERA DEL LINK) */}
                                                             <div className="flex items-center gap-2">
                                                                 <button
-                                                                    onClick={() => confirmToggleStatus(course)}
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        confirmToggleStatus(course);
+                                                                    }}
                                                                     className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md ${
                                                                         course.is_active
                                                                             ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -579,6 +582,7 @@ export default function Index({ courses = [], teacher = null }) {
 
                                                                 <Link
                                                                     href={route("teacher.courses.edit", course.id)}
+                                                                    onClick={(e) => e.stopPropagation()}
                                                                     className="p-3 rounded-lg transition-all shadow-sm hover:shadow-md"
                                                                     style={{ backgroundColor: "#FFD23F" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
@@ -589,7 +593,11 @@ export default function Index({ courses = [], teacher = null }) {
                                                                 </Link>
 
                                                                 <button
-                                                                    onClick={() => confirmDelete(course)}
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        confirmDelete(course);
+                                                                    }}
                                                                     className="p-3 rounded-lg text-white transition-all shadow-sm hover:shadow-md"
                                                                     style={{ backgroundColor: "#EE4266" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}

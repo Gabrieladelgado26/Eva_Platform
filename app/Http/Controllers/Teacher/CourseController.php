@@ -95,6 +95,26 @@ class CourseController extends Controller
             ->with('success', 'Curso creado correctamente.');
     }
 
+    public function show(Course $course)
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        abort_if(!$user, 403);
+        abort_unless($user->id === $course->teacher_id, 403);
+
+        $course->loadCount('students');
+
+        $students = $course->students()
+            ->select('users.id', 'users.name', 'users.username')
+            ->get();
+
+        return Inertia::render('Teacher/Courses/Index', [
+            'course' => $course,
+            'students' => $students
+        ]);
+    }
+
     public function edit(Course $course)
     {
         /** @var User|null $user */

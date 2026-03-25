@@ -22,12 +22,18 @@ class Course extends Model
 
     public function students()
     {
-        return $this->belongsToMany(User::class, 'course_student');
+        return $this->belongsToMany(User::class, 'course_student')
+            ->withTimestamps();
     }
 
     // Nombre automático del curso
     public function getNameAttribute()
     {
         return ucfirst($this->grade) . ' ' . $this->section;
+    }
+
+    public function studentsCount()
+    {
+        return $this->students()->count();
     }
 }

@@ -58,8 +58,16 @@ class User extends Authenticatable
         };
     }
 
+    // cursos creados por el docente
     public function courses()
     {
         return $this->hasMany(Course::class, 'teacher_id');
+    }
+
+    // cursos donde el usuario está inscrito como estudiante
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'course_student')
+            ->withTimestamps();
     }
 }
