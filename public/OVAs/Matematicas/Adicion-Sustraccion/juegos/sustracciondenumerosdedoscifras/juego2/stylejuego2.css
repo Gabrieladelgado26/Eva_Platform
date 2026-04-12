@@ -1,0 +1,1381 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 99%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+
+.alerta{
+    
+    z-index: 1;
+    position: absolute;
+    top: 37%;
+    right: 34%;
+    width: 34%;
+}
+
+
+
+.botonevaluar
+{
+    width: 17%;
+    bottom: 23%;
+    left: 5%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+
+
+.divinstruccion
+{
+    position: absolute;
+    width: 37%;
+    text-align: left;   
+    padding: 2%;
+    left: 39%;
+    top: 7%;
+    background: rgba(255,255,255, 1.6);
+    font-family: Roboto;
+      border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+
+
+}
+
+.divinstruccionjuego
+{
+    position: absolute;
+    width: 46%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 2%;
+    left: 39%;
+    top:5%;
+    font-family: Roboto;
+   border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.divBotonComenzar
+{
+    width: 19%;
+    bottom: 2%;
+    right: 12%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+
+}
+
+.divgeneral{
+    width: 7%;
+    height: 34px;
+    z-index: 1;
+    position: absolute;
+     border-radius: 86%;
+}
+
+
+
+.iconoSonido, .iconoSonido2
+{
+    left: 33%;    
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    top: 12%;
+}
+
+.iconoSonido2
+{
+    top: 8%;
+}
+
+.ivisonriendo
+{
+    width: 13%;
+    left: 78%;
+    top: 8%;
+}
+
+
+
+.mensaje{
+    z-index: 1;
+    position: absolute;
+    top: 29%;
+    right: 34%;
+}
+
+
+.respuesta
+{
+    display: block;
+    top: 28%;
+    width: 34%;
+    left: 23%;
+}
+
+.respuestafin
+{
+    
+    z-index: 1;
+    position: absolute;
+    width: 23%;
+    right: 35%;
+    bottom: 29%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+.resultados
+{
+    width: 49%;
+    left: 36%;
+    top: 26%;
+}
+
+
+.titulojuego
+{
+    width: 23%;
+    left: 5%;
+    top: 4%;
+}
+
+
+.vidas3
+{
+    width: 19%;
+    top: 32%;
+    left: 3%;
+}
+
+/*DISEÑO UNICO JUEGO*/
+
+.cajavalor
+{
+    position: absolute;
+    right: 5%;
+    width: 8%;
+    bottom: 21%;
+    text-align: center;
+    font-size: 54px !important;
+    height: 10% !important;
+    font-family: Chewy;
+    color: black !important;
+    border-radius: 16px 13px 13px 13px !important;
+}
+
+.letrassurtidos
+{
+    position: absolute;
+    right: 15%;
+    top: 47%;
+    font-size: 26px;
+    font-family: Chewy;
+    color: #652E86;
+}
+
+.standgeneral
+{
+    width: 46%;
+    left: 28%;
+    bottom: 13%;
+}
+
+.operacion1
+{
+    position: absolute;
+    right: 5%;
+    top: 43%;
+    width: 20%;
+}
+
+.tituloproductos
+{
+    position: absolute;
+    top: 24%;
+    left: 41%;
+    font-family: Chewy;
+    color: #652E86;
+    font-size: 47px;
+}
+
+/*DISEÑO ESCENARIO 1*/
+
+.manzana1
+{
+    width: 4%;
+    left: 31%;
+    top: 34%;
+}
+
+.manzana2
+{
+    width: 4%;
+    left: 36%;
+    top: 34%;
+}
+
+.manzana3
+{
+    width: 4%;
+    left: 41%;
+    top: 34%;
+}
+
+.manzana4
+{
+    width: 4%;
+    left: 46%;
+    top: 34%;
+}
+
+.manzana5
+{
+    width: 4%;
+    left: 51%;
+    top: 34%;
+}
+
+.manzana6
+{
+    width: 4%;
+    left: 56%;
+    top: 34%;
+}
+
+.manzana7
+{
+    width: 4%;
+    left: 61%;
+    top: 34%;
+}
+
+.manzana8
+{
+    right: 30%;
+    width: 4%;
+    top: 34%;
+}
+
+
+.manzana9
+{
+    width: 4%;
+    left: 31%;
+    top: 45%;
+}
+
+.manzana10
+{
+    width: 4%;
+    left: 36%;
+    top: 45%;
+}
+
+.manzana11
+{
+    width: 4%;
+    left: 41%;
+    top: 45%;
+}
+
+.manzana12
+{
+    width: 4%;
+    left: 46%;
+    top: 45%;
+}
+
+.manzana13
+{
+    width: 4%;
+    left: 51%;
+    top: 45%;
+}
+
+.manzana14
+{
+    width: 4%;
+    left: 56%;
+    top: 45%;
+}
+
+.manzana15
+{
+    width: 4%;
+    left: 61%;
+    top: 45%;
+}
+
+.manzana16
+{
+    right: 30%;
+    width: 4%;
+    top: 45%;
+}
+
+.manzana17
+{
+    width: 4%;
+    left: 31%;
+    top: 55%;
+}
+
+.manzana18
+{
+    width: 4%;
+    left: 36%;
+    top: 55%;
+}
+
+.manzana19
+{
+    width: 4%;
+    left: 41%;
+    top: 55%;
+}
+
+.manzana20
+{
+    width: 4%;
+    left: 46%;
+    top:55%;
+}
+
+.manzana21
+{
+    width: 4%;
+    left: 51%;
+    top: 55%;
+}
+
+.manzana22
+{
+    width: 4%;
+    left: 56%;
+    top: 55%;
+}
+
+.manzana23
+{
+    width: 4%;
+    left: 61%;
+    top: 55%;
+}
+
+.manzana24
+{
+    right: 30%;
+    width: 4%;
+    top: 55%;
+}
+
+.manzana25
+{
+    width: 4%;
+    left: 31%;
+    bottom: 26%;
+}
+
+.manzana26
+{
+    width: 4%;
+    left: 36%;
+    bottom: 26%;
+}
+
+.manzana27
+{
+    width: 4%;
+    left: 41%;
+    bottom: 26%;
+}
+
+.manzana28
+{
+    width: 4%;
+    left: 46%;
+   bottom: 26%;
+}
+
+.manzana29
+{
+    width: 4%;
+    left: 51%;
+    bottom: 26%;
+}
+
+/*DISEÑO ESCENARIO 2*/
+
+.yogurt1
+{
+    width: 4%;
+    left: 31%;
+    top: 34%;
+}
+
+.yogurt2
+{
+    width: 4%;
+    left: 36%;
+    top: 34%;
+}
+
+.yogurt3
+{
+    width: 4%;
+    left: 41%;
+    top: 34%;
+}
+
+.yogurt4
+{
+    width: 4%;
+    left: 46%;
+    top: 34%;
+}
+
+.yogurt5
+{
+    width: 4%;
+    left: 51%;
+    top: 34%;
+}
+
+.yogurt6
+{
+    width: 4%;
+    left: 56%;
+    top: 34%;
+}
+
+.yogurt7
+{
+    width: 4%;
+    left: 61%;
+    top: 34%;
+}
+
+.yogurt8
+{
+    right: 30%;
+    width: 4%;
+    top: 34%;
+}
+
+
+.yogurt9
+{
+    width: 4%;
+    left: 31%;
+    top: 45%;
+}
+
+.yogurt10
+{
+    width: 4%;
+    left: 36%;
+    top: 45%;
+}
+
+.yogurt11
+{
+    width: 4%;
+    left: 41%;
+    top: 45%;
+}
+
+.yogurt12
+{
+    width: 4%;
+    left: 46%;
+    top: 45%;
+}
+
+.yogurt13
+{
+    width: 4%;
+    left: 51%;
+    top: 45%;
+}
+
+.yogurt14
+{
+    width: 4%;
+    left: 56%;
+    top: 45%;
+}
+
+.yogurt15
+{
+    width: 4%;
+    left: 61%;
+    top: 45%;
+}
+
+.yogurt16
+{
+    right: 30%;
+    width: 4%;
+    top: 45%;
+}
+
+.yogurt17
+{
+    width: 4%;
+    left: 31%;
+    top: 55%;
+}
+
+.yogurt18
+{
+    width: 4%;
+    left: 36%;
+    top: 55%;
+}
+
+.yogurt19
+{
+    width: 4%;
+    left: 41%;
+    top: 55%;
+}
+
+.yogurt20
+{
+    width: 4%;
+    left: 46%;
+    top:55%;
+}
+
+.yogurt21
+{
+    width: 4%;
+    left: 51%;
+    top: 55%;
+}
+
+.yogurt22
+{
+    width: 4%;
+    left: 56%;
+    top: 55%;
+}
+
+.yogurt23
+{
+    width: 4%;
+    left: 61%;
+    top: 55%;
+}
+
+.yogurt24
+{
+    right: 30%;
+    width: 4%;
+    top: 55%;
+}
+
+.yogurt25
+{
+    width: 4%;
+    left: 31%;
+    bottom: 26%;
+}
+
+.yogurt26
+{
+    width: 4%;
+    left: 36%;
+    bottom: 26%;
+}
+
+.yogurt27
+{
+    width: 4%;
+    left: 41%;
+    bottom: 26%;
+}
+
+.yogurt28
+{
+    width: 4%;
+    left: 46%;
+   bottom: 26%;
+}
+
+.yogurt29
+{
+    width: 4%;
+    left: 51%;
+    bottom: 26%;
+}
+
+.yogurt30
+{
+    width: 4%;
+    left: 56%;
+     bottom: 26%;
+}
+
+.yogurt31
+{
+    width: 4%;
+    left: 61%;
+     bottom: 26%;
+}
+
+.yogurt32
+{
+    right: 30%;
+    width: 4%;
+    bottom: 26%;
+}
+
+.yogurt33
+{
+    width: 4%;
+    left: 31%;
+    bottom: 15%;
+}
+
+.yogurt34
+{
+    width: 4%;
+    left: 36%;
+    bottom: 15%;
+}
+
+.yogurt35
+{
+    width: 4%;
+    left: 41%;
+    bottom: 15%;
+}
+
+/*DISEÑO ESCENARIO 3*/
+
+.oso1
+{
+    width: 3%;
+    left: 31%;
+    top: 34%;
+}
+
+.oso2
+{
+    width: 3%;
+    left: 36%;
+    top: 34%;
+}
+
+.oso3
+{
+    width: 3%;
+    left: 41%;
+    top: 34%;
+}
+
+.oso4
+{
+    width: 3%;
+    left: 46%;
+    top: 34%;
+}
+
+.oso5
+{
+    width: 3%;
+    left: 51%;
+    top: 34%;
+}
+
+.oso6
+{
+    width: 3%;
+    left: 56%;
+    top: 34%;
+}
+
+.oso7
+{
+    width: 3%;
+    left: 61%;
+    top: 34%;
+}
+
+.oso8
+{
+    right: 30%;
+    width: 3%;
+    top: 34%;
+}
+
+
+.oso9
+{
+    width: 3%;
+    left: 31%;
+    top: 45%;
+}
+
+.oso10
+{
+    width: 3%;
+    left: 36%;
+    top: 45%;
+}
+
+.oso11
+{
+    width: 3%;
+    left: 41%;
+    top: 45%;
+}
+
+.oso12
+{
+    width: 3%;
+    left: 46%;
+    top: 45%;
+}
+
+.oso13
+{
+    width: 3%;
+    left: 51%;
+    top: 45%;
+}
+
+.oso14
+{
+    width: 3%;
+    left: 56%;
+    top: 45%;
+}
+
+.oso15
+{
+    width: 3%;
+    left: 61%;
+    top: 45%;
+}
+
+.oso16
+{
+    right: 30%;
+    width: 3%;
+    top: 45%;
+}
+
+.oso17
+{
+    width: 3%;
+    left: 31%;
+    top: 55%;
+}
+
+.oso18
+{
+    width: 3%;
+    left: 36%;
+    top: 55%;
+}
+
+.oso19
+{
+    width: 3%;
+    left: 41%;
+    top: 55%;
+}
+
+.oso20
+{
+    width: 3%;
+    left: 46%;
+    top:55%;
+}
+
+.oso21
+{
+    width: 3%;
+    left: 51%;
+    top: 55%;
+}
+
+.oso22
+{
+    width: 3%;
+    left: 56%;
+    top: 55%;
+}
+
+.oso23
+{
+    width: 3%;
+    left: 61%;
+    top: 55%;
+}
+
+.oso24
+{
+    right: 30%;
+    width: 3%;
+    top: 55%;
+}
+
+.oso25
+{
+    width: 3%;
+    left: 31%;
+    bottom: 26%;
+}
+
+.oso26
+{
+    width: 3%;
+    left: 36%;
+    bottom: 26%;
+}
+
+.oso27
+{
+    width: 3%;
+    left: 41%;
+    bottom: 26%;
+}
+
+/*DISEÑO ESCENARIO 4*/
+.leche1
+{
+    width: 4%;
+    left: 31%;
+    top: 34%;
+}
+
+.leche2
+{
+    width: 4%;
+    left: 36%;
+    top: 34%;
+}
+
+.leche3
+{
+    width: 4%;
+    left: 41%;
+    top: 34%;
+}
+
+.leche4
+{
+    width: 4%;
+    left: 46%;
+    top: 34%;
+}
+
+.leche5
+{
+    width: 4%;
+    left: 51%;
+    top: 34%;
+}
+
+.leche6
+{
+    width: 4%;
+    left: 56%;
+    top: 34%;
+}
+
+.leche7
+{
+    width: 4%;
+    left: 61%;
+    top: 34%;
+}
+
+.leche8
+{
+    right: 30%;
+    width: 4%;
+    top: 34%;
+}
+
+
+.leche9
+{
+    width: 4%;
+    left: 31%;
+    top: 45%;
+}
+
+.leche10
+{
+    width: 4%;
+    left: 36%;
+    top: 45%;
+}
+
+.leche11
+{
+    width: 4%;
+    left: 41%;
+    top: 45%;
+}
+
+.leche12
+{
+    width: 4%;
+    left: 46%;
+    top: 45%;
+}
+
+.leche13
+{
+    width: 4%;
+    left: 51%;
+    top: 45%;
+}
+
+.leche14
+{
+    width: 4%;
+    left: 56%;
+    top: 45%;
+}
+
+.leche15
+{
+    width: 4%;
+    left: 61%;
+    top: 45%;
+}
+
+.leche16
+{
+    right: 30%;
+    width: 4%;
+    top: 45%;
+}
+
+.leche17
+{
+    width: 4%;
+    left: 31%;
+    top: 55%;
+}
+
+.leche18
+{
+    width: 4%;
+    left: 36%;
+    top: 55%;
+}
+
+.leche19
+{
+    width: 4%;
+    left: 41%;
+    top: 55%;
+}
+
+.leche20
+{
+    width: 4%;
+    left: 46%;
+    top:55%;
+}
+
+.leche21
+{
+    width: 4%;
+    left: 51%;
+    top: 55%;
+}
+
+.leche22
+{
+    width: 4%;
+    left: 56%;
+    top: 55%;
+}
+
+.leche23
+{
+    width: 4%;
+    left: 61%;
+    top: 55%;
+}
+
+.leche24
+{
+    right: 30%;
+    width: 4%;
+    top: 55%;
+}
+
+.leche25
+{
+    width: 4%;
+    left: 31%;
+    bottom: 26%;
+}
+
+.leche26
+{
+    width: 4%;
+    left: 36%;
+    bottom: 26%;
+}
+
+.leche27
+{
+    width: 4%;
+    left: 41%;
+    bottom: 26%;
+}
+
+.leche28
+{
+    width: 4%;
+    left: 46%;
+   bottom: 26%;
+}
+
+.leche29
+{
+    width: 4%;
+    left: 51%;
+    bottom: 26%;
+}
+
+.leche30
+{
+    width: 4%;
+    left: 56%;
+     bottom: 26%;
+}
+
+.leche31
+{
+    width: 4%;
+    left: 61%;
+     bottom: 26%;
+}
+
+.leche32
+{
+    right: 30%;
+    width: 4%;
+    bottom: 26%;
+}
+
+.leche33
+{
+    width: 4%;
+    left: 31%;
+    bottom: 15%;
+}
+
+.leche34
+{
+    width: 4%;
+    left: 36%;
+    bottom: 15%;
+}
+
+.leche35
+{
+    width: 4%;
+    left: 41%;
+    bottom: 15%;
+}
+.leche36
+{
+    width: 4%;
+    left: 46%;
+   bottom: 15%;
+}
+
+.leche37
+{
+    width: 4%;
+    left: 51%;
+    bottom: 15%;
+}
+
+/*DISEÑO ESCENARIO 5*/
+.jamoneta1
+{
+    width: 4%;
+    left: 31%;
+    top: 34%;
+}
+
+.jamoneta2
+{
+    width: 4%;
+    left: 36%;
+    top: 34%;
+}
+
+.jamoneta3
+{
+    width: 4%;
+    left: 41%;
+    top: 34%;
+}
+
+.jamoneta4
+{
+    width: 4%;
+    left: 46%;
+    top: 34%;
+}
+
+.jamoneta5
+{
+    width: 4%;
+    left: 51%;
+    top: 34%;
+}
+
+.jamoneta6
+{
+    width: 4%;
+    left: 56%;
+    top: 34%;
+}
+
+.jamoneta7
+{
+    width: 4%;
+    left: 61%;
+    top: 34%;
+}
+
+.jamoneta8
+{
+    right: 30%;
+    width: 4%;
+    top: 34%;
+}
+
+
+.jamoneta9
+{
+    width: 4%;
+    left: 31%;
+    top: 45%;
+}
+
+.jamoneta10
+{
+    width: 4%;
+    left: 36%;
+    top: 45%;
+}
+
+.jamoneta11
+{
+    width: 4%;
+    left: 41%;
+    top: 45%;
+}
+
+.jamoneta12
+{
+    width: 4%;
+    left: 46%;
+    top: 45%;
+}
+
+.jamoneta13
+{
+    width: 4%;
+    left: 51%;
+    top: 45%;
+}
+
+.jamoneta14
+{
+    width: 4%;
+    left: 56%;
+    top: 45%;
+}
+
+.jamoneta15
+{
+    width: 4%;
+    left: 61%;
+    top: 45%;
+}
+
+.jamoneta16
+{
+    right: 30%;
+    width: 4%;
+    top: 45%;
+}
+
+.jamoneta17
+{
+    width: 4%;
+    left: 31%;
+    top: 55%;
+}
+
+.jamoneta18
+{
+    width: 4%;
+    left: 36%;
+    top: 55%;
+}
+
+.jamoneta19
+{
+    width: 4%;
+    left: 41%;
+    top: 55%;
+}
+
+.jamoneta20
+{
+    width: 4%;
+    left: 46%;
+    top:55%;
+}
+
+.jamoneta21
+{
+    width: 4%;
+    left: 51%;
+    top: 55%;
+}
+
+.jamoneta22
+{
+    width: 4%;
+    left: 56%;
+    top: 55%;
+}
+
+.jamoneta23
+{
+    width: 4%;
+    left: 61%;
+    top: 55%;
+}
+
+.jamoneta24
+{
+    right: 30%;
+    width: 4%;
+    top: 55%;
+}
+
+.jamoneta25
+{
+    width: 4%;
+    left: 31%;
+    bottom: 26%;
+}
+
+.jamoneta26
+{
+    width: 4%;
+    left: 36%;
+    bottom: 26%;
+}
+
+.jamoneta27
+{
+    width: 4%;
+    left: 41%;
+    bottom: 26%;
+}
+
+.jamoneta28
+{
+    width: 4%;
+    left: 46%;
+   bottom: 26%;
+}
+
+.jamoneta29
+{
+    width: 4%;
+    left: 51%;
+    bottom: 26%;
+}
+
+.jamoneta30
+{
+    width: 4%;
+    left: 56%;
+     bottom: 26%;
+}
+
+.jamoneta31
+{
+    width: 4%;
+    left: 61%;
+     bottom: 26%;
+}
+
+.jamoneta32
+{
+    right: 30%;
+    width: 4%;
+    bottom: 26%;
+}
+
+

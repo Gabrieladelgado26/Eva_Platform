@@ -1,0 +1,344 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 99%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+
+.alerta{
+    
+    z-index: 1;
+    position: absolute;
+    width: 39%;
+    right: 34%;
+    bottom: 5%;
+}
+
+
+.botonevaluar
+{
+    width: 17%;
+    bottom: 23%;
+    left: 5%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.divinstruccion
+{
+    position: absolute;
+    width: 37%;
+    text-align: left;   
+    padding: 2%;
+    left: 39%;
+    top: 7%;
+    background: rgba(255,255,255, 1.6);
+    font-family: Roboto;
+      border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+
+
+}
+
+.divinstruccionjuego
+{
+    position: absolute;
+    width: 46%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 1%;
+    left: 39%;
+    top:5%;
+    font-family: Roboto;
+   border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.divBotonComenzar
+{
+    width: 19%;
+    bottom: 2%;
+    right: 12%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+
+}
+
+.divgeneral{
+    width: 7%;
+    height: 34px;
+    z-index: 1;
+    position: absolute;
+     border-radius: 86%;
+}
+
+.iconoSonido
+{
+    left: 33%;
+    top: 12%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    left: 33%;
+    top: 8%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.ivisonriendo
+{
+    width: 13%;
+    left: 78%;
+    top: 8%;
+}
+
+.mensaje{
+    z-index: 1;
+    position: absolute;
+    top: 26%;
+    right:35%;
+}
+
+.pintada
+{
+    background: rgba(173, 20, 87, 0.78);
+    border-radius: 50%;
+    padding: 0.5%;
+}
+
+.respuesta
+{
+    display: block;
+    top: 28%;
+    width: 34%;
+    left: 15%;
+}
+
+.respuestafin
+{    
+    z-index: 1;
+    position: absolute;
+    width: 24%;
+    right: 35%;
+    bottom: 28%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+.resultados
+{
+    width: 49%;
+    left: 36%;
+    top: 26%;
+}
+
+
+.titulojuego
+{
+    width: 23%;
+    left: 5%;
+    top: 4%;
+}
+
+
+.vidas3
+{
+    width: 19%;
+    top: 32%;
+    left: 3%;
+}
+
+/*DISEÑO UNICO JUEGO*/
+.balones0,.balones1,.balones2,.balones3,.balones4{
+
+    width: 65%;
+    left: 28%;
+    top: 25%;
+    height: 17%;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+.balones0{
+
+    background-image: url(img/resultado1.png);
+}
+
+.balones1{
+
+    background-image: url(img/resultado2.png);
+}
+
+.balones2{
+
+    background-image: url(img/resultado3.png);
+}
+
+.balones3{
+
+    background-image: url(img/resultado4.png);
+}
+
+.balones4{
+
+    background-image: url(img/resultado5.png);
+}
+
+.fondoselec{
+
+    width: 21%;
+    right: 8%;
+    top: 44%;
+    animation: 1.5s pulse infinite !important;
+}
+
+.objeto0,.objeto1,.objeto2,.objeto3,.objeto4
+{    
+    left: 3%;   
+    top: 39%;
+    float: left !important;
+    position: relative !important;
+}
+
+.objeto0{
+    width: 7.8%;
+}
+
+.objeto1{
+    width: 6.2%;    
+}
+
+.objeto2{
+    width: 5.6%;
+}
+
+.objeto3{
+    width: 7%;
+}
+
+.objeto4{
+    width: 7%;
+}
+
+.tabla
+{
+    width: 39%;
+    left: 29%;
+    top: 47%;
+}
+.numeroTabla
+{
+    bottom: 18.9%;
+    left: 53.5%;
+    width: 3%;
+    background: rgba(106, 27, 154, 0.75);
+    padding: 0.5%;
+    border-radius: 50%;
+}
+
+
+.numero1,.numero2,.numero3{
+    top: 53%;
+    width: 4%;
+}
+
+.numero1
+{
+    right: 23%;
+    
+}
+
+.numero2
+{
+    right: 16.9%;
+}
+
+.numero3
+{
+    right: 10%;
+}
+
+.numero4, .numero5, .numero6{
+    top: 66%;
+    width:4%;
+}
+
+.numero4
+{
+    right: 23%;
+}
+
+.numero5
+{
+    right: 16.9%;
+}
+
+.numero6
+{
+    right: 10%;
+}
+
+
+.numero7, .numero8, .numero9{
+    bottom: 13%;
+    width:4%;
+}
+
+.numero7
+{
+    right: 23%;   
+}
+
+.numero8
+{
+    right: 16.9%;
+}
+
+.numero9
+{
+    right: 10%;
+}

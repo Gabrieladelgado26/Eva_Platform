@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+<head>
+
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+
+    <title>Juego adición de numero de dos cifras</title>
+    <meta name="title" content="Juego adición de numero de dos cifras" />
+	<meta name="description" content="Juego adición de numero de dos cifras"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="stylejuego1.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+  </head>
+  
+					
+				
+					<div class="tab-content" style="width: 97%">
+
+					<img id="mensaje" name="mensaje"  class="mensaje" src="" style="display:none"/> 	
+					<img id="alerta" name="alerta"  class="alerta" style="display:none"/>
+					<a id="redir" href=""><img id="mensaje2" name="mensaje2"  class="respuestafin" style="display:none"/></a>	
+					<div id="audio_men"></div>
+					   
+					   <div class="tab-pane active" id="tab1">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/Fondojuego1.png">
+
+					      <a class="repro_audio4"><img class="iconoSonido" src="img/sonido.png">
+					      <audio id="audio4" src="sonidos/enunciado.mp3"/></a>
+
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1"  src="sonidos/titulo.mp3"/></a>
+
+					       <div class="divinstruccion I18N">enu_adddoscifras</div> 							
+ 						  <img class="ivisonriendo" src="img/ivy.png">
+
+ 						  
+ 						  <a href="#tab2" data-toggle="tab" class="repro_audio2"><img class="divBotonComenzar" src="img/botones.png" ><audio id="audio2" src="sonidos/continuar.mp3"/></a>
+ 						  </div>
+					    </div>
+
+
+					    <div class="tab-pane " id="tab2">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio5"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio5" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img id="vida" name="vida" class="vidas3">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego</div> 					     
+
+					      <div class="complementos">
+					       <img class="letrasd" src="img/letrad.png">
+					      <img class="letrasu" src="img/letrau.png">
+
+					       <img id="arrastrar-a" class="kumis arrastra" src="img/kumis.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					       <img id="arrastrar-a-1" class="cajakumis arrastra" src="img/cajak.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					       
+					       	<img class="suma1" src="img/kumisvarios.png">
+					        <img class="cuadroanimado" src="img/cuadro.png">	
+
+
+					        <div id="di1">
+					        <input id="vd1" class="res1 solo_numero" type="text" maxlength="1" max="9" min="1">
+					        <input id="vu1" class="res2 solo_numero" type="text" maxlength="1" max="9" min="1">
+					        </div>
+
+						   <input id="valord1" type="hidden" value="9">
+						   <input id="valoru1" type="hidden" value="4">
+
+						   <div class="cajavalor" id="d1" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+						  
+
+						   <!-- ORDEN TABLA DE RESULTADOS -->
+						   <!-- DECENAS  -->
+
+						    <img id="objda1" class="objetodecenas1" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',1)">
+						    <img id="objda2" class="objetodecenas2" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',2)">
+						    <img id="objda3" class="objetodecenas3" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',3)">
+						    <img id="objda4" class="objetodecenas4" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',4)">
+						    <img id="objda5" class="objetodecenas5" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',5)">
+						    <img id="objda6" class="objetodecenas6" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',6)">
+						    <img id="objda7" class="objetodecenas7" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',7)">
+						    <img id="objda8" class="objetodecenas8" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',8)">
+						    <img id="objda9" class="objetodecenas9" src="img/cajak.png" style="display:none" onclick="ocultarImg('d',9)">
+
+						    <!-- UNIDADES  -->
+
+						    <img id="objua1" class="objetounidades1" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',1)">
+						    <img id="objua2" class="objetounidades2" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',2)">
+						    <img id="objua3" class="objetounidades3" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',3)">
+						    <img id="objua4" class="objetounidades4" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',4)">
+						    <img id="objua5" class="objetounidades5" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',5)">
+						    <img id="objua6" class="objetounidades6" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',6)">
+						    <img id="objua7" class="objetounidades7" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',7)">
+						    <img id="objua8" class="objetounidades8" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',8)">
+						    <img id="objua9" class="objetounidades9" src="img/kumis.png" style="display:none" onclick="ocultarImg('u',9)">
+
+						    <a id="sig1" href="#tab3" data-toggle="tab"></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(1)">
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+					    <div class="tab-pane " id="tab3">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio6"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio6" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego</div> 
+					      <div class="complementos">
+
+					      <img class="letrasd" src="img/letrad.png">
+					      <img class="letrasu" src="img/letrau.png">
+
+					       <img id="arrastrar-b" class="kumis arrastra" src="img/limon.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					       <img id="arrastrar-b-1" class="cajakumis arrastra" src="img/cajal.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+
+					       <img class="suma1" src="img/limones.png">
+					       <img class="cuadroanimado" src="img/cuadro.png">
+					        
+					       <div id="di2">
+					       <input id="vd2" class="res1 solo_numero" type="text" maxlength="1" max="9" min="1">
+					       <input id="vu2" class="res2 solo_numero" type="text" maxlength="1" max="9" min="1" >
+					       </div>
+
+						   <input id="valord2" type="hidden" value="5">
+						   <input id="valoru2" type="hidden" value="5">
+
+						   <div class="cajavalor" id="d2" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+
+						   <!-- ORDEN TABLA DE RESULTADOS -->
+						   <!-- DECENAS  -->
+					    
+					    	<img id="objdb1" class="objetodecenas1" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',1)">
+						    <img id="objdb2" class="objetodecenas2" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',2)">
+						    <img id="objdb3" class="objetodecenas3" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',3)">
+						    <img id="objdb4" class="objetodecenas4" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',4)">
+						    <img id="objdb5" class="objetodecenas5" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',5)">
+						    <img id="objdb6" class="objetodecenas6" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',6)">
+						    <img id="objdb7" class="objetodecenas7" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',7)">
+						    <img id="objdb8" class="objetodecenas8" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',8)">
+						    <img id="objdb9" class="objetodecenas9" src="img/cajal.png" style="display:none" onclick="ocultarImg('d',9)">
+
+						      <!-- UNIDADES  -->
+
+						    <img id="objub1" class="objetounidades1" src="img/limon.png" style="display:none" onclick="ocultarImg('u',1)">
+						    <img id="objub2" class="objetounidades2" src="img/limon.png" style="display:none" onclick="ocultarImg('u',2)">
+						    <img id="objub3" class="objetounidades3" src="img/limon.png" style="display:none" onclick="ocultarImg('u',3)">
+						    <img id="objub4" class="objetounidades4" src="img/limon.png" style="display:none" onclick="ocultarImg('u',4)">
+						    <img id="objub5" class="objetounidades5" src="img/limon.png" style="display:none" onclick="ocultarImg('u',5)">
+						    <img id="objub6" class="objetounidades6" src="img/limon.png" style="display:none" onclick="ocultarImg('u',6)">
+						    <img id="objub7" class="objetounidades7" src="img/limon.png" style="display:none" onclick="ocultarImg('u',7)">
+						    <img id="objub8" class="objetounidades8" src="img/limon.png" style="display:none" onclick="ocultarImg('u',8)">
+						    <img id="objub9" class="objetounidades9" src="img/limon.png" style="display:none" onclick="ocultarImg('u',9)">
+
+
+					       <a id="sig2" href="#tab4" data-toggle="tab"></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(2)">
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+
+ 						  <div class="tab-pane " id="tab4">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio7"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio7" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					      
+					    <div class="divinstruccionjuego I18N">ins_juego</div> 
+					     <div class="complementos">
+
+					     <img class="letrasd" src="img/letrad.png">
+					      <img class="letrasu" src="img/letrau.png">
+
+					       <img id="arrastrar-c" class="kumis arrastra" src="img/yogurt.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					        <img id="arrastrar-c-1" class="cajakumis arrastra" src="img/cajay.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+
+					       <img class="suma1" src="img/yogures.png">
+					       <img class="cuadroanimado" src="img/cuadro.png">
+					      
+					       <div id="di3">
+					       <input id="vd3" class="res1 solo_numero" type="text" maxlength="1" max="9" min="1">
+					       <input id="vu3" class="res2 solo_numero" type="text" maxlength="1" max="9" min="1" >
+					       </div>
+
+						    <input id="valord3" type="hidden" value="3">
+						   <input id="valoru3" type="hidden" value="9">
+
+						   <div class="cajavalor" id="d3" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+						    <!-- ORDEN TABLA DE RESULTADOS -->
+						   <!-- DECENAS  -->
+					    
+					    	<img id="objdc1" class="objetodecenas1" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',1)">
+						    <img id="objdc2" class="objetodecenas2" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',2)">
+						    <img id="objdc3" class="objetodecenas3" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',3)">
+						    <img id="objdc4" class="objetodecenas4" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',4)">
+						    <img id="objdc5" class="objetodecenas5" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',5)">
+						    <img id="objdc6" class="objetodecenas6" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',6)">
+						    <img id="objdc7" class="objetodecenas7" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',7)">
+						    <img id="objdc8" class="objetodecenas8" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',8)">
+						    <img id="objdc9" class="objetodecenas9" src="img/cajay.png" style="display:none" onclick="ocultarImg('d',9)">
+
+						      <!-- UNIDADES  -->
+
+						    <img id="objuc1" class="objetounidades1" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',1)">
+						    <img id="objuc2" class="objetounidades2" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',2)">
+						    <img id="objuc3" class="objetounidades3" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',3)">
+						    <img id="objuc4" class="objetounidades4" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',4)">
+						    <img id="objuc5" class="objetounidades5" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',5)">
+						    <img id="objuc6" class="objetounidades6" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',6)">
+						    <img id="objuc7" class="objetounidades7" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',7)">
+						    <img id="objuc8" class="objetounidades8" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',8)">
+						    <img id="objuc9" class="objetounidades9" src="img/yogurt.png" style="display:none" onclick="ocultarImg('u',9)">
+					    
+
+					     <a id="sig3" href="#tab5" data-toggle="tab"></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(3)">
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+ 						  <div class="tab-pane " id="tab5">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio8"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio8" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					        <div class="divinstruccionjuego I18N">ins_juego</div> 
+					      <div class="complementos">
+
+					      <img class="letrasd" src="img/letrad.png">
+					      <img class="letrasu" src="img/letrau.png">
+
+					       <img id="arrastrar-d" class="kumis arrastra" src="img/naranja.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					       <img id="arrastrar-d-1" class="cajakumis arrastra" src="img/cajan.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+
+
+					       <img class="suma1" src="img/naranjas.png">
+					       <img class="cuadroanimado" src="img/cuadro.png">
+					       
+					       <div id="di4">
+						   <input id="vd4" class="res1 solo_numero" type="text" maxlength="1" max="9" min="1">
+					       <input id="vu4" class="res2 solo_numero" type="text" maxlength="1" max="9" min="1" >
+					       </div>
+
+						    <input id="valord4" type="hidden" value="8">
+						   <input id="valoru4" type="hidden" value="9">
+
+						   <div class="cajavalor" id="d4" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+						    <!-- ORDEN TABLA DE RESULTADOS -->
+						   <!-- DECENAS  -->
+					    
+					    	<img id="objdd1" class="objetodecenas1" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',1)">
+						    <img id="objdd2" class="objetodecenas2" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',2)">
+						    <img id="objdd3" class="objetodecenas3" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',3)">
+						    <img id="objdd4" class="objetodecenas4" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',4)">
+						    <img id="objdd5" class="objetodecenas5" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',5)">
+						    <img id="objdd6" class="objetodecenas6" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',6)">
+						    <img id="objdd7" class="objetodecenas7" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',7)">
+						    <img id="objdd8" class="objetodecenas8" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',8)">
+						    <img id="objdd9" class="objetodecenas9" src="img/cajan.png" style="display:none" onclick="ocultarImg('d',9)">
+
+						      <!-- UNIDADES  -->
+
+						    <img id="objud1" class="objetounidades1" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',1)">
+						    <img id="objud2" class="objetounidades2" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',2)">
+						    <img id="objud3" class="objetounidades3" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',3)">
+						    <img id="objud4" class="objetounidades4" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',4)">
+						    <img id="objud5" class="objetounidades5" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',5)"> 
+						    <img id="objud6" class="objetounidades6" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',6)">
+						    <img id="objud7" class="objetounidades7" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',7)">
+						    <img id="objud8" class="objetounidades8" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',8)">
+						    <img id="objud9" class="objetounidades9" src="img/naranja.png" style="display:none" onclick="ocultarImg('u',9)">
+					    
+
+					     <a id="sig4" href="#tab6" data-toggle="tab"></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(4)">
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+ 						  <div class="tab-pane" id="tab6">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio9"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio9" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					      
+
+					        <div class="divinstruccionjuego I18N">ins_juego</div> 
+					      <div class="complementos">
+
+					       <img class="letrasd" src="img/letrad.png">
+					      <img class="letrasu" src="img/letrau.png">
+
+					       <img id="arrastrar-e" class="kumis arrastra" src="img/pera.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					       <img id="arrastrar-e-1" class="cajakumis arrastra" src="img/cajap.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+
+					       <img class="suma1" src="img/peras.png">
+					       <img class="cuadroanimado" src="img/cuadro.png">					       						    
+
+						    <input id="valord5" type="hidden" value="6">
+						   <input id="valoru5" type="hidden" value="8">
+
+						   <div id="di5">
+						   <input id="vd5" class="res1 solo_numero" type="text" maxlength="1" max="9" min="1">
+					       <input id="vu5" class="res2 solo_numero" type="text" maxlength="1" max="9" min="1" >
+					       </div>
+
+						   <div class="cajavalor" id="d5" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+						    <!-- ORDEN TABLA DE RESULTADOS -->
+						   <!-- DECENAS  -->
+					    
+					    	<img id="objde1" class="objetodecenas1" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',1)">
+						    <img id="objde2" class="objetodecenas2" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',2)">
+						    <img id="objde3" class="objetodecenas3" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',3)">
+						    <img id="objde4" class="objetodecenas4" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',4)">
+						    <img id="objde5" class="objetodecenas5" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',5)">
+						    <img id="objde6" class="objetodecenas6" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',6)">
+						    <img id="objde7" class="objetodecenas7" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',7)">
+						    <img id="objde8" class="objetodecenas8" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',8)">
+						    <img id="objde9" class="objetodecenas9" src="img/cajap.png" style="display:none" onclick="ocultarImg('d',9)">
+
+						      <!-- UNIDADES  -->
+
+						    <img id="objue1" class="objetounidades1" src="img/pera.png" style="display:none" onclick="ocultarImg('u',1)">
+						    <img id="objue2" class="objetounidades2" src="img/pera.png" style="display:none" onclick="ocultarImg('u',2)">
+						    <img id="objue3" class="objetounidades3" src="img/pera.png" style="display:none" onclick="ocultarImg('u',3)">
+						    <img id="objue4" class="objetounidades4" src="img/pera.png" style="display:none" onclick="ocultarImg('u',4)">
+						    <img id="objue5" class="objetounidades5" src="img/pera.png" style="display:none" onclick="ocultarImg('u',5)">
+						    <img id="objue6" class="objetounidades6" src="img/pera.png" style="display:none" onclick="ocultarImg('u',6)">
+						    <img id="objue7" class="objetounidades7" src="img/pera.png" style="display:none" onclick="ocultarImg('u',7)">
+						    <img id="objue8" class="objetounidades8" src="img/pera.png" style="display:none" onclick="ocultarImg('u',8)">
+						    <img id="objue9" class="objetounidades9" src="img/pera.png" style="display:none" onclick="ocultarImg('u',9)">
+					    
+
+					      <a id="sig5" href="#" data-toggle="tab"></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(5)">
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+					    
+						
+					</div>	
+
+
+				<audio id="audio" name="audio" preload="" src=""/>
+	</html>
+
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>	
+	<script src="./index_files/juegoMethod.js"></script>
+
+	<script >
+
+	$("#di1").mouseover(function(){
+		 validar(1);
+	});
+
+	$("#di2").mouseover(function(){
+		 validar(2);
+	});
+
+	$("#di3").mouseover(function(){
+		 validar(3);
+	});
+
+	$("#di4").mouseover(function(){
+		 validar(4);
+	});
+
+	$("#di5").mouseover(function(){
+		 validar(5);
+	});
+
+	function validar(val){
+
+		var numU=$("#vu"+val).val();
+	  	var numD=$("#vd"+val).val();
+
+	  	if (!(0<=numU && numU<=9)) {
+	  		$("#vu"+val).val('');
+	  	}
+
+	  	if (!(0<=numD && numD<=9)) {
+	  		$("#vd"+val).val('');
+	  	}
+	}
+
+/*INICIO CAPTURA PANTALLA*/
+  $(document).ready(resizeContent);
+  $(window).resize(resizeContent);
+  function resizeContent() {
+    var res = $(window).width()/(750 * 1);
+    if($(window).width()<=750)
+    {
+    $("body").css({'zoom': res});
+    }
+  }
+ setTimeout(function(){$("#modalslider").modal({show:true})},1000);
+/*FIN CAPTURA PANTALLA*/
+</script>
+
+	<!--ARCHIVO PROPERTIES-->
+	<script src="../../../js/I18N/es.js"></script>
+	<script src="../../../js/funcion.js"></script>
+
+	

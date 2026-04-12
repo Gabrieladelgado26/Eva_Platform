@@ -1,0 +1,373 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 99%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+
+.alerta{
+    
+    z-index: 1;
+    position: absolute;
+    width: 35%;
+    right: 25%;
+    bottom: 55%;
+}
+
+
+
+.botonevaluar
+{
+    width: 13%;
+    bottom: 35%;
+    left: 7%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+.cajakumis{
+
+    width: 8%;
+    bottom: 7%;
+    left: 5.5%;
+    z-index: 3;
+}
+
+.cajavalor
+{
+    position: absolute;
+    width: 23%;
+    height: 74%;
+    right: 2%;
+    top: 22%;
+    background-image: url('img/fondo1.png');
+    border-radius: 8px;
+    background-size: 84%;
+    background-repeat: no-repeat;
+
+}
+
+.cuadroanimado{
+
+    width: 22%;
+    bottom: 4%;
+    left: 3.5%;
+    animation: 1.5s pulse infinite !important;
+}
+
+.divinstruccion
+{
+    position: absolute;
+    width: 37%;
+    text-align: left;   
+    padding: 2%;
+    left: 39%;
+    top: 7%;
+    background: rgba(255,255,255, 1.6);
+    font-family: Roboto;
+      border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+
+
+}
+
+.divinstruccionjuego
+{
+    position: absolute;
+    width: 46%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 1%;
+    left: 39%;
+    top:5%;
+    font-family: Roboto;
+   border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.divBotonComenzar
+{
+    width: 19%;
+    bottom: 2%;
+    right: 12%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+
+}
+
+.divgeneral{
+    width: 7%;
+    height: 34px;
+    z-index: 1;
+    position: absolute;
+     border-radius: 86%;
+}
+
+
+
+.iconoSonido
+{
+    left: 33%;
+    top: 13%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    left: 33%;
+    top: 8%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.ivisonriendo
+{
+    width: 14%;
+    left: 78%;
+    top: 8%;
+}
+
+
+
+.mensaje{
+   z-index: 1;
+    position: absolute;
+    top: 26%;
+    right:35%;
+}
+
+.letrasu{
+    bottom: 19%;
+    left: 16.5%;
+    z-index: 3;
+}
+
+.letrasd{
+    bottom: 19%;
+    left: 5.5%;
+    z-index: 3;
+}
+
+.respuesta
+{
+    display: block;
+    top: 28%;
+    width: 34%;
+    left: 23%;
+}
+
+.respuestafin
+{
+    
+   z-index: 1;
+    position: absolute;
+    width: 24%;
+    right: 35%;
+    bottom: 29%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+.res1, .res2
+{
+    position: absolute;    
+    background-color: #498AC5 !important;    
+    height: 22px !important;
+    width: 3%;
+    bottom: 4.1%;
+    text-align: center;
+    font-size: 24px !important;
+    border: 21px solid;
+    font-family: Chewy;  
+    z-index: 3;
+    color: #000 !important;
+}
+
+.res1{
+    
+    right: 18%;
+}
+
+.res2{
+    right: 9%;
+}
+
+.titulojuego
+{
+    width: 23%;
+    left: 5%;
+    top: 4%;
+}
+
+
+.vidas3
+{
+    width: 19%;
+    top: 24%;
+    left: 3%;
+}
+
+/*DISEÑO UNICO JUEGO*/
+
+.kumis
+{
+     width: 5%;
+    bottom: 8%;
+    left: 17.5%;
+    z-index: 3;
+}
+
+.suma1
+{
+    width: 44%;
+    left: 29%;
+    top: 22%;
+}
+
+/*POSICIONES RESULTADOS*/
+
+.objetodecenas1, .objetodecenas2 ,.objetodecenas3,.objetodecenas4,.objetodecenas5,.objetodecenas6,.objetodecenas7, .objetodecenas8, .objetodecenas9
+{
+    width: 5%;
+    right: 17.5%;
+    
+}
+
+.objetodecenas1{
+    top: 30%;
+}
+
+.objetodecenas2
+{
+    top: 36.5%;
+}
+
+.objetodecenas3
+{
+    top: 43%;
+}
+
+.objetodecenas4
+{
+    top: 49.5%;
+}
+
+.objetodecenas5
+{
+    bottom: 37.5%;
+}
+
+.objetodecenas6
+{
+    bottom: 31%;
+}
+
+.objetodecenas7
+{
+    bottom: 24.5%;
+}
+
+.objetodecenas8
+{
+    bottom: 18%;
+}
+
+.objetodecenas9
+{
+    bottom: 11.5%;
+}
+
+
+
+.objetounidades1, .objetounidades2, .objetounidades3, .objetounidades4,.objetounidades5 ,.objetounidades6 , .objetounidades7, .objetounidades8, .objetounidades9 
+{
+    width: 3%;
+    right: 9.5%;
+    
+}
+
+.objetounidades1{
+    top: 30%;
+}
+
+.objetounidades2
+{
+    top: 36%;
+}
+
+.objetounidades3
+{
+    top: 42%;
+}
+
+.objetounidades4
+{
+    top: 48%;
+}
+
+.objetounidades5
+{
+    bottom: 41%;
+}
+
+.objetounidades6
+{
+    bottom: 35%;
+}
+
+.objetounidades7
+{
+    bottom: 29%;
+}
+
+.objetounidades8
+{
+    bottom: 23%;
+}
+
+.objetounidades9
+{
+    bottom: 17%;
+}
+

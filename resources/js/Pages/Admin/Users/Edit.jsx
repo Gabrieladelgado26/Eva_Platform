@@ -40,7 +40,7 @@ export default function Edit({ user, roles }) {
     const confirmRegeneratePin = () => {
         setShowConfirmModal(false);
 
-        router.post(route('admin.users.regeneratePin', user.id), {}, {
+        router.patch(route('admin.users.regeneratePin', user.id), {}, {
             preserveScroll: true,
         });
     };
@@ -112,7 +112,7 @@ export default function Edit({ user, roles }) {
                     {/* Header Académico */}
                     <div className="mb-12 animate-fade-in">
                         <Link
-                            href={route('admin.index', { section: 'users' })}
+                            href={route('admin.dashboard', { section: 'users' })}
                             className="group inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 mb-8 transition-all duration-300 px-4 py-2 rounded-lg hover:bg-white/80"
                         >
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
@@ -433,7 +433,7 @@ export default function Edit({ user, roles }) {
                                     {/* Action Buttons */}
                                     <div className="flex items-center justify-end gap-4 pt-8 border-t border-gray-200">
                                         <Link
-                                            href={route('admin.index', { section: 'users' })}
+                                            href={route('admin.dashboard', { section: 'users' })}
                                             className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200"
                                             style={{ '--tw-ring-color': 'rgba(107, 114, 128, 0.3)' }}
                                         >

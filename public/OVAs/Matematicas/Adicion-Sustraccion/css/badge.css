@@ -1,0 +1,12 @@
+.badge-anestesia { background: #E3F2FD; color: #003268; padding: 3px 10px; border-radius: 5px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.badge-callcenter { padding: 4px 10px; border-radius: 5px; font-size: .75rem; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.badge-no-contesto  { background: #FEE2E2; color: #991B1B; }
+.badge-reprogramo   { background: #FEF9C3; color: #854D0E; }
+.badge-pendiente    { background: #F3F4F6; color: #6B7280; }
+.badge-confirmado   { background: #DCFCE7; color: #166534; }
+.badge-buzon        { background: #EDE9FE; color: #5b21b6; }
+.badge-incorrecto   { background: #FFEDD5; color: #9a3412; }
+.badge-reagendado   { background: #E0F2FE; color: #075985; }
+.badge-instrucciones{ background: #CCFBF1; color: #115e59; }
+.badge-cancelo      { background: #FFE4E6; color: #9f1239; }
+.badge-otro         { background: #F3F4F6; color: #374151; }

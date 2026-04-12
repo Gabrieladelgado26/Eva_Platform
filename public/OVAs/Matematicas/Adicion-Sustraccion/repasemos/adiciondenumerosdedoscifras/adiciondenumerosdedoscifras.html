@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+
+<head>
+
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+
+    <title>Repasar adición de números de dos cifras</title>
+    <meta name="title" content="Repasar adición de números de dos cifras" />
+	<meta name="description" content="Repasemos adición de números de dos cifras"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+	
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+  </head>
+  <body cz-shortcut-listen="true">
+    <div class="container Skin3">
+		
+		<div class="span12 Skin3">
+			<section id="wizard">
+	
+				<div id="rootwizard">				
+				
+					<div class="tab-content" style="width: 93%">
+						
+						<img id="mensaje" name="mensaje" class="mensaje"  style="display:none"/>
+						<img id="final" name="final" class="final"  src="img/logro.png" style="display:none"/>	
+					    <div id="audio_men"></div>
+
+					    <div class="tab-pane active" id="tab1">
+						    <div class="" style=" ">					      	
+							    <img class="Skin2" src="img/dp1.png">					     
+							    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(1)">
+							    <img class="tablaunidades" src="img/tablaunidades.png">
+		 						<a href="#tab2" data-toggle="tab"> <img class="siguiente" src="img/siguiente.png"></a>
+	 						</div>
+					    </div>
+
+
+
+
+						<div class="tab-pane" id="tab2">
+						    <div class="" style=" ">					      	
+							    <img class="Skin2" src="img/dp2.png">					     
+							    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+							    <img class="estudiantes1" src="img/estudiantes1.png">
+							    <img class="estudiantes2" src="img/estudiantes2.png">
+							    <img class="tablaestudiantes" src="img/cuadro.png">
+							  	
+							  	<!--NUMEROS CONTEO-->
+
+							  	<img class="dos" src="img/2.png">
+							  	<img class="tres" src="img/3.png">
+							  	<img class="dosa" src="img/2.png">
+							  	<img class="cinco" src="img/5.png">
+							  	<img class="cuatro" src="img/4.png">
+							  	<img class="ochoa" src="img/8.png">
+							  	<img class="total" src="img/total.png">
+
+		 					    <a href="#tab1" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+		 						<a href="#tab3" data-toggle="tab"> <img class="siguiente" src="img/siguiente.png"></a>
+	 						</div>
+					    </div>
+
+					   <div class="tab-pane" id="tab3">
+					      <div class="" style=" ">					      	
+					      <img class="Skin2" src="img/dp3.png">					     
+					      <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(3)">
+					      <div id="complementos">
+					      <div id="d1" class="cajavalor" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+					        <img id="1" class="opcion1" src="img/11.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					        <img id="2" class="opcion2" src="img/12.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					        <img id="3" class="opcion3" src="img/13.png" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+					      </div>
+					       <a href="#tab2" data-toggle="tab"><img class="antes" src="img/antes.png" onclick="reiniciar()"></a>
+ 						  </div>
+					    </div>
+					    
+
+					   
+
+					</div>	
+
+						<div class="navbar" style="display:none">
+					    <div class="navbar-inner" style="display:none">
+					    <div class="container">
+						<ul class="nav nav-pills">
+					  	<li class="active"><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab1" data-toggle="tab">First</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab2" data-toggle="tab">Second</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab3" data-toggle="tab">Third</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab4" data-toggle="tab">Forth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab5" data-toggle="tab">Fifth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab6" data-toggle="tab">Sixth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab7" data-toggle="tab">Seventh</a></li>
+					</ul>
+					 </div>
+					  </div>
+					</div>
+
+
+				</div>
+				</section>
+
+ 		</div>
+	</div>
+
+	<audio id="au1" src="audio/enunciado1.mp3" preload="auto" autoplay></audio>
+	<audio id="au2" src="audio/enunciado2.mp3" preload="auto" ></audio>
+	<audio id="au3" src="audio/actividad.mp3" preload="auto" ></audio>
+	
+
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>
+	<script src="./index_files/repasemosMethod.js"></script>
+	<script>
+
+	$(document).ready(function() {
+		$(document).on( 'shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+			var str = String(e.target);
+			var tabNum = str.substr(str.indexOf("#") + 1).substr(3,4);  
+			playAudio(tabNum);
+
+   			console.log(tabNum); // activated tab
+		})
+	  	
+		window.prettyPrint && prettyPrint()
+	});	
+
+	var set1='',set2='',set3='',set4='',set5='',set6='',set7='',set8='',set9='' ,set10='' ,set11='',set12='',set13='' ,set14='';
+
+	function playAudio(num){
+	  //pause playing
+		$("audio").trigger('pause');
+		//set play time to 0
+		$("audio").prop('currentTime',0);
+		$("#au" + num).trigger('play');
+
+		if (num==1){
+			
+			set1 = setTimeout(function(){$(".tablaunidades").attr('style','display:table')},13000);
+				
+
+			//CANCELO LOS DEL 2
+
+			$(".estudiantes1, .estudiantes2, .tablaestudiantes, .dos, .tres, .dosa, .cinco, .tres, .ochoa, .cuatro, .total").attr('style','display:none');
+
+
+			clearTimeout(set2);
+			clearTimeout(set3);
+			clearTimeout(set4);
+			clearTimeout(set5);
+			clearTimeout(set6);
+			clearTimeout(set7);
+			clearTimeout(set8);
+			clearTimeout(set9);	
+			clearTimeout(set10);
+			clearTimeout(set11);
+			clearTimeout(set12);
+			clearTimeout(set13);
+			clearTimeout(set14);
+			
+		}
+
+		else if(num==2)
+
+		{
+
+			//CANCELO LOS DEL 1
+
+			$(".tablaunidades").attr('style','display:none');
+
+
+			clearTimeout(set1);
+			
+
+			set2 = setTimeout(function(){$(".estudiantes1").attr('style','display:table')},4000);
+			set3 = setTimeout(function(){$(".estudiantes2").attr('style','display:table')},7000);
+			set4 = setTimeout(function(){$(".tablaestudiantes").attr('style','display:table')},10000);
+			set4 = setTimeout(function(){$(".dos").attr('style','display:table')},11000);
+			set5 = setTimeout(function(){$(".tres").attr('style','display:table')},12000);
+			set6 = setTimeout(function(){$(".dosa").attr('style','display:table')},13000);
+			set7 = setTimeout(function(){$(".cinco").attr('style','display:table')},14000);
+			set8 = setTimeout(function(){$(".tres").attr('style','display:table; animation: 2s zoomIn')},17000);
+			set9 = setTimeout(function(){$(".cinco").attr('style','display:table; animation: 2s zoomIn')},18000);
+			set10 = setTimeout(function(){$(".ochoa").attr('style','display:table')},19000);
+			set11 = setTimeout(function(){$(".dos").attr('style','display:table; animation: 2s zoomIn')},24000);
+			set12 = setTimeout(function(){$(".dosa").attr('style','display:table; animation: 2s zoomIn')},25000);
+			set13 = setTimeout(function(){$(".cuatro").attr('style','display:table')},26000);
+			set14 = setTimeout(function(){$(".total").attr('style','display:table')},29000);
+		}
+
+		else if(num==3)
+		{
+
+			//CANCELO LOS DEL 2
+			
+			$(".estudiantes1, .estudiantes2, .tablaestudiantes, .dos, .tres, .dosa, .cinco, .tres, .ochoa, .cuatro, .total").attr('style','display:none');
+
+
+			clearTimeout(set2);
+			clearTimeout(set3);
+			clearTimeout(set4);
+			clearTimeout(set5);
+			clearTimeout(set6);
+			clearTimeout(set7);
+			clearTimeout(set8);
+			clearTimeout(set9);	
+			clearTimeout(set10);
+			clearTimeout(set11);
+			clearTimeout(set12);
+			clearTimeout(set13);
+			clearTimeout(set14);
+		}
+
+	}
+
+	set1 = setTimeout(function(){$(".tablaunidades").attr('style','display:table')},13000);
+
+			
+	</script>
+  
+</body></html>

@@ -10,13 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CourseStudentController extends Controller
 {
-    /**
-     * Buscar estudiantes existentes (autocomplete)
-     * GET /teacher/courses/{course}/students/search?q=...
-     */
     public function search(Request $request, Course $course)
     {
         abort_if($course->teacher_id !== Auth::id(), 403);
@@ -28,7 +25,7 @@ class CourseStudentController extends Controller
             ->whereNotIn('id', $course->students()->pluck('users.id'))
             ->where(function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
-                      ->orWhere('username', 'like', "%{$q}%");
+                    ->orWhere('username', 'like', "%{$q}%");
             })
             ->limit(8)
             ->get(['id', 'name', 'username']);
@@ -36,16 +33,13 @@ class CourseStudentController extends Controller
         return response()->json($students);
     }
 
-    /**
-     * Inscribir estudiante existente o crear uno nuevo
-     * POST /teacher/courses/{course}/students
-     */
     public function store(Request $request, Course $course)
     {
         abort_if($course->teacher_id !== Auth::id(), 403);
 
-        // Caso 1: estudiante ya existe, solo vincular
+        // Vincular existente
         if ($request->filled('student_id')) {
+
             $student = User::whereHas('role', fn($r) => $r->where('slug', 'student'))
                 ->where('is_active', true)
                 ->findOrFail($request->student_id);
@@ -55,12 +49,11 @@ class CourseStudentController extends Controller
             return back()->with('success', 'Estudiante agregado al curso.');
         }
 
-        // Caso 2: crear estudiante nuevo y vincularlo
+        // Crear nuevo
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        // Generar username único a partir del nombre
         $baseUsername = Str::slug($request->name);
         $username = $baseUsername;
         $counter = 1;
@@ -69,7 +62,6 @@ class CourseStudentController extends Controller
             $username = $baseUsername . $counter++;
         }
 
-        // Generar PIN aleatorio
         $generatedPin = random_int(1000, 9999);
 
         $role = Role::where('slug', 'student')->firstOrFail();
@@ -90,10 +82,6 @@ class CourseStudentController extends Controller
         ]);
     }
 
-    /**
-     * Retirar estudiante del curso (no lo elimina del sistema)
-     * DELETE /teacher/courses/{course}/students/{student}
-     */
     public function destroy(Course $course, User $student)
     {
         abort_if($course->teacher_id !== Auth::id(), 403);
@@ -101,5 +89,76 @@ class CourseStudentController extends Controller
         $course->students()->detach($student->id);
 
         return back()->with('success', 'Estudiante retirado del curso.');
+    }
+
+    public function storeBulk(Request $request, Course $course)
+    {
+        abort_if($course->teacher_id !== Auth::id(), 403);
+
+        // Modo descarga PDF (llamado desde fetch, no desde Inertia)
+        if ($request->input('generate_pdf')) {
+            $students = collect($request->input('students'))->map(function ($s) {
+                return [
+                    'name' => mb_convert_encoding($s['name'], 'UTF-8', 'UTF-8'),
+                    'username' => $s['username'],
+                    'pin' => $s['pin'],
+                ];
+            })->toArray();
+
+            $pdf = Pdf::loadView('pdf.credentials', [
+                'students' => $students,
+                'course'   => $course,
+                'date'     => now()->format('d/m/Y'),
+            ])->setOptions([
+                'defaultFont' => 'DejaVu Sans'
+            ]);
+
+            return $pdf->download('credenciales.pdf');
+        }
+
+        // Modo creación de estudiantes (llamado desde Inertia)
+        $request->validate([
+            'students'       => ['required', 'array'],
+            'students.*.name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $role = Role::where('slug', 'student')->firstOrFail();
+        $createdStudents = [];
+
+        foreach ($request->students as $studentData) {
+            $baseUsername = Str::slug($studentData['name']);
+            $username     = $baseUsername;
+            $counter      = 1;
+
+            while (User::where('username', $username)->exists()) {
+                $username = $baseUsername . $counter++;
+            }
+
+            $pin  = random_int(1000, 9999);
+
+            $user = User::create([
+                'name'      => $studentData['name'],
+                'username'  => $username,
+                'pin'       => Hash::make($pin),
+                'role_id'   => $role->id,
+                'is_active' => true,
+            ]);
+
+            $course->students()->attach($user->id);
+
+            $createdStudents[] = [
+                'name'     => $user->name,
+                'username' => $username,
+                'pin'      => $pin,
+            ];
+        }
+
+        // Devuelve flash para que Inertia lo maneje
+        return redirect()
+            ->back()
+            ->with('bulk_credentials', json_decode(
+                json_encode($createdStudents, JSON_UNESCAPED_UNICODE),
+                true
+            ));
     }
 }

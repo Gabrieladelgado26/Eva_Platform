@@ -1,0 +1,766 @@
+@CHARSET "UTF-8";
+/*
+over-ride "Weak" message, show font in dark grey
+*/
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../Shared/fonts/Roboto-Regular.ttf);
+}
+
+
+form[role=login] {
+  color: #5d5d5d;
+  background: #f2f2f2;
+  padding: 26px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+  form[role=login] img {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 35px;
+  }
+  form[role=login] input,
+  form[role=login] button {
+    font-size: 18px;
+    margin: 16px 0;
+  }
+  form[role=login] > div {
+    text-align: center;
+  }
+
+
+.form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    @include box-sizing(border-box);
+
+    &:focus {
+      z-index: 2;
+    }
+  }
+
+
+.form-links {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 50px;
+}
+
+.form-links a {
+    color: #fff;
+  }
+
+.login-form {
+  margin-top: 60px;
+}
+
+
+.progress-bar {
+    color: #333;
+} 
+
+* {
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  outline: none;
+}
+
+ 
+
+  /*DISEÑO DE VISTA MENU PLANTILLA*/
+ 
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: auto;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+}
+
+#skin {
+    display: block;
+    float: left;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    /* background-image: url(../img/skn_paramo_1.jpg); */
+    background-color: #6c7c7c;
+    background-size: cover;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+}
+
+
+#contentframe
+{
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 120%;
+  width: 100%;
+}
+
+
+
+
+#contentframeRepasemos
+{
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 93%;
+  width: 100%;
+}
+
+
+#contentframeEvaluemos
+{
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 93%;
+  width: 100%;
+}
+
+#contentslider
+{
+  border: none;
+    padding: 0;
+    left: 16%;
+    margin: 0;
+    height: 85%;
+    width: 73%;
+    top: 1%;
+    position: absolute;
+}
+
+
+ /* FIN DISEÑO DE VISTA MENU*/
+
+/* INICIO DISEÑO DE ELEMENTOS VISTA MENU*/
+
+.libros
+{
+    left: 33%;
+    top: 76%;
+    width: 14%;
+    z-index: 1;
+}
+
+
+.libros:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+   display: inline-block;
+    font-size: 10px;
+    text-shadow: 0 0 10px #222,1px 1px  0 #450505;
+    color: red;
+    animation: latidos .8s infinite;
+    transform-origin: center;
+}
+
+
+.busqueda
+
+{
+
+    left: 94%;
+  top: 59%;
+ width: 6%;
+ -webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+}
+
+
+.busqueda:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+.registradora
+{
+    left: 69%;
+    top: 69%;
+    width: 21%;
+    z-index: 1;
+}
+
+
+.registradora:hover
+{
+    cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+    display: inline-block;
+    font-size: 150px;
+    text-shadow: 0 0 10px #222,1px 1px  0 #450505;
+    color: red;
+    animation: latidos .8s infinite;
+    transform-origin: center;
+}
+
+
+.calificacion
+
+{
+
+    left: 94%;
+    top: 45%;
+    width: 6%;
+     -webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+}
+
+
+.calificacion:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+
+.letreroconoce
+{
+     width: 9%;
+    top: 40%;
+    left: 13%;
+    z-index: 1;
+
+}
+
+
+.letreroconoce:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+  display: inline-block;
+    font-size: 150px;
+    text-shadow: 0 0 10px #222,1px 1px  0 #450505;
+    color: red;
+    animation: latidos .8s infinite;
+    transform-origin: center;
+}
+
+
+.info
+{
+    top: 340;
+    left: 407;
+    width: 150;
+    display: none;
+    
+    
+}
+
+
+.profe
+
+{
+
+left: 94%;
+top: 15%;
+width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+
+.inicio
+
+{
+
+left: 94%;
+top: 31%;
+width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+
+.compartir
+
+{
+
+left: 94%;
+top: 47%;
+width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+ cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+
+.tutorial
+
+{
+
+    left: 94%;
+    top: 63%;
+    width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+
+
+.lampara
+{
+      width: 28%;
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    top: -13%;
+    left: 40%;
+    /* bottom: 6%; */
+}
+
+
+.letreroContenido
+{
+  width: 33%;
+  left: 2%;
+}
+
+
+
+
+.helado
+{
+    left: 59%;
+    top: 53%;
+    width: 10%;
+    z-index: 1;
+}
+
+
+.helado:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+   display: inline-block;
+    font-size: 150px;
+    text-shadow: 0 0 10px #222,1px 1px  0 #450505;
+    color: red;
+    animation: latidos .8s infinite;
+    transform-origin: center;
+  }
+ 
+
+
+
+@keyframes latidos {
+    from { transform: none; }
+    50% { transform: scale(1.3); }
+    to { transform: none; }
+}
+
+
+.titulocontenido
+{
+   position: absolute;
+    top: 9%;
+    z-index: 1;
+    left: 5%;
+    color: #FFF;
+    font-size:206%;
+    width: 27%;
+    text-align: center;
+    font-family:Chewy;
+}
+
+
+.titulocontenidotrescifras
+{
+    position: absolute;
+    top: 7%;
+    z-index: 1;
+    left: 5%;
+    color: #FFF;
+    font-size:206%;
+    width: 27%;
+    text-align: center;
+    font-family:Chewy;
+}
+
+.titulocontenidoPerimetro
+{
+    position: absolute;
+    top: 9%;
+    z-index: 1;
+    left: 5%;
+    color: #FFF;
+    font-size: 234%;
+    width: 27%;
+    text-align: center;
+    font-family: Chewy;
+}
+
+
+
+/* FIN  DISEÑO DE ELEMENTOS VISTA MENU*/
+
+
+/*INICIO DISEÑO TOOLTIPS*/
+
+.aprendemas
+{
+    left: 48%;
+    top: 61%;
+    width: 17%;
+    display: none;
+}
+
+
+.conoce
+{
+    top: 63%;
+    width: 23%;
+    left: 24%;
+    display: none;
+}
+
+.evaluemos
+{
+  right: 19%;
+  top: 74%;
+  width: 14%;
+  display: none;
+}
+
+.repasemos
+
+{
+    left: 26%;
+    top: 77%;
+    width: 13%;
+    display: none;
+}
+
+.trafico
+{
+    left: 60%;
+    width: 28%;
+    top: 31%;
+    height: 235px;
+    z-index: -1;
+}
+
+
+
+/*DISEÑO MODALES*/
+
+.divmodal
+{
+
+     position: absolute !important;
+    top: 6% !important;
+    width: 94% !important;
+    border-radius: 5px !important;
+    left: 5% !important;
+    height: 95%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  
+}
+
+.divmodaljuego2
+{
+     position: absolute !important;
+    width: 108% !important;
+    border-radius: 5px !important;
+    height: 95%;
+    right: -1%;
+  
+}
+
+
+.divmodalRepasemos
+{
+   position: absolute !important;
+    top: 8% !important;
+    width: 97% !important;
+    border-radius: 5px !important;
+    left: 7% !important;
+    height: 95%;
+    }
+
+
+.iconoadelante
+{
+   position: absolute;
+    bottom: 8%;
+    z-index: 1;
+    right: 10%;
+    width: 5%;
+}
+
+.iconoatrasconoce
+{
+  position: absolute;
+    bottom: 1%;
+    z-index: 1;
+    right: 3%;
+    width: 6%;
+}
+
+.iconoayuda
+{
+    position: absolute;
+    top: 48%;
+    left: 2%;
+    width: 4%;
+}
+
+.iconocerrar
+{
+   cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+  position: absolute;
+    top: 7%;
+    right: 4%;
+    width: 4%;
+    z-index: 10000;
+}
+
+.iconoinfo
+{
+    position: absolute;
+    top: 60%;
+    left: 2%;
+    width: 4%;
+}
+
+
+.iconosonido
+{
+    position: absolute;
+    top: 37%;
+    left: 2%;
+    width: 4%;
+}
+
+.iconocerrar2
+{
+   cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+   position: absolute;
+    top: 7%;
+    right: 13%;
+    width: 4%;
+    z-index: 10000;
+}
+
+
+
+.modalImagen
+{
+    width: 100% !important;
+}
+
+
+.videomodal
+{
+    z-index: 1;
+    left: 6%;
+    width: 85%;
+    float: left;
+    padding: 1%;
+    margin-left: 8%;
+}
+
+.divmodalConoce
+{
+   position: absolute !important;
+    top: 11% !important;
+    width: 107% !important;
+    border-radius: 5px !important;
+    left: 7% !important;
+    height: 95%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+
+ .iconoyoutube
+{
+    position: absolute;
+    right: 22%;
+    width: 14%;
+    bottom: 20.6%;
+    z-index: 2;
+}
+ /*FIN DISEÑO MODALES*/
+
+
+ /* INICIO DISEÑO DE ESTRELLAS*/
+
+.estrellasaprendemas
+{
+  width: 8%;
+  left: 54%;
+  top: 62%;
+  z-index: 5;
+}
+
+.estrellasconoce
+{
+  width: 8%;
+  left: 19%;
+  top: 42%;
+  z-index: 5;
+
+}
+
+
+.estrellasevaluemos
+{
+   width: 8%;
+  left: 84%;
+  top: 61%;
+  z-index: 5;
+}
+
+.estrellasrepasemos
+{
+  width: 8%;
+    left: 36%;
+    top: 70%;
+    z-index: 5;
+ 
+}
+
+.saltaranimacion
+{
+ 
+    z-index: 5 !important;
+    bottom: 3% !important;
+    width: 17% !important;
+    left: 1% !important;
+    position: absolute !important;
+}
+
+.saltaranimacion:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+.verintro
+{
+
+    position: absolute !important;
+    width: 14% !important;
+    top: 2% !important;
+    left: 1% !important;
+}
+
+.verintro:hover
+{
+  cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+}
+
+.sonidoslider
+{
+    width: 7% !important;
+    position: fixed;
+    top: 9px;
+     cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+     animation: 1s milatido infinite;
+}
+
+
+@keyframes milatido {
+    from { transform: none; }
+    50% { transform: scale(1.2); }
+    to { transform: none; }
+  }
+
+
+.licencia
+{
+    bottom: 6%;
+    width: 9%;
+    right: 1%;
+}
+
+
+.modal-content
+{
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: 0px !important;
+}
+
+.iconoregresar
+{
+    cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+    position: absolute;
+    top: 8%;
+    left: 2%;
+    width: 4%;
+    z-index: 10000;
+}
+
+.verintroInicio
+{
+
+    position: absolute !important;
+    width: 14% !important;
+    top: 2% !important;
+    left: 1% !important;
+    cursor:url(../../Adicion-Sustraccion/images/hand.cur) , auto!important;
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

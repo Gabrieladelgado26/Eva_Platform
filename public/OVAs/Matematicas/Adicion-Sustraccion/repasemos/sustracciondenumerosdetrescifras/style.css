@@ -1,0 +1,859 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+
+
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+.alerta{
+    
+    z-index: 3;
+    position: absolute;
+    width: 39%;
+    right: 24%;
+    bottom: 51%;
+}
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+.comprobar{
+
+    position: absolute;
+    width: 12%;
+    right: 12%;
+    bottom: 19%;
+    z-index: 10000;
+}
+
+.cajavalor
+{
+    position: absolute;
+    left: 10%;
+    bottom: 39%;
+    width: 11%;
+    height: 68px;
+    
+}
+
+.cajavalor2
+{
+    position: absolute;
+    left: 21%;
+    bottom: 39%;
+    width: 11%;
+    height: 68px;
+   
+}
+
+.cajavalor3
+{
+    position: absolute;
+    left: 32%;
+    bottom: 39%;
+    width: 11%;
+    height: 68px;
+   
+}
+.cajavalor4
+{
+    position: absolute;
+    left: 10%;
+    bottom: 25%;
+    width: 11%;
+    height: 68px;
+   
+}
+.cajavalor5
+{
+    position: absolute;
+    left: 21%;
+    bottom: 25%;
+    width: 11%;
+    height: 68px;
+   
+}
+
+.cajavalor6
+{
+    position: absolute;
+    left: 32%;
+    bottom: 25%;
+    width: 11%;
+    height: 68px;
+   
+}
+
+.cajavalor7
+{
+    position: absolute;
+    left: 10%;
+    bottom: 12%;
+    width: 11%;
+    height: 68px;
+    
+}
+.cajavalor8
+{
+    position: absolute;
+    left: 21%;
+    bottom: 12%;
+    width: 11%;
+    height: 68px;
+   
+}
+.cajavalor9
+{
+    position: absolute;
+    left: 32%;
+    bottom: 12%;
+    width: 11%;
+    height: 68px;
+    
+}
+
+.divinstruccion
+{
+    position: absolute;
+    width: 26%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 1%;
+    left: 57%;
+    top: 11%;
+    font-family: Roboto;
+    border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.final{
+    position: absolute;
+    z-index: 1;
+    width: 21%;
+    top: 34%;
+    left: 18%;
+}
+.iconoSonido
+{
+    left: 3%;
+    top: 5%;
+    position: absolute;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+.mensaje{
+    position: absolute;
+    z-index: 1;
+    top: 22%;
+    width: 20%;
+    left: 37%;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 3%;
+    z-index: 10000;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+
+.siguiente2
+{
+    position: absolute;
+    width: 8%;
+    right: 10%;
+    bottom: 5%;
+    z-index: 10000;
+}
+
+.siguiente2:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+
+}
+
+.volver
+{
+    position: absolute;
+    width: 14%;
+    right: 10%;
+    bottom: 6%;
+    z-index: 10000;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+/*DISEÑOS UNICO REPASEMOS*/
+
+.chocolates
+{
+    position: absolute;
+    width: 20%;
+    padding: 2%;
+    left: 34%;
+    top: 55%;
+}
+
+.caja1
+{
+    position: absolute;
+    display: none;
+    left: 27%;
+    width: 5%;
+    border-radius: 10px 10px 10px 10px !important;
+    height: 55px !important;
+    top: 38%;
+    border: 3px solid #EF6C00 !important;
+    text-align: center !important;
+    font-size: 53px !important;
+    font-weight: bold;
+    color: #000 !important;
+    font-family: Chewy;
+}
+
+.caja2
+{
+    position: absolute;
+    display: none;
+    left: 32.4%;
+    width: 5%;
+    border-radius: 10px 10px 10px 10px !important;
+    height: 55px !important;
+    top: 54.5%;
+    border: 3px solid #EF6C00 !important;
+    text-align: center !important;
+    font-size: 53px !important;
+    font-weight: bold;
+    color: #000 !important;
+    font-family: Chewy;
+}
+
+.caja3
+{
+    position: absolute;
+    display: none;
+    left: 27%;
+    width: 5%;
+    border-radius: 10px 10px 10px 10px !important;
+    height: 55px !important;
+    top: 38%;
+    border: 3px solid #EF6C00 !important;
+    text-align: center !important;
+    font-size: 53px !important;
+    font-weight: bold;
+    color: #000 !important;
+    font-family: Chewy;
+}
+
+.caja4
+{
+    position: absolute;
+    display: none;
+    left: 25.8%;
+    width: 5%;
+    border-radius: 10px 10px 10px 10px !important;
+    height: 55px !important;
+    top: 55%;
+    border: 3px solid #EF6C00 !important;
+    text-align: center !important;
+    font-size: 53px !important;
+    font-weight: bold;
+    color: #000 !important;
+    font-family: Chewy;
+}
+
+.igual
+{
+    position: absolute;
+    width: 3%;
+    padding: 2%;
+    left: 55.9%;
+    top: 77%;
+}
+
+.interrogante
+{
+    position: absolute;
+    width: 2.4%;
+    padding: 2%;
+    left: 67.7%;
+    top: 74%;
+}
+
+.ficha1
+{
+    position: absolute;
+    right: 42%;
+    width: 12%;
+    top: 44%;
+}
+
+.ficha2
+{
+    position: absolute;
+    right: 28%;
+    width: 12%;
+    top: 44%;
+}
+
+
+.ficha3
+{
+    position: absolute;
+    right: 14%;
+    width: 12%;
+    top: 44%;
+}
+
+.ficha4
+{
+    position: absolute;
+    right: 42%;
+    width: 12%;
+    bottom: 23%;
+}
+
+.ficha5
+{
+    position: absolute;
+    right: 28%;
+    width: 12%;
+    bottom: 23%;
+}
+
+
+.ficha6
+{
+    position: absolute;
+    right: 14%;
+    width: 12%;
+    bottom: 23%;
+}
+
+
+.ficha7
+{
+    position: absolute;
+    right: 42%;
+    width: 12%;
+    bottom: 5%;
+}
+
+.ficha8
+{
+    position: absolute;
+    right: 28%;
+    width: 12%;
+    bottom: 5%;
+}
+
+
+.ficha9
+{
+    position: absolute;
+    right: 14%;
+    width: 12%;
+    bottom: 5%;
+}
+
+
+.menos
+{
+    position: absolute;
+    width: 3%;
+    padding: 2%;
+    left: 56%;
+    top: 69%;
+}
+
+.num1
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 61.7%;
+    top: 59%;
+}
+
+.num2
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 68.2%;
+    top: 59%;
+}
+
+.num3
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 74.5%;
+    top: 59%;
+}
+
+.num4
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 61.7%;
+    top: 66%;
+}
+
+.num5
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 68%;
+    top: 66.5%;
+}
+
+.num6
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 74.5%;
+    top: 66.5%;
+}
+
+.num7
+{
+    position: absolute;
+    width: 1.4%;
+    padding: 2%;
+    left: 74.8%;
+    top: 74.5%;
+}
+
+.num8
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 68%;
+    top: 74.6%;
+}
+
+
+.num9
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 61.5%;
+    top: 74.7%;
+}
+
+.pregeneral
+{
+    position: absolute;
+    z-index: 1;
+    width: 35%;
+    height: 7%;
+}
+
+.pre1
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 38%;
+}
+
+.pre1:hover
+{
+     background: rgba(248, 148, 6, 0.28);
+     border-radius: 8px 8px 8px 8px; 
+     width:14%
+}
+
+.pre2
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 49%;
+}
+
+.pre2:hover
+{
+     background: rgba(248, 148, 6, 0.28);
+     border-radius: 8px 8px 8px 8px; 
+     width:14%
+}
+
+.pre3
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 60%;
+}
+
+.pre3:hover
+{
+     background: rgba(248, 148, 6, 0.28); 
+     border-radius: 8px 8px 8px 8px; 
+     width:14%
+}
+
+.pre4
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 71%;
+}
+
+.pre4:hover
+{
+     background: rgba(248, 148, 6, 0.28); 
+     border-radius: 8px 8px 8px 8px; 
+     width:14%
+}
+
+.resultado
+{
+    position: absolute;
+    width: 29%;
+    height: 10%;
+    left: 53%;
+    top: 85%;
+}
+
+.resultado1
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 38%;
+}
+
+.resultado2
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 49%;
+}
+
+.resultado3
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 60%;
+}
+
+.resultado4
+{
+    position: absolute;
+    width: 14%;
+    height: 10%;
+    left: 57%;
+    top: 71%;
+}
+
+.resulOpcion1
+{
+    position: absolute;
+    width: 16%;
+    height: 11%;
+    left: 23%;
+    top: 72%;
+}
+
+.resulOpcion2
+{
+    position: absolute;
+    width: 16%;
+    height: 11%;
+    left: 23%;
+    top: 72%;
+}
+
+.resulOpcion3
+{
+    position: absolute;
+    width: 16%;
+    height: 11%;
+    left: 23%;
+    top: 72%;
+}
+
+.resulOpcion4
+{
+    position: absolute;
+    width: 16%;
+    height: 11%;
+    left: 23%;
+    top: 72%;
+}
+
+.sustraccion1
+{
+    position: absolute;
+    width: 26%;
+    padding: 2%;
+    left: 17%;
+    top: 32%;
+}
+
+.sustraccion2
+{
+    position: absolute;
+    width: 26%;
+    padding: 2%;
+    left: 17%;
+    top: 32%;  
+}
+
+.sustraccion3
+{
+    position: absolute;
+    width: 26%;
+    padding: 2%;
+    left: 17%;
+    top: 32%;  
+}
+
+.sustraccion4
+{
+    position: absolute;
+    width: 26%;
+    padding: 2%;
+    left: 17%;
+    top: 32%;   
+}
+
+.tabla
+{
+    position: absolute;
+    width: 20%;
+    padding: 2%;
+    left: 59%;
+    top: 51%;
+}
+
+.verificar
+{
+    position: absolute;
+    left: 18%;
+    width: 15%;
+    bottom: 17%;
+}
+
+
+.verificar:hover
+{
+    cursor:url(../../images/hand.cur) , auto!important;
+
+}
+
+/*DISEÑO TAB 1*/
+
+.mamaIvy
+{
+    position: absolute;
+    left: 27%;
+    width: 18%;
+    top: 47%;
+    display: none;
+}
+
+.mamapipe
+{
+    position: absolute;
+    right: 31%;
+    width: 21%;
+    bottom: 10%;
+    display: none;
+}
+
+.interrogacion
+{
+    position: absolute;
+    right: 17%;
+    bottom: 24%;
+    width: 8%;
+    display: none;
+}
+
+.tablacentenas
+{
+    position: absolute;
+    right: 36%;
+    width: 39%;
+    bottom: 8%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.cinco1, .cuatro1, .cinco2
+{
+    position: absolute;
+    bottom: 33%;
+    width: 7%;
+    display: none;
+     animation: 2s flipInX;
+}
+
+.cinco1
+{
+    left: 32%;
+
+}
+
+.cuatro1
+{
+    left: 44%;
+}
+
+.cinco2
+{
+    left: 54%;
+}
+
+.tres1, .dos1, .cuatro2
+{
+    position: absolute;
+    left: 54%;
+    width: 7%;
+    bottom: 22%;
+    display: none;
+     animation: 2s flipInX;
+
+}
+
+.tres1
+{
+    left: 32%;
+}
+
+.dos1
+{
+    left: 44%;
+}
+
+.cuatro2
+{
+     left: 54%;
+}
+
+.total1, .total2, .total3
+{
+    position: absolute;
+    left: 54%;
+    width: 7%;
+    bottom: 9%;
+    display: none;
+     animation: 2s zoomIn;
+}
+
+.total1
+{
+    left: 32%;
+}
+
+.total2
+{
+     left: 44%;
+}
+
+.total3
+{
+     left: 54%;
+}
+
+.totalchocolates
+{
+    position: absolute;
+    right: 10%;
+    width: 25%;
+    top: 59%;
+    display: none;
+}

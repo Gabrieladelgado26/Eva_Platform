@@ -17,7 +17,10 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Dashboard (listado de usuarios)
+     */
+    public function dashboard(Request $request)
     {
         $users = User::with('role')
             ->orderBy('id', 'desc')
@@ -38,17 +41,29 @@ class UserController extends Controller
                 ];
             });
 
-        return Inertia::render('Admin/Index', [
+        // Obtener estadísticas globales (sin paginación)
+        $totalUsers = User::count();
+        $activeUsers = User::where('is_active', true)->count();
+
+        // Contar roles únicos que tienen al menos un usuario
+        $uniqueRoles = User::whereHas('role')
+            ->distinct('role_id')
+            ->count('role_id');
+
+        return Inertia::render('Admin/Dashboard', [
             'users' => $users,
+            'stats' => [
+                'total' => $totalUsers,
+                'active' => $activeUsers,
+                'unique_roles' => $uniqueRoles,
+            ]
         ]);
     }
 
     public function create()
     {
-        $roles = Role::all();
-
         return Inertia::render('Admin/Users/Create', [
-            'roles' => $roles
+            'roles' => Role::all()
         ]);
     }
 
@@ -60,7 +75,6 @@ class UserController extends Controller
 
         $role = Role::findOrFail($request->role_id);
 
-        // Crear estudiante
         if ($role->slug === 'student') {
 
             $request->validate([
@@ -88,14 +102,13 @@ class UserController extends Controller
             audit('created_user', $user, null, $user->toArray());
 
             return redirect()
-                ->route('admin.index', ['section' => 'users'])
+                ->route('admin.dashboard', ['section' => 'users'])
                 ->with('credentials', [
                     'username' => $username,
                     'pin' => $generatedPin,
                 ]);
         }
 
-        // Crear admin o docente
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
@@ -121,17 +134,15 @@ class UserController extends Controller
         }
 
         return redirect()
-            ->route('admin.index', ['section' => 'users'])
+            ->route('admin.dashboard', ['section' => 'users'])
             ->with('success', 'Usuario creado correctamente.');
     }
 
     public function edit(User $user)
     {
-        $roles = Role::all();
-
         return Inertia::render('Admin/Users/Edit', [
             'user' => $user,
-            'roles' => $roles
+            'roles' => Role::all()
         ]);
     }
 
@@ -148,13 +159,11 @@ class UserController extends Controller
 
         $role = Role::findOrFail($request->role_id);
 
-        $isCurrentlyAdmin = $user->role && $user->role->slug === 'admin';
+        $isAdmin = $user->role?->slug === 'admin';
         $isDeactivating = $request->has('is_active') && !$request->boolean('is_active');
 
-        if ($isCurrentlyAdmin && $isDeactivating) {
-            $activeAdmins = User::whereHas('role', function ($q) {
-                $q->where('slug', 'admin');
-            })
+        if ($isAdmin && $isDeactivating) {
+            $activeAdmins = User::whereHas('role', fn($q) => $q->where('slug', 'admin'))
                 ->where('is_active', true)
                 ->count();
 
@@ -187,9 +196,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'role_id' => $role->id,
-                'is_active' => $request->has('is_active')
-                    ? $request->boolean('is_active')
-                    : $user->is_active,
+                'is_active' => $request->boolean('is_active', $user->is_active),
             ];
 
             if ($request->filled('password')) {
@@ -205,36 +212,28 @@ class UserController extends Controller
             );
         }
 
-        if ($oldStatus === true && $user->is_active === false) {
-            Mail::to($user->email)->queue(
-                new UserDeactivatedMail($user)
-            );
+        if ($oldStatus && !$user->is_active) {
+            Mail::to($user->email)->queue(new UserDeactivatedMail($user));
         }
 
-        if ($oldStatus === false && $user->is_active === true) {
-            Mail::to($user->email)->queue(
-                new UserActivatedMail($user)
-            );
+        if (!$oldStatus && $user->is_active) {
+            Mail::to($user->email)->queue(new UserActivatedMail($user));
         }
 
         audit('updated_user', $user, $old, $user->getChanges());
 
         return redirect()
-            ->route('admin.index', ['section' => 'users'])
+            ->route('admin.dashboard', ['section' => 'users'])
             ->with('success', 'Usuario actualizado correctamente');
     }
 
     public function destroy(User $user)
     {
-        // Validación: No eliminar último admin activo
-
-        $isAdmin = $user->role && $user->role->slug === 'admin';
+        $isAdmin = $user->role?->slug === 'admin';
 
         if ($isAdmin && $user->is_active) {
 
-            $activeAdmins = User::whereHas('role', function ($q) {
-                $q->where('slug', 'admin');
-            })
+            $activeAdmins = User::whereHas('role', fn($q) => $q->where('slug', 'admin'))
                 ->where('is_active', true)
                 ->count();
 
@@ -247,14 +246,12 @@ class UserController extends Controller
             }
         }
 
-        // Eliminar usuario
-
         audit('deleted_user', $user, $user->toArray(), null);
 
         $user->delete();
 
         return redirect()
-            ->route('admin.index', ['section' => 'users'])
+            ->route('admin.dashboard', ['section' => 'users'])
             ->with('success', 'Usuario eliminado correctamente.');
     }
 
@@ -262,14 +259,11 @@ class UserController extends Controller
     {
         $oldStatus = $user->is_active;
 
-        $isAdmin = $user->role && $user->role->slug === 'admin';
-        $isDeactivating = $oldStatus === true;
+        $isAdmin = $user->role?->slug === 'admin';
 
-        if ($isAdmin && $isDeactivating) {
+        if ($isAdmin && $oldStatus) {
 
-            $activeAdmins = User::whereHas('role', function ($q) {
-                $q->where('slug', 'admin');
-            })
+            $activeAdmins = User::whereHas('role', fn($q) => $q->where('slug', 'admin'))
                 ->where('is_active', true)
                 ->count();
 
@@ -282,7 +276,7 @@ class UserController extends Controller
             }
         }
 
-        if ($oldStatus == true) {
+        if ($oldStatus) {
             $user->update(['force_logout' => true]);
         }
 
@@ -290,15 +284,11 @@ class UserController extends Controller
             'is_active' => !$oldStatus
         ]);
 
-        if ($oldStatus === true) {
-            Mail::to($user->email)->queue(
-                new UserDeactivatedMail($user)
-            );
-        } else {
-            Mail::to($user->email)->queue(
-                new UserActivatedMail($user)
-            );
-        }
+        Mail::to($user->email)->queue(
+            $oldStatus
+                ? new UserDeactivatedMail($user)
+                : new UserActivatedMail($user)
+        );
 
         audit(
             $oldStatus ? 'user_deactivated' : 'user_activated',
@@ -318,12 +308,7 @@ class UserController extends Controller
             'pin' => Hash::make($generatedPin)
         ]);
 
-        audit(
-            'pin_regenerated',
-            $user,
-            null,
-            ['pin_regenerated' => true]
-        );
+        audit('pin_regenerated', $user, null, ['pin_regenerated' => true]);
 
         return back()->with('credentials', [
             'username' => $user->username,

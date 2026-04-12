@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+
+<head>
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+    <title>Repasar adición de números hasta el 19</title>
+    <meta name="title" content="Repasar adición de números hasta el 19" />
+	<meta name="description" content="Repasemos adición de números hasta el 19"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+	
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+  </head>
+  <body cz-shortcut-listen="true">
+    <div class="container Skin3">
+		
+		<div class="span12 Skin3">
+			<section id="wizard">
+	
+				<div id="rootwizard">				
+				
+					<div class="tab-content" style="width: 93%">						
+						<img id="mensaje" name="mensaje" class="mensaje"  style="display:none"/>
+						<img id="final" name="final" class="mensaje"  src="img/logro.png" style="display:none"/>	
+					    <div id="audio_men"></div>
+
+					     <div class="tab-pane active" id="tab1">
+					      <div class="" style=" ">					      	
+						    <img class="Skin2" src="img/dp1.png" id="tb1">
+						    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(1)">
+						    <img class="diadema7" src="img/diadema7.png" >
+						    <img class="diadema8" src="img/diadema8.png" >
+						    <img class="primersumando" src="img/primersumando.png" >
+						    <img class="segundosumando" src="img/segundosumando.png" >
+						    <img class="masblanco" src="img/mas.png" >
+						    <img class="igual" src="img/igual.png" >
+						    <img class="resultado15" src="img/15resultado.png" >
+						     <img class="diademasumando" src="img/siete.png" >						   
+
+						    <!--NUMEROS CONTEO-->
+
+						     <img class="ocho" src="img/8a.png" >
+						      <img class="nueve" src="img/9.png" >
+						       <img class="diez" src="img/10.png" >
+						        <img class="once" src="img/11a.png" >
+						         <img class="doce" src="img/12a.png" >
+						          <img class="trece" src="img/13.png" >
+						           <img class="catorce" src="img/14.png" >
+						            <img class="quince" src="img/15a.png" >
+
+ 						   	<a href="#tab2" data-toggle="tab"><img class="siguiente" src="img/siguiente.png" ></a>
+ 						  </div>
+					    </div>
+
+
+
+					    <div class="tab-pane" id="tab2">
+						    <div class="" style=" ">					      	
+						    <img class="Skin2" src="img/dp2.png">
+						    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+
+					      	<img class="marcadores13" src="img/marcador13.png" >
+					      	<img class="marcadores6" src="img/marcador6.png" >
+					      	<img class="masmarcadores" src="img/mas.png" >
+					      	<img class="cuadro" src="img/cuadro.png" >
+
+					      	<img class="mastabla" src="img/mas.png" >
+					      	<img class="sumando1" src="img/primersumando.png" >
+					      	<img class="sumando2" src="img/segundosumando.png" >
+					      	<img class="igualmarcadores" src="img/igualblanco.png" >
+					      	<img class="unotabla" src="img/1.png" >
+					      	<img class="trestabla" src="img/3.png" >
+					      	<img class="cerotabla" src="img/0.png" >
+					      	<img class="seistabla" src="img/6.png" >
+					      	<img class="unotablaa" src="img/1.png" >
+					      	<img class="nuevetabla" src="img/9.png">
+					      	<img class="linea" src="img/linea.png" >
+					      	<img class="totalmarcadores" src="img/totalmarcadores.png" >
+
+
+					      
+					      	<a href="#tab1" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+ 						   <a href="#tab3" data-toggle="tab"><img class="siguiente" src="img/siguiente.png" ></a>
+ 						  </div>
+					    </div>
+
+
+
+					   <div class="tab-pane" id="tab3">
+					      <div class="" style=" ">	
+					      <input id="respuesta1" type="hidden" value="2">				      	
+					      <img class="Skin2" src="img/dp3.png">
+					      <img class="numero1" src="img/11.png" onclick="comprueba(1,1)">
+					      <img class="numero2" src="img/12.png" onclick="comprueba(2,1)">
+					      <img class="numero3" src="img/15.png" onclick="comprueba(3,1)">
+					      <img class="numero4" src="img/8.png" onclick="comprueba(4,1)">
+					      <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(3)">
+
+					       <a href="#tab2" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+ 						   <a id="sig1" href="#tab4" data-toggle="tab" style="display:none;">
+					      	<img class="siguiente" src="img/siguiente.png" ></a>
+ 						  </div>
+					    </div>
+					    
+
+					    <div class="tab-pane" id="tab4">
+					      <div class="" style=" ">			
+					      <input id="respuesta2" type="hidden" value="3">			      	
+					      <img class="Skin2" src="img/dp4.png">
+					      <img class="numero5" src="img/19.png" onclick="comprueba(1,2)">
+					      <img class="numero6" src="img/16.png" onclick="comprueba(2,2)">
+					      <img class="numero7" src="img/15.png" onclick="comprueba(3,2)">
+					      <img class="numero8" src="img/17.png" onclick="comprueba(4,2)">
+					      <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(3)">
+
+					      <a href="#tab3" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+					      <a id="sig2" href="#tab5" data-toggle="tab" style="display:none;">
+					      	<img class="siguiente" src="img/siguiente.png" ></a> 						   
+ 						  </div>
+					    </div>
+
+
+					      <div class="tab-pane" id="tab5">
+					      <div class="" style=" ">
+					      <input id="respuesta3" type="hidden" value="4">	
+					      <img class="Skin2" src="img/dp5.png">	
+					      <img class="numero9" src="img/17.png" onclick="comprueba(1,3)">
+					      <img class="numero10" src="img/7.png" onclick="comprueba(2,3)">
+					      <img class="numero11" src="img/19.png" onclick="comprueba(3,3)">
+					      <img class="numero12" src="img/16.png" onclick="comprueba(4,3)">
+					      <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(3)">
+					      
+					      <a href="#tab4" data-toggle="tab"><img class="antes" src="img/antes.png"></a> 	
+					       <!-- <a id="sig3" href="#" data-toggle="tab"></a> -->
+					   </div>
+					    </div>
+
+					</div>	
+
+			<div class="navbar" style="display:none">
+					  <div class="navbar-inner" style="display:none">
+					    <div class="container">
+					<ul class="nav nav-pills">
+					  	<li class="active"><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab1" data-toggle="tab">First</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab2" data-toggle="tab">Second</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab3" data-toggle="tab">Third</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab4" data-toggle="tab">Forth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab5" data-toggle="tab">Fifth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab6" data-toggle="tab">Sixth</a></li>
+						<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab7" data-toggle="tab">Seventh</a></li>
+					</ul>
+					 </div>
+					  </div>
+					</div>
+
+
+				</div>
+				</section>
+
+ 		</div>
+	</div>
+
+	<audio id="au1" src="audio/enunciado1.mp3" preload="auto" autoplay></audio>
+	<audio id="au2" src="audio/enunciado2.mp3" preload="auto"></audio>
+	<audio id="au3" src="audio/actividad.mp3" preload="auto" ></audio>
+
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>
+	<script src="./index_files/repasemosMethod.js"></script>
+	<script>
+
+	$(document).ready(function() {
+		$(document).on( 'shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+			var str = String(e.target);
+			var tabNum = str.substr(str.indexOf("#") + 1).substr(3,4);  
+			playAudio(tabNum);
+
+   			console.log(tabNum); // activated tab
+		})
+	  	
+		window.prettyPrint && prettyPrint()
+	});	
+
+	
+	var set1='',set2='',set3='',set4='',set5='',set6='',set7='',set8='',set9='' ,set10='',set11='',set12='' ,set13='' ,set14='',set15='' ,set16='',set17='',set18='' ,set19='',set20='',set21='' ,set22='',set23='',set24='' ,set25='' ,set26='',set27='' ,set28='',set29='',set30='' ,set31='',set32='',set33='' ,set34='',set35='',set36='' ,set37='';
+
+	function playAudio(num){
+	  //pause playing
+		$("audio").trigger('pause');
+		//set play time to 0
+		$("audio").prop('currentTime',0);
+		$("#au" + num).trigger('play');
+
+		if (num==1){
+			
+			set1 = setTimeout(function(){$(".diadema7").attr('style','display:table')},13000);
+			set2 = setTimeout(function(){$(".masblanco").attr('style','display:table')},22000);
+			set3 = setTimeout(function(){$(".diadema8").attr('style','display:table')},23000);
+			set4 = setTimeout(function(){$(".igual").attr('style','display:table')},27000);
+			set5 = setTimeout(function(){$(".primersumando").attr('style','display:table')},33000);
+			set6 = setTimeout(function(){$(".segundosumando").attr('style','display:table')},34000);
+			set7 = setTimeout(function(){$(".diademasumando").attr('style','display:table')},40000);
+			set8 = setTimeout(function(){$(".ocho").attr('style','display:table')},41000);
+			set9 = setTimeout(function(){$(".nueve").attr('style','display:table')},42000);
+			set10 = setTimeout(function(){$(".diez").attr('style','display:table')},43000);
+			set11 = setTimeout(function(){$(".once").attr('style','display:table')},44000);
+			set12 = setTimeout(function(){$(".doce").attr('style','display:table')},45000);
+			set13 = setTimeout(function(){$(".trece").attr('style','display:table')},46000);
+			set14 = setTimeout(function(){$(".catorce").attr('style','display:table')},47000);
+			set15 = setTimeout(function(){$(".quince").attr('style','display:table')},48000);
+			set16 = setTimeout(function(){$(".igual").attr('style','display:none')},50000);
+			set17 = setTimeout(function(){$(".resultado15").attr('style','display:table')},50000);		
+
+			//CANCELO LOS DEL 2
+
+			$(".marcadores13, .masmarcadores, .marcadores6, .cuadro, .unotabla, .trestabla, .sumando1, .seistabla, .sumando2, .mastabla, .igualmarcadores, .linea, .nuevetabla, .cerotabla, .unotablaa, .totalmarcadores").attr('style','display:none');
+
+
+			clearTimeout(set18);
+			clearTimeout(set19);
+			clearTimeout(set20);
+			clearTimeout(set21);
+			clearTimeout(set22);
+			clearTimeout(set23);
+			clearTimeout(set24);
+			clearTimeout(set25);	
+			clearTimeout(set26);
+			clearTimeout(set27);
+			clearTimeout(set28);
+			clearTimeout(set29);
+			clearTimeout(set30);
+			clearTimeout(set31);
+			clearTimeout(set32);
+			clearTimeout(set33);
+			clearTimeout(set34);
+			clearTimeout(set35);
+			clearTimeout(set36);
+			clearTimeout(set37);
+
+	}
+
+		else if(num==2)
+
+		{
+
+			//CANCELO LOS DEL 1
+
+			$(".diadema7, .masblanco, .diadema8, .igual, .primersumando, .segundosumando, .diademasumando, .ocho, .nueve, .diez, .once, .doce, .trece, .catorce, .quince, .igual, .resultado15").attr('style','display:none');
+
+
+			clearTimeout(set1);
+			clearTimeout(set2);
+			clearTimeout(set3);
+			clearTimeout(set4);
+			clearTimeout(set5);
+			clearTimeout(set6);
+			clearTimeout(set7);
+			clearTimeout(set8);
+			clearTimeout(set9);
+			clearTimeout(set10);
+			clearTimeout(set11);
+			clearTimeout(set12);
+			clearTimeout(set13);
+			clearTimeout(set14);
+			clearTimeout(set15);
+			clearTimeout(set16);
+			clearTimeout(set17);
+
+
+			set18 = setTimeout(function(){$(".marcadores13").attr('style','display:table')},15000);
+			set19 = setTimeout(function(){$(".masmarcadores").attr('style','display:table')},16000);
+			set20 = setTimeout(function(){$(".marcadores6").attr('style','display:table')},17000);
+			set21 = setTimeout(function(){$(".cuadro").attr('style','display:table')},19000);
+			set22 = setTimeout(function(){$(".unotabla").attr('style','display:table')},21000);
+			set23 = setTimeout(function(){$(".trestabla").attr('style','display:table')},22000);
+			set24 = setTimeout(function(){$(".sumando1").attr('style','display:table')},22000);			
+			set25 = setTimeout(function(){$(".seistabla").attr('style','display:table')},23000);
+			set26 = setTimeout(function(){$(".sumando2").attr('style','display:table')},23000);
+			set27 = setTimeout(function(){$(".mastabla").attr('style','display:table')},26000);
+			set28 = setTimeout(function(){$(".igualmarcadores").attr('style','display:table')},27000);
+			set29 = setTimeout(function(){$(".linea").attr('style','display:table')},29000);
+			set30 = setTimeout(function(){$(".trestabla").attr('style','display:table; animation: 2s zoomIn')},33000);
+			set31 = setTimeout(function(){$(".seistabla").attr('style','display:table; animation: 2s zoomIn')},34000);
+			set33 = setTimeout(function(){$(".nuevetabla").attr('style','display:table; animation: 2s bounceInDown')},35000);
+			set34 = setTimeout(function(){$(".unotabla").attr('style','display:table; animation: 2s zoomIn')},37000);
+			set35 = setTimeout(function(){$(".cerotabla").attr('style','display:table; animation: 2s zoomIn')},38000);
+			set36 = setTimeout(function(){$(".unotablaa").attr('style','display:table; animation: 2s bounceInDown')},39000);
+			set37 = setTimeout(function(){$(".totalmarcadores").attr('style','display:table')},42000);
+
+
+		}
+
+}
+
+			set1 = setTimeout(function(){$(".diadema7").attr('style','display:table')},13000);
+			set2 = setTimeout(function(){$(".masblanco").attr('style','display:table')},22000);
+			set3 = setTimeout(function(){$(".diadema8").attr('style','display:table')},23000);
+			set4 = setTimeout(function(){$(".igual").attr('style','display:table')},27000);
+			set5 = setTimeout(function(){$(".primersumando").attr('style','display:table')},33000);
+			set6 = setTimeout(function(){$(".segundosumando").attr('style','display:table')},34000);
+			set7 = setTimeout(function(){$(".diademasumando").attr('style','display:table')},40000);
+			set8 = setTimeout(function(){$(".ocho").attr('style','display:table')},41000);
+			set9 = setTimeout(function(){$(".nueve").attr('style','display:table')},42000);
+			set10 = setTimeout(function(){$(".diez").attr('style','display:table')},43000);
+			set11 = setTimeout(function(){$(".once").attr('style','display:table')},44000);
+			set12 = setTimeout(function(){$(".doce").attr('style','display:table')},45000);
+			set13 = setTimeout(function(){$(".trece").attr('style','display:table')},46000);
+			set14 = setTimeout(function(){$(".catorce").attr('style','display:table')},47000);
+			set15 = setTimeout(function(){$(".quince").attr('style','display:table')},48000);
+			set16 = setTimeout(function(){$(".igual").attr('style','display:none')},50000);
+			set17 = setTimeout(function(){$(".resultado15").attr('style','display:table')},50000);			
+
+	
+			
+	</script>
+
+  
+</body></html>

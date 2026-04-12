@@ -51,9 +51,9 @@ class User extends Authenticatable
         $slug = $this->role?->slug;
 
         return match ($slug) {
-            'admin'   => 'admin.index',
-            'teacher' => 'teacher.index',
-            'student' => 'student.index',
+            'admin'   => 'admin.dashboard',
+            'teacher' => 'teacher.dashboard',
+            'student' => 'student.dashboard',
             default   => 'dashboard',
         };
     }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+
+<head>
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+    <title>Juego adición de numeros hasta el 19</title>
+    <meta name="title" content="Juego adición de numeros hasta el 19" />
+	<meta name="description" content="Juego adición de numeros hasta el 19"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="stylejuego1.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+
+  </head>
+  
+					
+				
+	<div class="tab-content" style="width: 98%" >
+
+					<img id="mensaje" name="mensaje"  class="mensaje" src="" style="display:none"/> 	
+					<img id="alerta" name="alerta"  class="alerta" src="img/alerta.png" style="display:none"/>
+					<a id="redir" href=""><img id="mensaje2" name="mensaje2"  class="respuestafin" style="display:none"/></a>	
+					<div id="audio_men"></div>
+					   
+					   <div class="tab-pane active" id="tab1">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/Fondojuego1.png">
+
+					      <a class="repro_audio1"><img class="iconoSonido" src="img/sonido.png">
+					      <audio id="audio1" src="sonidos/enunciado.mp3"/></a>
+
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3"  src="sonidos/titulo.mp3"/></a>
+
+					       <div class="divinstruccion I18N">enu_numhasta19</div> 							
+ 						  <img class="ivisonriendo" src="img/ivy.png">
+ 						  
+ 						  <a href="#tab2" data-toggle="tab" class="repro_audio4"><img class="divBotonComenzar" src="img/botones.png" ><audio id="audio4" src="sonidos/continuar.mp3"/></a>
+ 						  </div>
+					    </div>
+
+
+
+					    <div class="tab-pane " id="tab2">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio2"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio2" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img id="vida" name="vida" class="vidas3">
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego3</div> 
+					      <div class="complementos">
+					      	<img class="registro" src="img/registro.png">
+
+					      	 <img id="producto" class="producto">
+					      	 <img id="num1f1" class="num1f1" src="img/1.png">
+					      	 <img id="num2f1" class="num2f1">
+					      	 <img id="num2f2" class="num2f2">
+
+					      	 <img id="numc1f1" class="numc1f1" src="img/1.png">
+					      	 <img id="numc2f1" class="numc2f1">
+					      	 <img id="numc2f2" class="numc2f2">
+
+					      	 <input id="valorDecenas" type="text" class="cajaDecenas solo_numero" maxlength="1">
+					      	 <input id="valorUnidades" type="text" class="cajaUnidades solo_numero" maxlength="1">
+
+
+					   	   <a id="sig1" href="#tab3" data-toggle="tab"></a>
+					      <a class="repro_audio5"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(1)" style="display:block">
+ 						  	<audio id="audio5" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+					</div>	
+				<audio id="audio" name="audio" preload="" src=""/>
+		
+</html>
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>	
+	<script src="./index_files/juegoMethod.js"></script>
+
+	<script >
+
+/*INICIO CAPTURA PANTALLA*/
+  $(document).ready(resizeContent);
+  $(window).resize(resizeContent);
+  function resizeContent() {
+    var res = $(window).width()/(750 * 1);
+    if($(window).width()<=750)
+    {
+    $("body").css({'zoom': res});
+    }
+  }
+ setTimeout(function(){$("#modalslider").modal({show:true})},1000);
+/*FIN CAPTURA PANTALLA*/
+</script>
+
+	<!--ARCHIVO PROPERTIES-->
+	<script src="../../../js/I18N/es.js"></script>
+	<script src="../../../js/funcion.js"></script>
+
+	

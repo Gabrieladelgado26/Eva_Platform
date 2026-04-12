@@ -1,0 +1,286 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 99%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+
+.alerta{
+    
+    z-index: 1;
+    position: absolute;
+    width: 38%;
+    right: 24%;
+    bottom: 46%;
+}
+
+
+
+.botonevaluar
+{
+    width: 17%;
+    bottom: 23%;
+    left: 5%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+.divinstruccion
+{
+    position: absolute;
+    width: 42%;
+    text-align: left;   
+    padding: 2%;
+    left: 39%;
+    top: 7%;
+    background: rgba(255,255,255, 1.6);
+    font-family: Roboto;
+      border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+
+
+}
+
+.divinstruccionjuego
+{
+    position: absolute;
+    width: 46%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 2%;
+    left: 39%;
+    top:5%;
+    font-family: Roboto;
+   border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.divBotonComenzar
+{
+    width: 19%;
+    bottom: 2%;
+    right: 12%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+
+}
+
+.divgeneral{
+    width: 7%;
+    height: 34px;
+    z-index: 1;
+    position: absolute;
+     border-radius: 86%;
+}
+
+
+
+.iconoSonido
+{
+    left: 33%;
+    top: 12%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    left: 33%;
+    top: 8%;
+    z-index: 1;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+
+.ivisonriendo
+{
+    width: 13%;
+    left: 81%;
+    top: 13%;
+}
+
+
+
+.mensaje{
+    z-index: 1;
+    position: absolute;
+    top: 25%;
+    right: 31%;
+}
+
+
+
+.respuesta
+{
+    display: block;
+    top: 28%;
+    width: 34%;
+    left: 23%;
+}
+
+.respuestafin
+{       
+    z-index: 1;
+    position: absolute;
+    width: 24%;
+    right: 35%;
+    bottom: 31%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+
+.resultados
+{
+    width: 49%;
+    left: 36%;
+    top: 26%;
+}
+
+
+.titulojuego
+{
+    width: 23%;
+    left: 5%;
+    top: 4%;
+}
+
+
+.vidas3
+{
+    width: 19%;
+    top: 27%;
+    left: 3%;
+}
+
+/*DISEÑO UNICO JUEGO*/
+
+.atunes
+{
+    width: 51%;
+    left: 35%;
+    top: 23%;
+}
+
+.ope{
+
+    width: 60%;
+    top: 57%;
+    left: 29%;
+}
+
+.bananos
+{
+    width: 51%;
+    left: 34%;
+    top: 24%;
+}
+
+
+.busqueda1
+{
+    -ms-transform: rotate(7deg); /* IE 9 */
+    -webkit-transform: rotate(7deg); /* Chrome, Safari, Opera */
+    transform: rotate(-44deg);
+    width: 2%;
+    top: 57.5%;
+    left: 37%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.busqueda2
+{
+    -ms-transform: rotate(7deg); /* IE 9 */
+    -webkit-transform: rotate(7deg); /* Chrome, Safari, Opera */
+    transform: rotate(37deg);
+    width: 2%;
+    top: 57.5%;
+    right: 19%;
+    cursor:url(../../../images/hand.cur) , auto!important;
+}
+
+.manzanas
+{
+    width: 51%;
+    left: 33%;
+    top: 24%;
+}
+
+.maiz
+
+{
+    width: 49%;
+    left: 36%;
+    top: 21%;
+}
+
+.pintada
+{
+    background: rgba(255, 255, 58, 0.3);
+    border-radius: 8px 8px 8px 8px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+}
+
+.propiedadasociativa
+{
+    bottom: 7%;
+    width: 28%;
+    left: 4%;
+}
+
+.propiedadconmutativa
+{
+    bottom: 7%;
+    width: 29%;
+    left: 35%;
+}
+
+.propiedadmodulativa
+{
+    bottom: 7%;
+    width: 29%;
+    right: 4%;
+}

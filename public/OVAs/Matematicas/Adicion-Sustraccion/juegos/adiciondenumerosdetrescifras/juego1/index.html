@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+<head>
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+    <title>Juego adición de numeros de tres cifras</title>
+    <meta name="title" content="Juego adición de numero de tres cifras" />
+	<meta name="description" content="Juego adición de numero de tres cifras"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="stylejuego1.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+  </head>
+ 
+				
+					<div class="tab-content" style="width: 97%">
+
+					<img id="mensaje" class="mensaje" style="display:none"/> 	
+					<img id="alerta" class="alerta"  style="display:none"/>
+					<a id="redir" href=""><img id="mensaje2" class="respuestafin" style="display:none"/></a> 	
+					<div id="audio_men"></div>
+					   
+					   <div class="tab-pane active" id="tab1">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/Fondojuego1.png">
+
+					      <a class="repro_audio4"><img class="iconoSonido" src="img/sonido.png">
+					      <audio id="audio4" src="sonidos/enunciado.mp3"/></a>
+
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1"  src="sonidos/titulo.mp3"/></a>
+
+					       <div class="divinstruccion I18N">enu_addtrescifras</div> 							
+ 						  <img class="ivisonriendo" src="img/ivy.png">
+
+ 						  
+ 						  <a href="#tab2" data-toggle="tab" class="repro_audio2"><img class="divBotonComenzar" src="img/botones.png" > 	<audio id="audio2" src="sonidos/continuar.mp3"/></a>
+ 						  </div>
+					    </div>
+
+
+
+					    <div class="tab-pane " id="tab2">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio5"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio5" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img id="vida" name="vida" class="vidas3">
+
+					      <a class="repro_audio1"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio1" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego2</div> 
+					      <div class="complementos">
+
+					      <img class="tabla" src="">
+
+					      <input id="c1" type="text" class="cajacentenas1 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)">
+					      <input id="c2" type="text" class="cajacentenas2 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)" >
+					      <input id="c3" type="text" class="cajacentenas3 solo_numero resul" maxlength="1" disabled="true" onkeyup="verificardos(this.id)" >
+					      <input id="d1" type="text" class="cajadecenas1 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)">
+					      <input id="d2" type="text" class="cajadecenas2 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)">
+					      <input id="d3" type="text" class="cajadecenas3 solo_numero resul" maxlength="1" disabled="true" onkeyup="verificardos(this.id)">
+					      
+					      <input id="u1" type="text" class="cajaunidades1 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)" >
+					      <input id="u2" type="text" class="cajaunidades2 solo_numero sum" maxlength="1" onkeyup="verificar(this.id)">
+					      <input id="u3" type="text" class="cajaunidades3 solo_numero resul" maxlength="1" disabled="true" onkeyup="verificardos(this.id)">
+
+
+					      <a id="sig1" href="#tab3" data-toggle="tab" ></a>
+					      <a class="repro_audio3"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba()" style="display: none" >
+ 						  	<audio id="audio3" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+					  
+						
+					</div>	
+
+				<audio id="audio" name="audio" preload="" src=""/>
+	</html>		
+
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>	
+	<script src="./index_files/juegoMethod.js"></script>
+
+	
+		<script >
+
+		/*INICIO CAPTURA PANTALLA*/
+		  $(document).ready(resizeContent);
+		  $(window).resize(resizeContent);
+		  function resizeContent() {
+		    var res = $(window).width()/(750 * 1);
+		    if($(window).width()<=750)
+		    {
+		    $("body").css({'zoom': res});
+		    }
+		  }
+		 setTimeout(function(){$("#modalslider").modal({show:true})},1000);
+		/*FIN CAPTURA PANTALLA*/
+		</script>
+
+	<!--ARCHIVO PROPERTIES-->
+	<script src="../../../js/I18N/es.js"></script>
+	<script src="../../../js/funcion.js"></script>
+
+	
+  

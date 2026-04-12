@@ -1,0 +1,1125 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+
+
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+.alerta{
+    position: absolute;
+    z-index: 1;
+    top: 43%;
+    width: 36%;
+    left: 44%;
+
+}
+
+.comprobar{
+
+    position: absolute;
+    width: 12%;
+    right: 12%;
+    bottom: 19%;
+    z-index: 10000;
+}
+
+
+.divinstruccion
+{
+    position: absolute;
+    width: 26%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 1%;
+    left: 57%;
+    top: 11%;
+    font-family: Roboto;
+    border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.iconoSonido
+{
+    left: 3%;
+    top: 5%;
+    position: absolute;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+.mensaje{
+    position: absolute;
+    z-index: 1;
+    width: 20%;
+    top: 23%;
+    right: 28%;
+}
+
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 3%;
+    z-index: 10000;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 10%;
+    bottom: 5%;
+    z-index: 10000;
+    cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+
+}
+
+/*DISEÑOS UNICO REPASEMOS*/
+.alquipitos
+{
+    position: absolute;
+    width: 66%;
+    padding: 2%;
+    left: 11.5%;
+    top: 43%;
+}
+
+.caja1
+{
+    position: absolute;
+    right: 35%;
+    width: 3%;
+    height: 26px !important;
+    top: 11%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja2
+{
+    position: absolute;
+    right: 26%;
+    width: 3%;
+    height: 26px !important;
+    top: 11%;
+    border: 3px solid blue !important;
+    text-align: center  !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja3
+{
+    position: absolute;
+    right: 53%;
+    width: 3%;
+    height: 26px !important;
+    top: 28%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja4
+{
+    position: absolute;
+    right: 26%;
+    width: 3%;
+    height: 26px !important;
+    top: 28%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja5
+{
+    position: absolute;
+    right: 44%;
+    width: 3%;
+    height: 26px !important;
+    top: 45%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja6
+{
+    position: absolute;
+    right: 26%;
+    width: 3%;
+    height: 26px !important;
+    top: 45%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+
+.caja7
+{
+    position: absolute;
+    right: 18%;
+    width: 3%;
+    height: 26px !important;
+    top: 45%;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+}
+
+.caja8
+{
+    position: absolute;
+    right: 44%;
+    width: 3%;
+    height: 26px !important;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+    bottom: 28%;
+}
+
+.caja9
+{
+    position: absolute;
+    right: 35%;
+    width: 3%;
+    height: 26px !important;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+    bottom: 28%;
+}
+
+.caja10
+{
+    position: absolute;
+    right: 53%;
+    width: 3%;
+    height: 26px !important;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+    bottom: 11%;
+}
+
+.caja11
+{
+    position: absolute;
+    right: 35%;
+    width: 3%;
+    height: 26px !important;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+    bottom: 11%;
+}
+
+
+.caja12
+{
+    position: absolute;
+    right: 18%;
+    width: 3%;
+    height: 26px !important;
+    border: 3px solid blue !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    font-weight: bold;
+    color: blue !important;
+    bottom: 11%;
+}
+
+.diferencia
+{
+    position: absolute;
+    width: 13%;
+    padding: 2%;
+    left: 68%;
+    top: 68%;
+}
+
+.diferencia2
+{
+    position: absolute;
+    width: 12%;
+    padding: 2%;
+    left: 66%;
+    top: 66%;
+}
+
+.igual
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 42.6%;
+    top: 65%;
+}
+
+
+.menos
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 43%;
+    top: 53%;
+}
+
+.minuendo
+{
+    position: absolute;
+    width: 13%;
+    padding: 2%;
+    left: 36%;
+    top: 68%;
+}
+
+.minuendo2
+{
+    position: absolute;
+    width: 12%;
+    padding: 2%;
+    left: 66%;
+    top: 41%;
+}
+
+.num1
+{
+    position: absolute;
+    width: 1.1%;
+    padding: 2%;
+    left: 14.2%;
+    top: 41%;
+}
+
+.num1_2
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 51.2%;
+    top: 42%;
+}
+
+.num1_3
+{
+    position: absolute;
+    width: 2%;
+    padding: 2%;
+    left: 51.2%;
+    top: 64%;
+}
+
+.num2
+{
+    position: absolute;
+    width: 1.6%;
+    padding: 2%;
+    left: 19.7%;
+    top: 41%;
+}
+
+.num3
+{
+    position: absolute;
+    width: 1.5%;
+    padding: 2%;
+    left: 25%;
+    top: 41%;
+}
+
+.num4
+{
+    position: absolute;
+    width: 1.87%;
+    padding: 2%;
+    left: 29.8%;
+    top: 41%;
+}
+
+.num4_2
+{
+    position: absolute;
+    width: 3%;
+    padding: 2%;
+    left: 59.5%;
+    top: 53%;
+}
+
+.num4_3
+{
+    position: absolute;
+    width: 3%;
+    padding: 2%;
+    left: 59.5%;
+    top: 64%;
+}
+
+.num1_1
+{
+    position: absolute;
+    width: 1.1%;
+    padding: 2%;
+    left: 29.8%;
+    top: 41%;
+}
+
+.num5
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 35.5%;
+    top: 41%;
+}
+
+.num2_1
+{
+    position: absolute;
+    width: 1.6%;
+    padding: 2%;
+    left: 35.5%;
+    top: 41%;
+}
+
+.num6
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 40.4%;
+    top: 41%;
+}
+
+.num3_1
+{
+    position: absolute;
+    width: 1.5%;
+    padding: 2%;
+    left: 40.4%;
+    top: 41%;
+}
+
+.num7
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 45.9%;
+    top: 41%;
+}
+
+.num4_1
+{
+    position: absolute;
+    width: 1.87%;
+    padding: 2%;
+    left: 45.9%;
+    top: 41%;
+}
+
+.num8
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 51.3%;
+    top: 41%;
+}
+
+.num8_2
+{
+    position: absolute;
+    width: 2.8%;
+    padding: 2%;
+    left: 59.3%;
+    top: 42%;
+}
+
+.num5_1
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 51.3%;
+    top: 41%;
+}
+
+.num9
+{
+    position: absolute;
+    width: 1.9%;
+    padding: 2%;
+    left: 56.6%;
+    top: 41%;
+}
+
+.num6_1
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 56.6%;
+    top: 41%;
+}
+
+.num10
+{
+    position: absolute;
+    width: 2.5%;
+    padding: 2%;
+    left: 61.5%;
+    top: 41%;
+}
+
+.num7_1
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 61.5%;
+    top: 41%;
+}
+
+
+.num11
+{
+    position: absolute;
+    width: 1.7%;
+    padding: 2%;
+    left: 67.2%;
+    top: 41%;
+}
+
+.num8_1
+{
+    position: absolute;
+    width: 1.8%;
+    padding: 2%;
+    left: 67.2%;
+    top: 41%;
+}
+
+.num12
+{
+    position: absolute;
+    width: 2.3%;
+    padding: 2%;
+    left: 72.7%;
+    top: 41%;
+}
+
+.num9_1
+{
+    position: absolute;
+    width: 1.9%;
+    padding: 2%;
+    left: 72.7%;
+    top: 41%;
+}
+
+.ope1_sutr
+{
+    position: absolute;
+    width: 43%;
+    right: 19%;
+    top: 57%;
+}
+
+.ope2_sutr
+{
+    position: absolute;
+    width: 22%;
+    height: 10%;
+    left: 36.5%;
+    top: 61%;
+}
+
+.resultado
+{
+    position: absolute;
+    width: 28%;
+    height: 10%;
+    left: 51%;
+    top: 76%;
+}
+
+.sustraendo
+{
+    position: absolute;
+    width: 13%;
+    padding: 2%;
+    left: 52%;
+    top: 68%;
+}
+
+.sustraendo2
+{
+    position: absolute;
+    width: 12%;
+    padding: 2%;
+    left: 65.6%;
+    top: 52%;
+}
+
+.tachar1
+{
+    position: absolute;
+    width: 6%;
+    padding: 2%;
+    left: 12%;
+    top: 42%;
+}
+
+.tachar2
+{
+    position: absolute;
+    width: 6%;
+    padding: 2%;
+    left: 17.5%;
+    top: 42%;   
+}
+
+.tachar3
+{
+    position: absolute;
+    width: 6%;
+    padding: 2%;
+    left: 23%;
+    top: 42%;   
+}
+
+.tachar4
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 18%;
+    top: 35%;
+}
+
+.tachar5
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 22.5%;
+    top: 35%; 
+}
+
+.tachar6
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 27%;
+    top: 35%;  
+}
+
+.tachar7
+{
+    position: absolute;
+    width: 4%;
+    padding: 2%;
+    left: 31%;
+    top: 35%;  
+}
+
+.tapas
+{
+    position: absolute;
+    width: 25%;
+    padding: 2%;
+    left: 14%;
+    top: 33%; 
+}
+
+.tabla
+{
+    position: absolute;
+    width: 19%;
+    padding: 2%;
+    left: 47%;
+    top: 30%;
+}
+
+
+.verificar
+{
+    position: absolute;
+    left: 18%;
+    width: 15%;
+    bottom: 17%;
+}
+
+
+.verificar:hover
+{
+    cursor:url(../../images/hand.cur) , auto!important;
+
+}
+
+/*DISEÑOS TAB NUEVOS*/
+
+.operacion1
+{
+    position: absolute;
+    right: 22%;
+    width: 40%;
+    bottom: 25%;
+    display: none;
+    animation: 1s zoomIn;
+}
+
+.palabra1, .palabra2, .palabra3
+{
+    position: absolute;
+    bottom: 18%;
+    width: 18%;
+    display: none;
+}
+
+.palabra1
+{
+
+    left: 34%;
+}
+
+.palabra2
+{
+    left: 49%;
+}
+
+.palabra3
+{
+
+    right: 16%;
+}
+
+/*SEGUNDO TAB*/
+
+.surtio, .vendio
+{
+    position: absolute;
+    width: 27%;
+    top: 40%;
+    display: none;
+}
+
+.surtio
+{
+
+    left: 17%;
+}
+
+.vendio
+{
+    left: 47%;
+}
+
+.interrogante
+{
+    position: absolute;
+    right: 16%;
+    width: 6%;
+    top: 40%;
+    display: none;
+    animation: 1s bounceIn;
+
+}
+
+.alquipitos1, .alquipitos2
+{
+    position: absolute;
+    width: 23%;
+    bottom: 3%;
+    display: none;
+    animation: 2s zoomIn;
+
+}
+
+.alquipitos1
+{
+
+    left: 16%;
+}
+
+.alquipitos2
+{
+    left: 51%;
+}
+
+.unomenos, .dosmenos, .tresmenos, .unoblanco, .dosblanco, .tresblanco, .cuatroblanco, .cincoblanco, .seisblanco,
+ .sieteblanco, .ochoblanco, .nueveblanco
+{
+    position: absolute;   
+    width: 6%;
+    display: none;
+}
+
+.unomenos
+{
+     left: 13%;
+    bottom: 19%;
+}
+
+.dosmenos
+{
+    left: 16%;
+    bottom: 10%;
+}
+
+.tresmenos
+{
+    left: 19%;
+    bottom: 2%;
+
+}
+
+
+.unoblanco
+{
+    left: 30%;
+    bottom: 30%;
+}
+
+
+.dosblanco
+
+{
+    left: 34%;
+    bottom: 24%;
+}
+
+
+.tresblanco
+{
+    left: 37%;
+    bottom: 13%;
+}
+
+.cuatroblanco
+{
+    left: 48%;
+    bottom: 18%;
+}
+
+
+.cincoblanco
+{
+        right: 44%;
+    bottom: 10%;
+}
+
+
+.seisblanco
+{
+    right: 40%;
+    bottom: 2%;
+}
+
+.sieteblanco
+{
+    right: 29%;
+    bottom: 29%;
+}
+
+.seisblanco2222
+{
+    right: 44%;
+    bottom: 10%;
+}
+
+.ochoblanco
+{
+    right: 25%;
+    bottom: 22%;
+}
+
+
+.nueveblanco
+{
+    right: 22%;
+    bottom: 11%;
+
+}
+.x1, .x2, .x3
+{
+    position: absolute;    
+    width: 4%;
+    display: none;
+   
+}
+
+.x1
+{
+    left: 19%;
+    bottom: 27%;
+}
+
+.x2
+{
+    left: 22%;
+    bottom: 19%;
+}
+
+.x3
+{
+    left: 26%;
+    bottom: 12%;
+}
+
+.total
+{
+    position: absolute;
+    left: 34%;
+    width: 30%;
+    top: 40%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+/*DISEÑO TAB 3*/
+
+.tablaresta
+{
+    position: absolute;
+    right: 31%;
+    top: 32%;
+    width: 20%;
+    display: none;
+}
+
+.minuendoresta, .sustraendoresta, .diferenciaresta
+{
+    position: absolute;
+    right: 10%;
+    width: 22%;
+    display: none;
+    animation: 2s zoomIn;
+    
+}
+
+.minuendoresta
+{
+    top: 43%;
+}
+
+.sustraendoresta
+{
+    top: 57%;
+}
+
+.diferenciaresta
+{
+    bottom: 22%;
+}
+
+.menosresta, .igualresta
+{
+    position: absolute;
+    right: 49%;
+    width: 10%;
+    display: none;
+    
+}
+
+.menosresta
+{
+   bottom: 34%; 
+}
+
+.igualresta
+{
+    bottom: 23%;
+}
+
+.totaltapas
+{
+    position: absolute;
+    bottom: 4%;
+    right: 41%;
+    width: 27%;
+    display: none;
+}
+
+.numero1, .numero8, .numero0, .numero4
+{
+    position: absolute;
+    width: 6%;
+    top: 42%;
+    display: none;
+}
+
+.numero1
+{
+     right: 42%;
+}
+
+.numero8
+{
+    right: 33%;
+
+}
+
+.numero0
+{
+     right: 42%;
+     top: 55% !important;
+}
+
+.numero4
+{
+    right: 33%;
+     top: 55% !important;
+
+}
+
+ .unototal, .cuatrototal
+ {
+     position: absolute;
+     width: 6%;
+     bottom: 22% !important;
+     display: none;
+     animation: 2s bounceIn;
+ }
+
+.unototal
+{
+     right: 42%;    
+}
+
+.cuatrototal
+{
+    right: 33%;   
+
+}
+
+.tiene, .regalo
+{
+    position: absolute;
+    left: 5%;
+    width: 31%;
+    top: 29%;
+    display: none;
+}
+
+.tiene
+{
+    top: 36%;
+}
+
+.regalo
+{
+    top: 55%;
+}
+    

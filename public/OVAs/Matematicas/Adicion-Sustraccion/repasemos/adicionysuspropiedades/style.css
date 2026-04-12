@@ -1,0 +1,882 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+
+
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+}
+
+.antes:hover
+{
+    
+cursor:url(../../images/hand.cur) , auto!important;
+
+}
+
+
+.comienza
+{
+    position: absolute;
+    width: 23%;
+    right: 44%;
+    bottom: 20%;
+}
+
+.comienza:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+.divinstruccion
+{
+    position: absolute;
+    width: 26%;
+    text-align: left;
+    background: rgba(255,255,255, 0.6);
+    padding: 1%;
+    left: 57%;
+    top: 11%;
+    font-family: Roboto;
+    border-radius: 13px 13px 13px 13px;
+    -moz-border-radius: 13px 13px 13px 13px;
+    -webkit-border-radius: 13px 13px 13px 13px;
+    border: 0px solid #000000;
+}
+
+.iconoSonido
+{
+    left: 3%;
+    top: 5%;
+    position: absolute;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+.mensaje{
+     position: absolute;
+    z-index: 1;
+    top: 22%;
+    width: 20%;
+    left: 37%;
+}
+
+.numero
+{
+    position: absolute;
+    left: 34%;
+    top: 16%;
+    z-index: 1;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 3%;
+    z-index: 10000;
+}
+
+.siguiente:hover
+{
+    cursor:url(../../images/hand.cur) , auto!important;
+
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 8%;
+    right: 10%;
+    bottom: 5%;
+    z-index: 10000;
+}
+
+.siguiente2:hover
+{
+     cursor:url(../../images/hand.cur) , auto!important;
+}
+
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+
+}
+
+.parte1, .parte2
+
+{
+    position: absolute;
+    left: 22%;
+    width: 69%;
+    display: none;
+    
+}
+
+.parte1
+{
+    top: 25%;
+}
+
+.parte2
+{
+    top: 39%;
+}
+
+.canicas1, .canicas2
+
+{
+    position: absolute;    
+    width: 27%;
+    bottom: 2%;
+    display: none;
+}
+
+.canicas1
+
+{
+    left: 5%;
+}
+
+.canicas2
+{
+    left: 42%;
+}
+
+.mas
+{
+    position: absolute;
+    left: 32%;
+    bottom: 17%;
+    width: 11%;
+    display: none;
+}
+
+.igual
+{
+    position: absolute;
+    right: 8%;
+    width: 28%;
+    bottom: 5%;
+    display: none;
+}
+
+
+.resultado
+{
+    position: absolute;
+    right: 10%;
+    width: 25%;
+    bottom: 10%;
+    display: none;
+}
+
+
+.uno, .dos, .tres
+{
+    position: absolute;   
+    bottom: 28%;
+    width: 4%;
+    display: none;
+}
+
+.uno
+{
+     left: 6.5%;
+     
+}
+
+.dos
+{
+     left: 13.5%;
+}
+
+.tres
+{
+     left: 21.5%;
+}
+
+
+.cuatro, .cinco, .seis
+{
+    position: absolute;   
+    bottom: 16%;
+    width: 4%;
+    display: none;
+
+}
+
+
+.cuatro
+{
+     left: 6.5%;
+     
+}
+
+.cinco
+{
+     left: 13.5%;
+}
+
+.seis
+{
+     left: 21.5%;
+}
+
+.siete, .ocho
+{
+    position: absolute;   
+    bottom: 28%;
+    width: 4%;
+    display: none;
+
+}
+
+.siete
+{
+    left: 44.5%;
+}
+
+.ocho
+{
+    left: 54.5%;
+}
+
+
+.nueve, .diez
+{
+    position: absolute;   
+    bottom: 16%;
+    width: 4%;
+    display: none;
+
+}
+
+
+.nueve
+{
+    left: 44.5%;
+}
+
+.diez
+{
+    left: 54.5%;
+}
+
+
+/*SEGUNDO TAB*/
+
+.canicas9, .canicas6a
+{
+    position: absolute;    
+    width: 29%;
+    top: 31%;
+    display: none;
+    animation: 1s zoomIn;
+}
+
+.canicas9
+{
+    left: 6%;
+}
+
+.canicas6a
+{
+    left: 29%;
+    left: 40%;
+    top: 33% !important;
+}
+
+.mas2
+{
+    position: absolute;
+    left: 33%;
+    top: 50%;
+    width: 9%;
+    display: none;
+}
+
+.resultado15
+{
+    position: absolute;
+    right: 10%;
+    width: 21%;
+    bottom: 29%;
+    display: none;
+}
+
+
+.sumando1, .sumando2
+{
+    position: absolute;   
+    width: 21%;
+    bottom: 16%;
+    display: none;
+    animation: 2s flipInX;
+}
+
+.sumando1
+{
+     left: 10%;
+}
+
+.sumando2
+{
+     left: 44%;
+}
+
+.dieza, .once, .doce 
+{
+    position: absolute;
+    bottom: 47%;
+    width: 3%;
+    display: none;
+    
+}
+
+.dieza, .trece
+{
+    right: 55%;
+}
+
+.once, .catorce
+{
+    right: 47%;
+}
+
+.doce, .quince
+{
+    right: 39%;
+}
+
+.trece, .catorce, .quince
+{
+    position: absolute;
+    bottom: 34%;
+    width: 3%;
+    display: none;
+}
+
+.sumando9
+{
+    position: absolute;
+    width: 30%;
+    top: 35%;
+    display: none;
+    left: 6%;
+}
+
+/*TAB TRES*/
+
+.rojo, .verde, .amarillo
+{
+    position: absolute;   
+    top: 43%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+
+.rojo
+{
+     width: 6%;
+    left: 26%;
+}
+
+
+.verde
+{
+    width: 6%;
+    left: 38%;
+}
+
+.amarillo
+{
+    width: 12%;
+    left: 50%;
+}
+
+.forma1, .forma2
+{
+    position: absolute;    
+    width: 34%;
+    top: 36%;
+    display: none;
+    
+}
+
+.forma1
+{
+    left: 9%;
+}
+
+.forma2
+{
+    right: 16%;
+}
+
+.tresrojo1, .masnegro1, .dosverde1, .cuatroamarillo1,  .masnegro2,
+.tresrojo2, .masnegro3, .dosverde2, .cuatroamarillo2,  .masnegro4
+
+{
+  
+    position: absolute;
+    bottom: 13%;
+    width: 4%;
+    display: none;
+    
+
+}
+
+.tresrojo1
+{
+   left: 11%; 
+}
+
+
+.masnegro1
+{
+    left: 15%;
+}
+
+.dosverde1
+{
+    left: 19%;
+}
+
+.masnegro2
+{
+    left: 25%;
+}
+
+.cuatroamarillo1
+{
+    left: 30%;
+    bottom: 14.1% !important;
+}
+
+.tresrojo2
+{
+  right: 43%;
+
+}
+
+.masnegro3
+{
+    right: 36%;
+}
+
+
+.dosverde2
+{
+  right: 30%;
+}
+
+.masnegro4
+{
+     right: 25%;
+
+}
+
+.cuatroamarillo2
+{
+    right: 21%;
+    bottom: 14.1% !important;
+}
+
+.resultado5, .resultado6
+{
+    position: absolute;
+    bottom: 4.2%;
+    width: 10%;
+    display: none;
+}
+
+.resultado5
+{
+
+    left: 12%;
+}
+
+
+.resultado6
+{
+       right: 22% !important;
+}
+
+.masnegro5, .cuatroamarillo3, .igualnegro1, .igualnegro2, .nueve1, .masnegro6, .tresrojo3, .nueve2
+{
+    position: absolute;
+    bottom: 5%;
+    width: 4%;
+    display: none;
+}
+
+.masnegro5
+{
+    left: 25%;
+}
+
+.cuatroamarillo3
+{
+    left: 30%;
+    bottom: 6.1% !important;  
+}
+
+.igualnegro1
+{
+    left: 33%;
+}
+
+
+.nueve1
+{
+    left: 37%;
+    bottom: 6.3% !important;
+}
+
+.masnegro6
+{
+    right: 36%;
+}
+
+.tresrojo3
+{
+    left: 53%;
+}
+
+.igualnegro2
+{
+    right: 21%;
+
+}
+
+.nueve2
+{
+    bottom: 5.3% !important;
+    right: 17%;
+}
+
+/*TAB CUATRO*/
+
+.manzanas4, .manzanas2, .manzanas2a, .manzanas4a
+{
+    position: absolute;
+    width: 14%;
+    top: 44%;
+    display: none;
+}
+
+.manzanas4
+{
+
+    left: 6%;
+}
+
+.manzanas4a
+{
+    left: 65%;
+}
+
+.manzanas2
+{
+    left: 22%;
+    width: 15% !important;
+}
+
+.manzanas2a
+{
+    left: 49%;
+    width: 15% !important;
+}
+
+.interrogante1, .interrogante2
+{
+    position: absolute;
+    width: 17%;
+    top: 39%;
+    display: none;
+}
+
+.interrogante1
+{
+
+    left: 34%; 
+}
+
+
+.interrogante2
+{
+    right: 7%;
+}
+
+
+
+.cuatroblanco1, .masblanco1, .dosblanco, .igualblanco1, .seisblanco1, .dosblancoa, .masblanco2, .cuatroblanco2,
+.igualblanco2, .seisblanco2
+{
+    position: absolute;
+    bottom: 33%;
+    width: 5%;
+    display: none;
+}
+
+.cuatroblanco1
+{
+    left: 10%;
+}
+
+.cuatroblanco2
+{
+    right: 25%;
+}
+
+.masblanco1
+{
+    left: 18%;
+}
+
+.masblanco2
+{
+    left: 61%;
+}
+
+.dosblanco
+{
+    left: 27%;
+    bottom: 32% !important;
+}
+
+.dosblancoa
+{
+    left: 54%;
+    bottom: 32% !important;
+}
+
+.igualblanco1
+{
+    left: 37%;
+    bottom: 31% !important;
+}
+
+.igualblanco2
+{
+    right: 15%;
+    bottom: 31% !important;
+}
+
+.seisblanco1
+{
+    left: 42%;
+    bottom: 32% !important;
+}
+
+.seisblanco2
+{
+    bottom: 32% !important;
+    right: 10%;
+}
+
+.resultadomanzanas1, .resultadomanzanas2
+{
+    position: absolute;
+    bottom: 12%;
+    width: 37%;
+    display: none;
+    animation: 1s slideInLeft;
+}
+
+.resultadomanzanas1
+{
+
+    left: 11%;
+}
+
+.resultadomanzanas2
+{
+        right: 11%;
+}
+
+/*TAB 5*/
+
+.cajabalones, .cajavacia, .cajatotal
+{
+    position: absolute;
+    width: 19%;
+    top: 39%;
+    display: none;
+    animation: 1s zoomIn;
+
+}
+
+.cajabalones
+{
+
+    left: 10%;
+}
+
+
+.cajavacia
+{
+   left: 39%;
+}
+
+.cajatotal
+{
+    right: 15%;
+    animation: 1s zoomIn;
+}
+
+.masbalones, .igualbalones
+{
+    position: absolute;
+    top: 47%;
+    width: 8%;
+    display: none;
+}
+
+.masbalones
+{
+
+   left: 30%;
+}
+
+.igualbalones
+{
+    right: 34%;
+}
+
+.mascinco, .igualcinco, .cincoblanco, .ceroblanco, .cincototal
+{
+    position: absolute;
+    width: 8%;    
+    bottom: 10%;
+    display: none;
+}
+
+.cincoblanco
+{
+    left: 15%;
+}
+
+.ceroblanco
+{
+    left: 44%;
+
+}
+
+.cincototal
+{
+    right: 20%;
+}
+
+.mascinco
+{
+    left: 30%;
+}
+
+.igualcinco
+{
+    right: 34%;
+    bottom: 6% !important;
+}
+
+/*ACTIVIDAD*/
+
+.operacion
+{
+    position: absolute;
+    left: 14%;
+    width: 62%;
+    top: 42%;
+}
+
+.propiedad1, .propiedad2, .propiedad3
+{
+    position: absolute;
+    width: 25%;
+    bottom: 18%;
+}
+
+.propiedad1
+{
+
+    left: 5%;
+}
+
+.propiedad2
+{
+    left:34% !important;
+}
+
+.propiedad3
+{
+    right: 11%;
+}

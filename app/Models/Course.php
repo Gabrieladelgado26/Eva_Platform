@@ -36,4 +36,11 @@ class Course extends Model
     {
         return $this->students()->count();
     }
+
+  public function ovas()
+{
+    return $this->belongsToMany(Ova::class, 'course_ova')
+                ->withPivot('order', 'is_required', 'assigned_at')
+                ->withTimestamps();
+}
 }

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+
+	<head>
+		<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+
+	    <title>Repasar sustracción de números de tres cifras</title>
+	    <meta name="title" content="Repasar sustracción de números de tres cifras" />
+		<meta name="description" content="Repasemos sustracción de números de tres cifras"/> 
+
+	    <!-- Bootstrap -->
+	    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link href="./index_files/prettify.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+		
+		<!--indexa en la bd del buscador-->
+		<meta name="robots" content="index,follow" />
+
+		<!--ajusta a las dimensiones donde se vea-->
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+	</head>
+
+	<body cz-shortcut-listen="true">
+	    <div class="container Skin3">			
+			<div class="span12 Skin3">
+				<section id="wizard">		
+					<div id="rootwizard">					
+						<div class="tab-content" style="width: 93%">							
+							<img id="mensaje" name="mensaje" class="mensaje"  style="display:none"/>
+							<img id="alerta" name="alerta" class="alerta" src="img/alerta.png" style="display:none"/>
+							<img id="alerta2" name="alerta2" class="alerta" src="img/alerta2.png" style="display:none"/>
+						    <div id="audio_men"></div>
+
+						    <div class="tab-pane active" id="tab1">
+							    <div class="" style=" ">					      	
+								    <img class="Skin2" src="img/dp1.png" id="tb1">
+								    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(1)">
+									<img class="mamaIvy" src="img/545.png">
+									<img class="mamapipe" src="img/324.png">
+							     	<img class="interrogacion" src="img/interrogacion.png">
+
+							     	<!--TABLA CON VALORES-->
+
+							     	<img class="tablacentenas" src="img/centenas.png">
+							     	<img class="cinco1" src="img/5.png">
+							     	<img class="cuatro1" src="img/4.png">
+							     	<img class="cinco2" src="img/5.png">
+
+							     	<img class="tres1" src="img/3.png">
+							     	<img class="dos1" src="img/2.png">
+							     	<img class="cuatro2" src="img/4.png">
+
+							     	<img class="total1" src="img/2.png">
+							     	<img class="total2" src="img/2.png">
+							     	<img class="total3" src="img/1.png">
+
+							     	<img class="totalchocolates" src="img/total.png">
+
+		 						   	<a id="sigInicio" href="#tab2" data-toggle="tab">
+		 						   		<img class="siguiente" src="img/siguiente.png"></a>
+		 						</div>
+						    </div>
+
+						    <div class="tab-pane" id="tab2">
+							    <div class="" style=" ">
+
+								    <img class="Skin2" src="img/dp2.png">
+								    <input id="pre1" type="hidden" value="3">
+
+								    <div class="sustraccion1" id="sustraccion1">
+			 					    	<img src="img/sustraccion1.png">
+			 						</div>	
+
+			 						<input id="caja1" type="text" class="caja1 solo_numero" maxlength="1">			    
+
+								    <a><div id="pre11" class="pregeneral pre1" onclick="comprueba(1,1)"></div>
+								    	<img class="resultado1" src="img/resultado1.png"></a>
+
+								    <a><div id="pre12" class="pregeneral pre2" onclick="comprueba(2,1)"></div>
+								    	<img class="resultado2" src="img/resultado2.png"></a>
+
+								    <a><div id="pre13" class="pregeneral pre3" onclick="comprueba(3,1)"></div>
+								    	<img class="resultado3" src="img/resultado3.png"></a>
+
+								    <a><div id="pre14" class="pregeneral pre4" onclick="comprueba(4,1)"></div>
+								    	<img class="resultado4" src="img/resultado4.png"></a>
+
+								    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+
+								    <a href="#tab1" data-toggle="tab"><img class="antes" src="img/antes.png"></a>
+								    <a id="sig1" href="#tab3" data-toggle="tab" style="display:none;">
+								    	<img class="siguiente" src="img/siguiente.png" ></a>
+
+								    <div id="resulOpcion1" class="resulOpcion1"></div>
+								    	<div class="resulOpcion1"><img id="resul1" src=""></div>
+							    </div>
+						    </div>
+
+						    <div class="tab-pane" id="tab3">
+							    <div class="" style=" ">
+
+								    <img class="Skin2" src="img/dp2.png">
+								    <input id="pre2" type="hidden" value="4">
+									
+									<div class="sustraccion2" id="sustraccion2">
+			 					    	<img src="img/sustraccion2.png">
+			 						</div>	
+
+			 						<input id="caja2" type="text" class="caja2 solo_numero" maxlength="1">			    
+
+								    <a><div id="pre21" class="pregeneral pre1" onclick="comprueba(1,2)"></div>
+								    	<img class="resultado1" src="img/resultado1.png"></a>
+
+								    <a><div id="pre22" class="pregeneral pre2" onclick="comprueba(2,2)"></div>
+								    	<img class="resultado2" src="img/resultado2.png"></a>
+
+								    <a><div id="pre23" class="pregeneral pre3" onclick="comprueba(3,2)"></div>
+								    	<img class="resultado3" src="img/resultado3.png"></a>
+
+								    <a><div id="pre24" class="pregeneral pre4" onclick="comprueba(4,2)"></div>
+								    	<img class="resultado4" src="img/resultado4.png"></a>
+
+								    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+
+								    <a href="#tab2" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+								    <a id="sig2" href="#tab4" data-toggle="tab" style="display:none;">
+								    	<img class="siguiente" src="img/siguiente.png" ></a>
+
+								    <div id="resulOpcion2" class="resulOpcion2"></div>
+								    	<div class="resulOpcion2"><img id="resul2" src=""></div>
+							    </div>
+						    </div>
+
+						    <div class="tab-pane" id="tab4">
+							    <div class="" style=" ">
+
+								    <img class="Skin2" src="img/dp2.png">
+								    <input id="pre3" type="hidden" value="1">
+
+								    <div class="sustraccion3" id="sustraccion3">
+			 					    	<img src="img/sustraccion3.png">
+			 						</div>	
+
+			 						<input id="caja3" type="text" class="caja3 solo_numero" maxlength="1">			    
+
+								    <a><div id="pre31" class="pregeneral pre1" onclick="comprueba(1,3)"></div>
+								    	<img class="resultado1" src="img/resultado1.png"></a>
+
+								    <a><div id="pre32" class="pregeneral pre2" onclick="comprueba(2,3)"></div>
+								    	<img class="resultado2" src="img/resultado2.png"></a>
+
+								    <a><div id="pre33" class="pregeneral pre3" onclick="comprueba(3,3)"></div>
+								    	<img class="resultado3" src="img/resultado3.png"></a>
+
+								    <a><div id="pre34" class="pregeneral pre4" onclick="comprueba(4,3)"></div>
+								    	<img class="resultado4" src="img/resultado4.png"></a>
+
+								    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+
+								    <a href="#tab3" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+								    <a id="sig3" href="#tab5" data-toggle="tab" style="display:none;">
+								    	<img class="siguiente" src="img/siguiente.png" ></a>
+
+								    <div id="resulOpcion3" class="resulOpcion3"></div>
+								    	<div class="resulOpcion3"><img id="resul3" src=""></div>
+							    </div>
+						    </div>
+
+						    <div class="tab-pane" id="tab5">
+							    <div class="" style=" ">
+
+								    <img class="Skin2" src="img/dp2.png">
+								    <input id="pre4" type="hidden" value="2">
+
+								    <div class="sustraccion4" id="sustraccion4">
+			 					    	<img src="img/sustraccion4.png">
+			 						</div>	
+
+			 						<input id="caja4" type="text" class="caja4 solo_numero" maxlength="1">			    
+
+								    <a><div id="pre41" class="pregeneral pre1" onclick="comprueba(1,4)"></div>
+								    	<img class="resultado1" src="img/resultado1.png"></a>
+
+								    <a><div id="pre42" class="pregeneral pre2" onclick="comprueba(2,4)"></div>
+								    	<img class="resultado2" src="img/resultado2.png"></a>
+
+								    <a><div id="pre43" class="pregeneral pre3" onclick="comprueba(3,4)"></div>
+								    	<img class="resultado3" src="img/resultado3.png"></a>
+
+								    <a><div id="pre44" class="pregeneral pre4" onclick="comprueba(4,4)"></div>
+								    	<img class="resultado4" src="img/resultado4.png"></a>
+
+								    <img class="iconoSonido" src="img/sonido.png" onclick="playAudio(2)">
+
+								    <a href="#tab4" data-toggle="tab"><img class="antes" src="img/antes.png" ></a>
+
+								    <a id="volver" href="#tab1" data-toggle="tab" style="display:none;" onclick="reiniciar()">
+								    	<img class="volver" src="img/volver.png"></a>
+
+								    <div id="resulOpcion4" class="resulOpcion4"></div>
+								    	<div class="resulOpcion4"><img id="resul4" src=""></div>
+							    </div>
+						    </div>						    
+						</div>	
+
+						<div class="navbar" style="display:none">
+							<div class="navbar-inner" style="display:none">
+							    <div class="container">
+									<ul class="nav nav-pills">
+									  	<li class="active"><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab1" data-toggle="tab">First</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab2" data-toggle="tab">Second</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab3" data-toggle="tab">Third</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab4" data-toggle="tab">Forth</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab5" data-toggle="tab">Fifth</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab6" data-toggle="tab">Sixth</a></li>
+										<li><a href="http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html#tab7" data-toggle="tab">Seventh</a></li>
+									</ul>
+							 	</div>
+							</div>
+						</div>
+					</div>
+				</section>
+	 		</div>
+		</div>
+
+		<audio id="au1" src="audio/enunciado.mp3" preload="auto" autoplay></audio>
+		<audio id="au2" src="audio/actividad.mp3" preload="auto" ></audio>
+
+	    <script src="./index_files/jquery-latest.js"></script>
+	    <script src="./index_files/bootstrap.min.js"></script>
+		<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+		<script src="./index_files/prettify.js"></script>
+		<script src="./index_files/repasemosMethod.js"></script>
+		<script>
+
+		$(document).ready(function() {
+			$(document).on( 'shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+				var str = String(e.target);
+				var tabNum = str.substr(str.indexOf("#") + 1).substr(3,4);  
+				playAudio(tabNum);
+
+	   			console.log(tabNum); // activated tab
+			})
+		  	
+			window.prettyPrint && prettyPrint()
+
+			$('img').attr('draggable','false');
+			$('a').attr('draggable','false');
+
+			$('.solo_numero').keyup(function (){
+	            this.value = (this.value + '').replace(/[^0-9]/g, '');
+	    	})
+
+		});	
+
+		var set1='',set2='',set3='',set4='',set5='',set6='',set7='',set8='',set9='' ,set10='' ,set11='',set12='',set13='' ,set14='' ,set15='',set16='',set17='',set18='',set19='',set20='',set21='',set22='' ,set23='';
+
+		function playAudio(num){
+		  //pause playing
+			$("audio").trigger('pause');
+			//set play time to 0
+			$("audio").prop('currentTime',0);
+			$("#au" + num).trigger('play');
+
+			if (num==1){
+				
+				set1 = setTimeout(function(){$(".mamaIvy").attr('style','display:table')},18000);
+				set2 = setTimeout(function(){$(".mamapipe").attr('style','display:table')},20000);
+				set3 = setTimeout(function(){$(".interrogacion").attr('style','display:table')},22000);
+				set4 = setTimeout(function(){$(".mamaIvy").attr('style','display:none')},25000);
+				set5 = setTimeout(function(){$(".mamapipe").attr('style','display:none')},25000);
+				set6 = setTimeout(function(){$(".interrogacion").attr('style','display:none')},25000);
+				set7 = setTimeout(function(){$(".tablacentenas").attr('style','display:table')},26000);
+				set8 = setTimeout(function(){$(".cinco1").attr('style','display:table')},26000);
+				set9 = setTimeout(function(){$(".cuatro1").attr('style','display:table')},27000);
+				set10 = setTimeout(function(){$(".cinco2").attr('style','display:table')},28000);
+				set11 = setTimeout(function(){$(".tres1").attr('style','display:table')},29000);
+				set12 = setTimeout(function(){$(".dos1").attr('style','display:table')},30000);
+				set13 = setTimeout(function(){$(".cuatro2").attr('style','display:table')},31000);
+				set14 = setTimeout(function(){$(".cinco2").attr('style','display:table; animation: 2s zoomIn')},32000);
+				set15 = setTimeout(function(){$(".cuatro2").attr('style','display:table; animation: 2s zoomIn')},33000);
+				set16 = setTimeout(function(){$(".total3").attr('style','display:table')},34000);
+				set17 = setTimeout(function(){$(".cuatro1").attr('style','display:table; animation: 2s zoomIn')},37000);
+				set18 = setTimeout(function(){$(".dos1").attr('style','display:table; animation: 2s zoomIn')},38000);
+				set19 = setTimeout(function(){$(".total2").attr('style','display:table')},39000);
+				set20 = setTimeout(function(){$(".cinco1").attr('style','display:table; animation: 2s zoomIn')},43000);
+				set21 = setTimeout(function(){$(".tres1").attr('style','display:table; animation: 2s zoomIn')},44000);
+				set22 = setTimeout(function(){$(".total1").attr('style','display:table')},45000);
+				set23 = setTimeout(function(){$(".totalchocolates").attr('style','display:table')},50000);			
+			}
+
+			else if(num==2)
+			{
+				//CANCELO LOS DEL 1
+				$(".mamaIvy, .mamapipe, .interrogacion, .tablacentenas, .cinco1, .cuatro1, .cinco2, .tres1, .dos1, .total3, .total2, .total1, .totalchocolates").attr('style','display:none');
+
+				clearTimeout(set1);
+				clearTimeout(set2);
+				clearTimeout(set3);
+				clearTimeout(set4);
+				clearTimeout(set5);
+				clearTimeout(set6);
+				clearTimeout(set7);
+				clearTimeout(set8);
+				clearTimeout(set9);
+				clearTimeout(set10);
+				clearTimeout(set11);
+				clearTimeout(set12);
+				clearTimeout(set13);
+				clearTimeout(set14);
+				clearTimeout(set15);
+				clearTimeout(set16);
+				clearTimeout(set17);
+				clearTimeout(set18);
+				clearTimeout(set19);
+				clearTimeout(set20);
+				clearTimeout(set21);
+				clearTimeout(set22);
+				clearTimeout(set23);				
+			}
+		}
+
+		set1 = setTimeout(function(){$(".mamaIvy").attr('style','display:table')},18000);
+		set2 = setTimeout(function(){$(".mamapipe").attr('style','display:table')},20000);
+		set3 = setTimeout(function(){$(".interrogacion").attr('style','display:table')},22000);
+		set4 = setTimeout(function(){$(".mamaIvy").attr('style','display:none')},25000);
+		set5 = setTimeout(function(){$(".mamapipe").attr('style','display:none')},25000);
+		set6 = setTimeout(function(){$(".interrogacion").attr('style','display:none')},25000);
+		set7 = setTimeout(function(){$(".tablacentenas").attr('style','display:table')},26000);
+		set8 = setTimeout(function(){$(".cinco1").attr('style','display:table')},26000);
+		set9 = setTimeout(function(){$(".cuatro1").attr('style','display:table')},27000);
+		set10 = setTimeout(function(){$(".cinco2").attr('style','display:table')},28000);
+		set11 = setTimeout(function(){$(".tres1").attr('style','display:table')},29000);
+		set12 = setTimeout(function(){$(".dos1").attr('style','display:table')},30000);
+		set13 = setTimeout(function(){$(".cuatro2").attr('style','display:table')},31000);
+		set14 = setTimeout(function(){$(".cinco2").attr('style','display:table; animation: 2s zoomIn')},32000);
+		set15 = setTimeout(function(){$(".cuatro2").attr('style','display:table; animation: 2s zoomIn')},33000);
+		set16 = setTimeout(function(){$(".total3").attr('style','display:table')},34000);
+		set17 = setTimeout(function(){$(".cuatro1").attr('style','display:table; animation: 2s zoomIn')},37000);
+		set18 = setTimeout(function(){$(".dos1").attr('style','display:table; animation: 2s zoomIn')},38000);
+		set19 = setTimeout(function(){$(".total2").attr('style','display:table')},39000);
+		set20 = setTimeout(function(){$(".cinco1").attr('style','display:table; animation: 2s zoomIn')},43000);
+		set21 = setTimeout(function(){$(".tres1").attr('style','display:table; animation: 2s zoomIn')},44000);
+		set22 = setTimeout(function(){$(".total1").attr('style','display:table')},45000);
+		set23 = setTimeout(function(){$(".totalchocolates").attr('style','display:table')},50000);
+				
+		</script>	  
+	</body>
+</html>

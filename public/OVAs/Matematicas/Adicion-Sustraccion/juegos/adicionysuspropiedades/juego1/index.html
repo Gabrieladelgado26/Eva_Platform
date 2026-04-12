@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8"/>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+
+<head>
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> -->
+    <title>Juego Adición y sus propiedades</title>
+    <meta name="title" content="Juego dición y sus propiedades" />
+	<meta name="description" content="JuegoAdición y sus propiedades"/> 
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	<link href="./index_files/prettify.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="stylejuego1.css" media="screen" />
+
+	<!--indexa en la bd del buscador-->
+	<meta name="robots" content="index,follow" />
+
+	<!--ajusta a las dimensiones donde se vea-->
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+  </head>
+ 
+					
+				
+					<div class="tab-content" style="width: 97%">
+
+					<img id="mensaje" name="mensaje"  class="mensaje" src="" style="display:none"/> 	
+					<img id="alerta" name="alerta"  class="alerta" src="img/alerta.png" style="display:none"/>
+					<a id="redir" href=""><img id="mensaje2" name="mensaje2"  class="respuestafin" style="display:none"/></a> 	
+					<div id="audio_men"></div>
+					   
+					   <div class="tab-pane active" id="tab1">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/Fondojuego1.png">
+
+					      <a class="repro_audio1"><img class="iconoSonido" src="img/sonido.png">
+					      <audio id="audio1" src="sonidos/enunciado.mp3"/></a>
+
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3"  src="sonidos/titulo.mp3"/></a>
+
+					       <div class="divinstruccion I18N">enu_addpropiedades</div> 							
+ 						  <img class="ivisonriendo" src="img/ivy.png">
+
+ 						  
+ 						  <a href="#tab2" data-toggle="tab" class="repro_audio4"><img class="divBotonComenzar" src="img/botones.png" >	<audio id="audio4" src="sonidos/continuar.mp3"/></a>
+ 						  </div>
+					    </div>
+
+
+
+					    <div class="tab-pane " id="tab2">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio2"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio2" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img id="vida" name="vida" class="vidas3">
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego4</div> 
+					      <div class="complementos">
+
+					       <img class="bananos" src="img/bananos.png">
+
+						   <input id="respuesta1" type="hidden" value="2">
+
+						   <a class="repro_audio6"><img id="prega1" class="propiedadasociativa" src="img/propiedad asociativa.png" onclick="pintar(1,'a')"><audio id="audio6" src="sonidos/PAsociativa.mp3"/></a>						   
+
+						   <a class="repro_audio7"><img id="prega2" class="propiedadconmutativa" src="img/propiedad conmutativa.png" onclick="pintar(2,'a')"><audio id="audio7" src="sonidos/PConmutativa.mp3"/></a>
+
+						   <a class="repro_audio8"><img id="prega3" class="propiedadmodulativa" src="img/propiedad modulativa.png" onclick="pintar(3,'a')"><audio id="audio8" src="sonidos/PModulativa.mp3"/></a>
+					    
+						   <a id="sig1" href="#tab3" data-toggle="tab" ></a>
+					      <a class="repro_audio5"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(1)" style="display:none">
+ 						  	<audio id="audio5" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+					    <div class="tab-pane " id="tab3">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio2"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio2" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego4</div> 
+					      <div class="complementos">
+
+					     
+						   <img id="at1" class="atunes" src="img/atunes1.png">
+						   <img class="ope" src="img/suma2.png">
+						   <img class="busqueda1" src="img/lupa.png" onclick="cambiar(1)">
+						   <img class="busqueda2" src="img/lupa.png"onclick="cambiar(2)" >
+						   <input id="respuesta2" type="hidden" value="1">
+
+						   <a class="repro_audio6"><img id="pregb1" class="propiedadasociativa" src="img/propiedad asociativa.png" onclick="pintar(1,'b')"><audio id="audio6" src="sonidos/PAsociativa.mp3"/></a>
+
+						   <a class="repro_audio7"><img id="pregb2" class="propiedadconmutativa" src="img/propiedad conmutativa.png" onclick="pintar(2,'b')"><audio id="audio7" src="sonidos/PConmutativa.mp3"/></a>
+
+						    <a class="repro_audio8"><img id="pregb3" class="propiedadmodulativa" src="img/propiedad modulativa.png" onclick="pintar(3,'b')"><audio id="audio8" src="sonidos/PModulativa.mp3"/></a>
+					    
+
+					       <a id="sig2" href="#tab4" data-toggle="tab" ></a>
+					      <a class="repro_audio5"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(2)" style="display:none">
+ 						  	<audio id="audio5" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+ 						  <div class="tab-pane " id="tab4">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio2"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio2" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego4</div> 
+					      <div class="complementos">
+
+					     <img class="maiz" src="img/suma1.png">
+						  <input id="respuesta3" type="hidden" value="3">
+
+						   <a class="repro_audio6"><img id="pregc1" class="propiedadasociativa" src="img/propiedad asociativa.png" onclick="pintar(1,'c')"><audio id="audio6" src="sonidos/PAsociativa.mp3"/></a>
+
+						   <a class="repro_audio7"><img id="pregc2" class="propiedadconmutativa" src="img/propiedad conmutativa.png" onclick="pintar(2,'c')"><audio id="audio7" src="sonidos/PConmutativa.mp3"/></a>
+
+						    <a class="repro_audio8"><img id="pregc3" class="propiedadmodulativa" src="img/propiedad modulativa.png" onclick="pintar(3,'c')"><audio id="audio8" src="sonidos/PModulativa.mp3"/></a>
+					    
+
+					     <a id="sig3" href="#tab5" data-toggle="tab" ></a>
+					      <a class="repro_audio5"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(3)" style="display:none">
+ 						  	<audio id="audio5" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+
+
+ 						  <div class="tab-pane " id="tab5">					   	
+					      <div class="Skin2">					      	
+					      <img class="Skin2" src="img/fondoverde.png">
+
+					      <a class="repro_audio2"><img class="iconoSonido2" src="img/sonido.png">
+					      <audio id="audio2" src="sonidos/enunciado1.mp3"/></a>	
+
+					      <input type="hidden" id="vidas" id="vidas"/> 
+					      <img class="vidas3" src="img/juegovidas.png">
+
+					      <a class="repro_audio3"><img class="titulojuego"  src="img/titulo.png">
+					      <audio id="audio3" src="sonidos/titulo.mp3"/></a>
+
+					      <div class="divinstruccionjuego I18N">ins_juego4</div> 
+					      <div class="complementos">
+
+					     <img class="manzanas" src="img/manzanas.png">					     
+						  <input id="respuesta4" type="hidden" value="2">
+
+						   <a class="repro_audio6"><img id="pregd1" class="propiedadasociativa" src="img/propiedad asociativa.png" onclick="pintar(1,'d')"><audio id="audio6" src="sonidos/PAsociativa.mp3"/></a>
+
+						   <a class="repro_audio7"><img id="pregd2" class="propiedadconmutativa" src="img/propiedad conmutativa.png" onclick="pintar(2,'d')"><audio id="audio7" src="sonidos/PConmutativa.mp3"/></a>
+
+						    <a class="repro_audio8"><img id="pregd3" class="propiedadmodulativa" src="img/propiedad modulativa.png" onclick="pintar(3,'d')"><audio id="audio8" src="sonidos/PModulativa.mp3"/></a>
+					    
+
+					      <a id="sig4" href="#" data-toggle="tab" ></a>
+					      <a class="repro_audio5"><img class="botonevaluar" src="img/evaluar.png" onclick="comprueba(4)" style="display:none">
+ 						  	<audio id="audio5" src="sonidos/verificar.mp3"/></a>
+ 						 	</div>						  
+ 						 
+ 						  </div> 
+ 						  </div>
+					    
+						
+					</div>	
+
+				<audio id="audio" name="audio" preload="" src=""/>
+	</html>
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+	<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+	<script src="./index_files/prettify.js"></script>	
+	<script src="./index_files/juegoMethod.js"></script>
+
+	<script >
+
+/*INICIO CAPTURA PANTALLA*/
+  $(document).ready(resizeContent);
+  $(window).resize(resizeContent);
+  function resizeContent() {
+    var res = $(window).width()/(750 * 1);
+    if($(window).width()<=750)
+    {
+    $("body").css({'zoom': res});
+    }
+  }
+ setTimeout(function(){$("#modalslider").modal({show:true})},1000);
+/*FIN CAPTURA PANTALLA*/
+</script>
+	
+
+	<!--ARCHIVO PROPERTIES-->
+	<script src="../../../js/I18N/es.js"></script>
+	<script src="../../../js/funcion.js"></script>
+
+	<script> 
+		
+	var texto='';
+		 for (var j = 1 ; j <= 38; j++)
+		  {								
+			texto+='<div id="div-'+j+'" class="div'+j+' divgeneral" onclick="pintar('+j+')"></div>';
+		  }	
+			$('#cuadros').append(texto);
+
+	</script>
+  
