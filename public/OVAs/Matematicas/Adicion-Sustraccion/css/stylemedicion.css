@@ -2,11 +2,6 @@
 /*
 over-ride "Weak" message, show font in dark grey
 */
-body
-{
-  overflow-y: hidden;
-  margin-bottom: 56%;
-}
 
 @font-face
 {
@@ -19,6 +14,12 @@ body
  src: url(../../../Shared/fonts/Roboto-Regular.ttf);
 }
 
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  font-family: Chewy;
+}
 
 form[role=login] {
   color: #5d5d5d;

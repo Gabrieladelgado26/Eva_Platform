@@ -55,13 +55,43 @@ Route::prefix('ova')->name('ova.')->group(function () {
     // Slider — se carga dentro de un <iframe>, también necesita la vista sin Tailwind
     Route::get('/slider', function () {
         return Inertia::render('OVAs/Components/Slider')
-            ->rootView('ova');
+            ->rootView('slider');
     })->name('slider');
 
-    Route::get('/adicion', function () {
+    Route::get('/adicionpropiedades', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Propiedades')
             ->rootView('ova');
-    })->name('adicion');
+    })->name('adicionpropiedades');
+
+    Route::get('/adiciondoscifras', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Dos_Cifras')
+            ->rootView('ova');
+    })->name('adiciondoscifras');
+
+    Route::get('/adiciontrescifras', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Tres_Cifras')
+            ->rootView('ova');
+    })->name('adiciontrescifras');
+
+    Route::get('/adicionhasta19', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Hasta_19')
+            ->rootView('ova');
+    })->name('adicionhasta19');
+
+    Route::get('/sustracciondoscifras', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Dos_Cifras')
+            ->rootView('ova');
+    })->name('sustracciondoscifras');
+
+    Route::get('/sustracciontrescifras', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Tres_Cifras')
+            ->rootView('ova');
+    })->name('sustracciontrescifras');
+
+    Route::get('/sustraccionhasta19', function () {
+        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Hasta_19')
+            ->rootView('ova');
+    })->name('sustraccionhasta19');
 });
 
 // Ruta para inicio (cuando da clic en ver introducción)

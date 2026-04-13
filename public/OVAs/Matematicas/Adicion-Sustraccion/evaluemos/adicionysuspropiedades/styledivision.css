@@ -2,22 +2,21 @@
 body
 {
   overflow-y: hidden;
-  margin-bottom: 56%;
+  margin-bottom: 169%;
   background: none transparent;
   font-family: Chewy;
 }
 
-@font-face {
-  font-family: 'Chewy';
-  src: url('../../fonts/Chewy.ttf') format('truetype');
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../Shared/fonts/Chewy.ttf);
 }
 @font-face
 {
- font-family: 'Roboto';
- src: url('../../fonts/Roboto-Regular.ttf') format('truetype');
+ font-family:Roboto;
+ src: url(../../../../Shared/fonts/Roboto-Regular.ttf);
 }
-
-
 
 .Skin2 img {
     display: block;

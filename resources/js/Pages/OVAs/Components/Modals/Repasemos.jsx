@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const BASE = "OVAs/Matematicas/Adicion-Sustraccion";
+const BASE = "/OVAs/Matematicas/Adicion-Sustraccion";
 const IMG_BG    = `${BASE}/images/modals/modal_bg.png`;
 const IMG_CLOSE = `${BASE}/images/modals/modal_close.png`;
 

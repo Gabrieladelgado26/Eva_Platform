@@ -13,6 +13,7 @@
         <!-- Estilos OVA -->
         <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/bootstrap.css">
         <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/stylemedicion.css">
+        <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/slider.css">
 
         <!-- Scripts Inertia -->
         @routes

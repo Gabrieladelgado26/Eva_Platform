@@ -83,7 +83,7 @@ function useAudioHover(ref, audioRef, tooltipRef = null) {
 }
 
 // ─── HoverImg ─────────────────────────────────────────────────────────────────
-function HoverImg({ src, hoverSrc, alt = "", className = "", style = {}, title = "" }) {
+function HoverImg({ src, hoverSrc, alt = "", className = "", style = {}, title = "", onClick }) {
   const [active, setActive] = useState(false);
   return (
     <img
@@ -94,23 +94,14 @@ function HoverImg({ src, hoverSrc, alt = "", className = "", style = {}, title =
       title={title}
       onMouseEnter={() => setActive(true)}
       onMouseLeave={() => setActive(false)}
+      onClick={onClick}
       draggable={false}
     />
   );
 }
 
 // ─── Modal genérico ───────────────────────────────────────────────────────────
-//
-// Replica la estructura exacta del blade + resuelve el problema de overflow:
-//
-// Bootstrap pone overflow:hidden en .modal por defecto.
-// jQuery (al abrir) agrega .modal-open al <body>, lo que activa overflow-y:auto
-// en .modal-open .modal — sin jQuery en React eso no ocurre y el contenido
-// se corta. Se resuelve con dos medidas:
-//   1. overflow-y:auto en el div .modal via inline style
-//   2. Agregar/quitar la clase modal-open del <body> al montar/desmontar
-//
-function OvaModal({ open, onClose, frameImg, children, closeId, modalClass, contentClass, extraChildren }) {
+export function OvaModal({ open, onClose, frameImg, children, closeId, modalClass, contentClass, extraChildren }) {
   // Agregar modal-open al body al abrir (igual que Bootstrap+jQuery),
   // quitarlo al cerrar para restaurar el scroll normal.
   useEffect(() => {
@@ -175,7 +166,7 @@ function OvaModal({ open, onClose, frameImg, children, closeId, modalClass, cont
 
             {/* Contenedor del iframe con la clase correcta según el modal */}
             <div className={contentClass}>
-              <div className="container-fluid">
+              <div className="container-fluid" style={{ height: "100%" }}>
                 {children}
               </div>
             </div>
@@ -190,14 +181,14 @@ function OvaModal({ open, onClose, frameImg, children, closeId, modalClass, cont
 // ─── Modal Slider ─────────────────────────────────────────────────────────────
 function ModalSlider({ open, onClose }) {
   const [src, setSrc] = useState("");
-  useEffect(() => { if (open) setSrc("slider"); else setSrc(""); }, [open]);
+  useEffect(() => { if (open) setSrc("/ova/slider"); else setSrc(""); }, [open]);
 
   return (
     <OvaModal open={open} onClose={onClose}
       frameImg={IMG.modalFrame} closeId="cerrarmodalslider"
       modalClass="modalslider" contentClass="divmodalRepasemos">
-      <iframe id="contentslider" src={src} allowTransparency="true"
-        style={{ width: "100%", height: "93%", border: "none", background: "transparent" }}
+      <iframe id="contentslider" src={src} allowtransparency="true"
+        style={{ border: "none", background: "transparent" }}
         title="Slider" />
     </OvaModal>
   );
@@ -215,7 +206,7 @@ function ModalRepasemos({ open, onClose, src: externalSrc }) {
     <OvaModal open={open} onClose={onClose}
       frameImg={IMG.modalBg} closeId="cerrarmodalrepasemos"
       modalClass="modalRepasemos" contentClass="divmodalRepasemos">
-      <iframe id="contentframeRepasemos" src={src} allowTransparency="true"
+      <iframe id="contentframeRepasemos" src={src} allowtransparency="true"
         style={{ width: "100%", height: "93%", border: "none", background: "transparent" }}
         title="Repasemos" />
     </OvaModal>
@@ -234,13 +225,17 @@ function ModalConoce({ open, onClose, videoSrc: externalVideoSrc }) {
   return (
     <OvaModal open={open} onClose={onClose}
       frameImg={IMG.modalBg} closeId="cerrarmodalconoce"
-      modalClass="modalConoce" contentClass="divmodalConoce"
-      extraChildren={
-        <img className="iconoyoutube" src={IMG.iconYoutube} alt="YouTube" draggable={false} />
-      }>
-      <iframe id="contentVideoConoce" src={videoSrc}
-        width="80%" height="80%" frameBorder="0" allowFullScreen
-        title="Conoce el OVA" style={{ border: "none" }} />
+      modalClass="modalConoce" contentClass="divmodalConoce">
+      <img className="iconoyoutube" src={IMG.iconYoutube} alt="YouTube" draggable={false} />
+      <iframe
+        id="contentVideoConoce"
+        src={videoSrc}
+        allowtransparency="true"
+        allowFullScreen
+        title="Conoce el OVA"
+        className="videomodal"
+        style={{ border: "none", height: "84%", width: "82%", marginLeft: "-1%", marginTop: "-1%" }}
+      />
     </OvaModal>
   );
 }
@@ -321,22 +316,23 @@ function OvaButtons({ onRepasemos, onEvaluemos, onAprende, onConoce, audioRefs }
 }
 
 // ─── Partial: Menú lateral ────────────────────────────────────────────────────
-function OvaMenu({ guiaTema }) {
+function OvaMenu({ guiaTema, onTutorial }) {
   return (
     <>
-      <a href="mprincovas">
+      <a href="menu">
         <HoverImg src={IMG.menuHome} hoverSrc={IMG.menuHomeHover}
           className="inicio" title="Inicio" alt="Inicio" />
       </a>
       <HoverImg src={IMG.menuTutorial} hoverSrc={IMG.menuTutorialHover}
-        className="tutorial" title="Tutorial" alt="Tutorial" style={{ cursor: "pointer" }} />
+        className="tutorial" title="Tutorial" alt="Tutorial" style={{ cursor: "pointer" }}
+        onClick={onTutorial} />
       {guiaTema && (
         <a href={`/${guiaTema}`} target="_blank" rel="noreferrer">
           <HoverImg src={IMG.menuShare} hoverSrc={IMG.menuShareHover}
             className="compartir" title="Guía del tema" alt="Guía del tema" />
         </a>
       )}
-      <a href="guias/guiadocente.pdf" target="_blank" rel="noreferrer">
+      <a href="/OVAs/Matematicas/Adicion-Sustraccion/guias/guiadocente.pdf" target="_blank" rel="noreferrer">
         <HoverImg src={IMG.menuTeacher} hoverSrc={IMG.menuTeacherHover}
           className="profe" title="Guía docente" alt="Guía docente" />
       </a>
@@ -404,7 +400,7 @@ export default function OvaLayout({
 
         <OvaAudios audioRefs={audioRefs} />
         <OvaStars />
-        <OvaMenu guiaTema={guiaTema} />
+        <OvaMenu guiaTema={guiaTema} onTutorial={() => setSliderOpen(true)} />
       </div>
 
       <ModalSlider    open={sliderOpen}    onClose={() => setSliderOpen(false)} />

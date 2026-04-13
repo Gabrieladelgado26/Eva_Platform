@@ -8,15 +8,13 @@ body
 @font-face
 {
   font-family:Chewy;
-  src: url(../../../fonts/Chewy.ttf);
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
 }
 @font-face
 {
  font-family:Roboto;
- src: url(../../../fonts/Roboto-Regular.ttf);
+ src: url(../../../../../Shared/fonts/Roboto-Regular.ttf);
 }
-
-
 
 .Skin2 img {
     display: block;
@@ -58,7 +56,7 @@ body
     width: 17%;
     bottom: 19%;
     left: 5%;
-    cursor:url(../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .cajaDecenas, .cajaUnidades
@@ -124,7 +122,7 @@ body
     width: 19%;
     bottom: 2%;
     right: 12%;
-    cursor:url(../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Adicion-Sustraccion/images/hand.cur) , auto!important;
 
 }
 
@@ -143,7 +141,7 @@ body
     left: 33%;
     top: 12%;
     z-index: 1;
-    cursor:url(../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .iconoSonido2
@@ -151,7 +149,7 @@ body
     left: 33%;
     top: 8%;
     z-index: 1;
-    cursor:url(../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 
@@ -258,7 +256,7 @@ body
     bottom: 27%;
     width: 24%;
     right: 32%;
-    cursor:url(../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .resultados

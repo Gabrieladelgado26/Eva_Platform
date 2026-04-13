@@ -48,7 +48,7 @@ export default function OvaMenu({ guiaTema = null, onTutorial }) {
   return (
     <>
       {/* ── Inicio ──────────────────────────────────────────────────────── */}
-      <a href="mprincovas">
+      <a href="menu">
         <HoverImg
           src={IMG.menuHome}
           hoverSrc={IMG.menuHomeHover}
@@ -71,7 +71,7 @@ export default function OvaMenu({ guiaTema = null, onTutorial }) {
 
       {/* ── Guía del tema (condicional, equiv. a @if ($guiaTema)) ────────── */}
       {guiaTema && (
-        <a href={`/${guiaTema}`} target="_blank" rel="noreferrer">
+        <a href={`/OVAs/Matematicas/Adicion-Sustraccion/guias/${guiaTema}`} target="_blank" rel="noreferrer">
           <HoverImg
             src={IMG.menuShare}
             hoverSrc={IMG.menuShareHover}
@@ -83,7 +83,7 @@ export default function OvaMenu({ guiaTema = null, onTutorial }) {
       )}
 
       {/* ── Guía docente ─────────────────────────────────────────────────── */}
-      <a href="guias/guiadocente.pdf" target="_blank" rel="noreferrer">
+      <a href="/OVAs/Matematicas/Adicion-Sustraccion/guias/guiadocente.pdf" target="_blank" rel="noreferrer">
         <HoverImg
           src={IMG.menuTeacher}
           hoverSrc={IMG.menuTeacherHover}

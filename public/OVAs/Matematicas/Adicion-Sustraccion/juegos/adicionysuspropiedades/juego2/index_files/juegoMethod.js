@@ -40,6 +40,14 @@ $(document).ready(function() {
 		$('a').attr('draggable','false');
 		$('.arrastra').attr('draggable','true');
 
+		$('.arrastra').on('dragstart', function(e) {
+			e.originalEvent.dataTransfer.effectAllowed = 'move';
+			e.originalEvent.dataTransfer.setData("Text", $(this).attr('src'));
+			$(this).css('opacity', '0.4');
+		}).on('dragend', function(e) {
+			$(this).css('opacity', '');
+		});
+
 		 $(".repro_audio1").click(function( ) {
 		    pausar();				 
 		   var audio = $("#audio1");

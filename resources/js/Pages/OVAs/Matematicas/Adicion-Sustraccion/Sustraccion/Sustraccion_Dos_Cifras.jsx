@@ -4,16 +4,16 @@ import OvaLayout, { OvaModal } from "../Layouts/Ova";
 const BASE = "/OVAs/Matematicas/Adicion-Sustraccion";
 
 const IMG = {
-  letrero:     `${BASE}/images/signboard/sign_addition_properties.png`,
+  letrero:     `${BASE}/images/signboard/sign_subtraction_2_digits.png`,
   modalBg:     `${BASE}/images/modals/modal_bg.png`,
   modalClose:  `${BASE}/images/modals/modal_close.png`,
   modalReturn: `${BASE}/images/modals/modal_return.png`,
 };
 
-const REPASEMOS_SRC = `${BASE}/repasemos/adicionysuspropiedades/adicionysuspropiedades.html`;
-const CONOCE_VIDEO  = "https://www.youtube-nocookie.com/embed/_OSb080GzXE?rel=0&showinfo=0";
-const APRENDE_SRC   = `${BASE}/juegos/adicionysuspropiedades/menu.html`;
-const EVALUEMOS_SRC = `${BASE}/evaluemos/adicionysuspropiedades/adicionysuspropiedades.html`;
+const REPASEMOS_SRC = `${BASE}/repasemos/sustracciondenumerosdedoscifras/sustracciondenumerosdedoscifras.html`;
+const CONOCE_VIDEO  = "https://www.youtube-nocookie.com/embed/qY4GqT-CEZE?rel=0&amp;showinfo=0";
+const APRENDE_SRC   = `${BASE}/juegos/sustracciondenumerosdedoscifras/menu.html`;
+const EVALUEMOS_SRC = `${BASE}/evaluemos/sustracciondenumerosdedoscifras/sustracciondenumerosdedoscifras.html`;
 
 // ─── Modal "Aprende más" ──────────────────────────────────────────────────────
 function ModalAprende({ open, onClose }) {
@@ -53,7 +53,7 @@ function ModalAprende({ open, onClose }) {
         className="frame1"
         allowtransparency="true"
         style={{ border: "none", background: "transparent" }}
-        title="Aprende más — Adición y sus propiedades"
+        title="Aprende más — Sustracción de números de dos cifras"
       />
     </OvaModal>
   );
@@ -84,28 +84,28 @@ function ModalEvaluemos({ open, onClose }) {
         src={src}
         allowtransparency="true"
         style={{ border: "none", background: "transparent" }}
-        title="Evaluemos — Adición y sus propiedades"
+        title="Evaluemos — Sustracción de números de dos cifras"
       />
     </OvaModal>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-export default function AdicionPropiedades() {
+export default function SustraccionDosCifras() {
   return (
     <OvaLayout
-      metaTitle="La adición y sus propiedades"
-      metaDescription="La adición y sus propiedades"
-      guiaTema="OVAs/Matematicas/Adicion-Sustraccion/guias/adicionysuspropiedades.pdf"
+      metaTitle="Sustracción de números de dos cifras"
+      metaDescription="Sustracción de números de dos cifras"
+      guiaTema="OVAs/Matematicas/Adicion-Sustraccion/guias/sustracciondoscifras.pdf"
       repasemosSrc={REPASEMOS_SRC}
       conoceVideoSrc={CONOCE_VIDEO}
       letrero={
-        <img 
-          id="canvas_btn_act1" 
+        <img
+          id="canvas_btn_act1"
           className="letreroContenido"
-          src={IMG.letrero} 
-          alt="La adición y sus propiedades" 
-          draggable={false} 
+          src={IMG.letrero}
+          alt="Sustracción de números de dos cifras"
+          draggable={false}
         />
       }
       renderAprende={(open, onClose) => <ModalAprende open={open} onClose={onClose} />}
