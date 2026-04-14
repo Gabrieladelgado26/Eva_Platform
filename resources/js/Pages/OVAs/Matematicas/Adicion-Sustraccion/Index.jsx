@@ -113,7 +113,7 @@ const OVAIndex = () => {
                 setIsRedirecting(true);
                 console.log('Video terminado, redirigiendo...');
                 setTimeout(() => {
-                    router.visit('./menu');
+                    router.visit('menu');
                 }, 500);
             }
         };
@@ -179,7 +179,7 @@ const OVAIndex = () => {
     const handleRedirect = () => {
         if (!isRedirecting) {
             setIsRedirecting(true);
-            router.visit('./menu');
+            router.visit('menu');
         }
     };
 

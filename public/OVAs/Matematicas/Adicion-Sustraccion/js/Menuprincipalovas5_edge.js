@@ -14,23 +14,23 @@ var im='',aud='media/',vid='media/',js='js/',fonts={'chewy, sans-serif':'<script
 //Edge symbol: 'stage'
 (function(symbolName){Symbol.bindTriggerAction(compId,symbolName,"Default Timeline",4000,function(sym,e){sym.stop();});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton1}","click",function(sym,e){window.open("/OVAs/Matematicas/Adicion-Sustraccion/juegos/adicionysuspropiedades/menu.html","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton1}","click",function(sym,e){window.location.href = "/ova/adicionpropiedades";});
 //Edge binding end
 Symbol.bindElementAction(compId,symbolName,"${boton1}","mouseover",function(sym,e){sym.getSymbol("btn1").play(0);sym.getSymbol("btn6").stop(0);sym.getSymbol("btn5").stop(0);sym.getSymbol("btn4").stop(0);sym.getSymbol("btn3").stop(0);sym.getSymbol("btn2").stop(0);sym.getSymbol("btn7").stop(0);});
 //Edge binding end
 Symbol.bindElementAction(compId,symbolName,"${boton1}","mouseout",function(sym,e){sym.getSymbol("btn1").play(500);});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton2}","click",function(sym,e){window.open("adiciondenumeroshastael19","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton2}","click",function(sym,e){window.location.href = "/ova/adicionhasta19";});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton3}","click",function(sym,e){window.open("adiciondenumerosdedoscifras","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton3}","click",function(sym,e){window.location.href = "/ova/adiciondoscifras";});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton4}","click",function(sym,e){window.open("adiciondenumerosdetrescifras","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton4}","click",function(sym,e){window.location.href = "/ova/adiciontrescifras";});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton5}","click",function(sym,e){window.open("sustracciondenumeroshastael19","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton5}","click",function(sym,e){window.location.href = "/ova/sustraccionhasta19";});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton6}","click",function(sym,e){window.open("sustracciondenumerosdedoscifras","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton6}","click",function(sym,e){window.location.href = "/ova/sustracciondoscifras";});
 //Edge binding end
-Symbol.bindElementAction(compId,symbolName,"${boton7}","click",function(sym,e){window.open("sustracciondenumerosdetrescifras","_self");});
+Symbol.bindElementAction(compId,symbolName,"${boton7}","click",function(sym,e){window.location.href = "/ova/sustracciontrescifras";});
 //Edge binding end
 Symbol.bindElementAction(compId,symbolName,"${boton2}","mouseover",function(sym,e){sym.getSymbol("btn2").play(0);sym.getSymbol("btn6").stop(0);sym.getSymbol("btn5").stop(0);sym.getSymbol("btn4").stop(0);sym.getSymbol("btn3").stop(0);sym.getSymbol("btn7").stop(0);sym.getSymbol("btn1").stop(0);});
 //Edge binding end
