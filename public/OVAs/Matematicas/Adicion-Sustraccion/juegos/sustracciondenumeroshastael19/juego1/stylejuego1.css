@@ -8,12 +8,12 @@ body
 @font-face
 {
   font-family:Chewy;
-  src: url(../../../Shared/fonts/Chewy.ttf);
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
 }
 @font-face
 {
  font-family:Roboto;
- src: url(../../../Shared/fonts/Roboto-Regular.ttf);
+ src: url(../../../../../Shared/fonts/Roboto-Regular.ttf);
 }
 
 .Skin2 img {

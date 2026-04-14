@@ -114,7 +114,7 @@ class CourseController extends Controller
     $assignedOvaIds = $course->ovas()->pluck('ovas.id')->toArray();
     $availableOvas = Ova::active()
         ->whereNotIn('id', $assignedOvaIds)
-        ->orderBy('title')
+        ->orderBy('area')
         ->get();
 
     return Inertia::render('Teacher/Courses/Index', [
@@ -418,7 +418,7 @@ class CourseController extends Controller
         $assignedOvaIds = $course->ovas()->pluck('ovas.id')->toArray();
         $availableOvas = Ova::active()
             ->whereNotIn('id', $assignedOvaIds)
-            ->orderBy('title')
+            ->orderBy('area')
             ->get();
 
         return response()->json($availableOvas);

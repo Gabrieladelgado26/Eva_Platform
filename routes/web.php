@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\OvaController;
 use App\Http\Controllers\Teacher\CourseController;
 use App\Http\Controllers\Teacher\CourseStudentController;
 use App\Http\Controllers\Teacher\CourseOvaController;
+use App\Http\Controllers\Student\CourseController as StudentCourseController;
+use App\Http\Controllers\Student\OvaController as StudentOvaController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -133,27 +137,29 @@ Route::get('/dashboard', function () {
 | Admin Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // Dashboard principal
+
+        // Dashboard
         Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
 
-        // Redirección a sección de usuarios dentro del dashboard
-        Route::get('/users', function () {
-            return redirect()->route('admin.dashboard', ['section' => 'users']);
-        })->name('users.index');
+        // Usuarios
+        Route::get('/users', fn() => redirect()->route('admin.dashboard', ['section' => 'users']))
+            ->name('users.index');
+        Route::get('/users/create',          [UserController::class, 'create'])->name('users.create');
+        Route::post('/users',                [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit',     [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}',          [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}',       [UserController::class, 'destroy'])->name('users.destroy');
+        Route::patch('/users/{user}/toggle-status',   [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
+        Route::patch('/users/{user}/regenerate-pin',  [UserController::class, 'regeneratePin'])->name('users.regeneratePin');
 
-        // CRUD usuarios
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
-        Route::patch('/users/{user}/regenerate-pin', [UserController::class, 'regeneratePin'])->name('users.regeneratePin');
+        // OVAs (CRUD completo del catálogo)
+        Route::resource('ovas', OvaController::class)->except(['show']);
+        Route::get('ovas/{ova}',                    [OvaController::class, 'show'])->name('ovas.show');
+        Route::patch('ovas/{ova}/toggle-status',    [OvaController::class, 'toggleStatus'])->name('ovas.toggle-status');
     });
 
 /*
@@ -161,62 +167,53 @@ Route::middleware(['auth', 'role:admin'])
 | Teacher Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:teacher'])
     ->prefix('teacher')
     ->name('teacher.')
     ->group(function () {
-        // Dashboard docente
+
+        // Dashboard
         Route::get('/', [CourseController::class, 'dashboard'])->name('dashboard');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Courses
-        |--------------------------------------------------------------------------
-        */
+        // Cursos (resource sin index — index = dashboard)
         Route::resource('courses', CourseController::class)->except(['index']);
-        Route::patch('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])->name('courses.toggleStatus');
+        Route::patch('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])
+            ->name('courses.toggleStatus');
 
-        // Rutas para asignar y gestionar OVAs en cursos
-        Route::post('courses/{course}/assign-ova', [CourseController::class, 'assignOva'])->name('courses.assign-ova');
-        Route::post('courses/{course}/assign-multiple-ovas', [CourseController::class, 'assignMultipleOvas'])->name('courses.assign-multiple-ovas');
-        Route::delete('courses/{course}/remove-ova/{ova}', [CourseController::class, 'removeOva'])->name('courses.remove-ova');
-        Route::put('courses/{course}/update-ova-order', [CourseController::class, 'updateOvaOrder'])->name('courses.update-ova-order');
+        // OVAs dentro del curso (métodos en CourseController)
+        Route::post('courses/{course}/assign-ova',            [CourseController::class, 'assignOva'])->name('courses.assign-ova');
+        Route::post('courses/{course}/assign-multiple-ovas',  [CourseController::class, 'assignMultipleOvas'])->name('courses.assign-multiple-ovas');
+        Route::delete('courses/{course}/remove-ova/{ova}',    [CourseController::class, 'removeOva'])->name('courses.remove-ova');
+        Route::put('courses/{course}/update-ova-order',        [CourseController::class, 'updateOvaOrder'])->name('courses.update-ova-order');
         Route::put('courses/{course}/update-ova-config/{ova}', [CourseController::class, 'updateOvaConfig'])->name('courses.update-ova-config');
-        Route::get('courses/{course}/ova-stats', [CourseController::class, 'getOvaStats'])->name('courses.ova-stats');
-        Route::get('courses/{course}/available-ovas', [CourseController::class, 'getAvailableOvas'])->name('courses.available-ovas');
+        Route::get('courses/{course}/ova-stats',               [CourseController::class, 'getOvaStats'])->name('courses.ova-stats');
+        Route::get('courses/{course}/available-ovas',          [CourseController::class, 'getAvailableOvas'])->name('courses.available-ovas');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Students (Course management)
-        |--------------------------------------------------------------------------
-        */
+        // Estudiantes del curso
         Route::get('courses/{course}/students/search', [CourseStudentController::class, 'search'])->name('courses.students.search');
-        Route::get('courses/{course}/students', [CourseStudentController::class, 'index'])->name('courses.students.index');
-        Route::post('courses/{course}/students', [CourseStudentController::class, 'store'])->name('courses.students.store');
-        Route::post('courses/{course}/students/bulk', [CourseStudentController::class, 'storeBulk'])->name('courses.students.bulk');
+        Route::get('courses/{course}/students',         [CourseStudentController::class, 'index'])->name('courses.students.index');
+        Route::post('courses/{course}/students',        [CourseStudentController::class, 'store'])->name('courses.students.store');
+        Route::post('courses/{course}/students/bulk',   [CourseStudentController::class, 'storeBulk'])->name('courses.students.bulk');
         Route::delete('courses/{course}/students/{student}', [CourseStudentController::class, 'destroy'])->name('courses.students.destroy');
-        Route::get('courses/{course}/students/export-pdf', [CourseStudentController::class, 'exportPdf'])->name('courses.students.export-pdf');
+        Route::get('courses/{course}/students/export-pdf',   [CourseStudentController::class, 'exportPdf'])->name('courses.students.export-pdf');
     });
 
 /*
 |--------------------------------------------------------------------------
-| Course OVA Routes (Alternativa con controlador separado)
+| Teacher — OVAs del curso (controlador separado CourseOvaController)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:teacher'])
     ->prefix('teacher/courses/{course}/ovas')
     ->name('teacher.courses.ovas.')
     ->group(function () {
-        Route::get('/', [CourseOvaController::class, 'index'])->name('index');
-        Route::get('/available', [CourseOvaController::class, 'available'])->name('available');
-        Route::post('/assign', [CourseOvaController::class, 'assign'])->name('assign');
-        Route::post('/assign-multiple', [CourseOvaController::class, 'assignMultiple'])->name('assign-multiple');
-        Route::delete('/{ova}', [CourseOvaController::class, 'remove'])->name('remove');
-        Route::put('/order', [CourseOvaController::class, 'updateOrder'])->name('update-order');
-        Route::put('/{ova}/config', [CourseOvaController::class, 'updateConfig'])->name('update-config');
-        Route::get('/stats', [CourseOvaController::class, 'stats'])->name('stats');
+        Route::get('/',           [CourseOvaController::class, 'index'])->name('index');
+        Route::get('/available',  [CourseOvaController::class, 'available'])->name('available');
+        Route::post('/assign',    [CourseOvaController::class, 'assign'])->name('assign');
+        Route::delete('/{ova}',   [CourseOvaController::class, 'remove'])->name('remove');
+        Route::put('/order',      [CourseOvaController::class, 'updateOrder'])->name('update-order');
+        Route::put('/{ova}/config',[CourseOvaController::class, 'updateConfig'])->name('update-config');
+        Route::get('/stats',      [CourseOvaController::class, 'stats'])->name('stats');
     });
 
 /*
@@ -224,14 +221,21 @@ Route::middleware(['auth', 'role:teacher'])
 | Student Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:student'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Student/Dashboard');
-        })->name('dashboard');
+
+        // Dashboard = lista de cursos con OVAs
+        Route::get('/', [StudentCourseController::class, 'index'])->name('dashboard');
+
+        // Cursos
+        Route::get('courses',          [StudentCourseController::class, 'index'])->name('courses.index');
+        Route::get('courses/{course}', [StudentCourseController::class, 'show'])->name('courses.show');
+
+        // OVAs
+        Route::get('ovas/{ova}',             [StudentOvaController::class, 'show'])->name('ovas.show');
+        Route::post('ovas/{ova}/progress',   [StudentOvaController::class, 'updateProgress'])->name('ovas.progress');
     });
 
 /*
@@ -239,10 +243,9 @@ Route::middleware(['auth', 'role:student'])
 | Profile Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
@@ -252,16 +255,3 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
-
-/*
-|--------------------------------------------------------------------------
-| OVA — rutas adicionales (alias y futuras OVAs)
-|--------------------------------------------------------------------------
-*/
-
-// Alias /ova/contenido → menú principal (para compatibilidad con Index.jsx)
-Route::get('/ova/contenido', function () {
-    return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Menu')
-        ->rootView('ova');
-})->name('ova.contenido');
-

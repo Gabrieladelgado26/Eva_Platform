@@ -135,7 +135,7 @@ const MenuPrincipal = () => {
       <a
         href="/ova/index"
         className="sonido_hover"
-        data-sonido="/OVAs/Matematicas/Adicion-Sustraccion/sounds/intro/intro_play.mp3"
+        data-sonido="/sounds/ovas/intro/intro_play.mp3"
       >
         <img
           className="verintro"

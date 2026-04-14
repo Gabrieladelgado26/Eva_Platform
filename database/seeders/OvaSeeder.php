@@ -1,9 +1,7 @@
 <?php
-// database/seeders/OvaSeeder.php
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Ova;
 
@@ -11,89 +9,138 @@ class OvaSeeder extends Seeder
 {
     public function run()
     {
-        // Limpiar la tabla antes de insertar (opcional)
-        // Ova::truncate();
+        // Limpiar tabla antes de insertar
+        Ova::truncate();
 
         $ovas = [
+            // ── CIENCIAS NATURALES ──────────────────────────────────────────
             [
-                'title' => 'Introducción a la Programación',
-                'description' => 'Aprende los fundamentos de la programación con ejemplos prácticos',
-                'url' => 'https://www.youtube.com/embed/ejemplo1',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Programacion',
-                'duration' => 45,
-                'is_active' => true,
+                'area'        => 'Ciencias Naturales',
+                'tematica'    => 'El Sistema Solar',
+                'description' => 'Explora los planetas, estrellas y fenómenos del universo',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Matemáticas Básicas',
-                'description' => 'Curso de matemáticas para nivel primario y secundario',
-                'url' => 'https://www.youtube.com/embed/ejemplo2',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Matematicas',
-                'duration' => 60,
-                'is_active' => true,
+                'area'        => 'Ciencias Naturales',
+                'tematica'    => 'El Cuerpo Humano',
+                'description' => 'Conoce los sistemas y órganos del cuerpo humano',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Historia del Perú',
-                'description' => 'Conoce la historia del Perú desde sus inicios hasta la actualidad',
-                'url' => 'https://www.youtube.com/embed/ejemplo3',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Historia',
-                'duration' => 50,
-                'is_active' => true,
+                'area'        => 'Ciencias Naturales',
+                'tematica'    => 'Ecosistemas y Biodiversidad',
+                'description' => 'Importancia del cuidado del medio ambiente y los ecosistemas',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
+            ],
+
+            // ── CIENCIAS SOCIALES ────────────────────────────────────────────
+            [
+                'area'        => 'Ciencias Sociales',
+                'tematica'    => 'Historia de Colombia',
+                'description' => 'Conoce la historia de Colombia desde sus inicios hasta hoy',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Educación Ambiental',
-                'description' => 'Importancia del cuidado del medio ambiente y desarrollo sostenible',
-                'url' => 'https://www.youtube.com/embed/ejemplo4',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Ambiente',
-                'duration' => 40,
-                'is_active' => true,
+                'area'        => 'Ciencias Sociales',
+                'tematica'    => 'Geografía Mundial',
+                'description' => 'Aprende sobre los continentes, países y culturas del mundo',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Comunicación Efectiva',
-                'description' => 'Mejora tus habilidades de comunicación oral y escrita',
-                'url' => 'https://www.youtube.com/embed/ejemplo5',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Comunicacion',
-                'duration' => 55,
-                'is_active' => true,
+                'area'        => 'Ciencias Sociales',
+                'tematica'    => 'Educación Ciudadana',
+                'description' => 'Formación en valores, derechos y deberes del ciudadano',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
+            ],
+
+            // ── ESPAÑOL ──────────────────────────────────────────────────────
+            [
+                'area'        => 'Español',
+                'tematica'    => 'Comprensión Lectora',
+                'description' => 'Desarrolla habilidades de lectura y análisis de textos',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Ciencias Naturales',
-                'description' => 'Explora el mundo de la biología, química y física',
-                'url' => 'https://www.youtube.com/embed/ejemplo6',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Ciencias',
-                'duration' => 65,
-                'is_active' => true,
+                'area'        => 'Español',
+                'tematica'    => 'Producción de Textos',
+                'description' => 'Aprende a redactar textos narrativos, descriptivos y argumentativos',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Inglés Básico',
-                'description' => 'Aprende vocabulario y frases útiles en inglés',
-                'url' => 'https://www.youtube.com/embed/ejemplo7',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Ingles',
-                'duration' => 70,
-                'is_active' => true,
+                'area'        => 'Español',
+                'tematica'    => 'Gramática y Ortografía',
+                'description' => 'Reglas gramaticales y ortográficas del español',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
+            ],
+
+            // ── MATEMÁTICAS ──────────────────────────────────────────────────
+            [
+                'area'        => 'Matemáticas',
+                'tematica'    => 'Aritmética Básica',
+                'description' => 'Operaciones con números naturales, decimales y fracciones',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Arte y Creatividad',
-                'description' => 'Desarrolla tu lado artístico con técnicas de dibujo y pintura',
-                'url' => 'https://www.youtube.com/embed/ejemplo8',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Arte',
-                'duration' => 35,
-                'is_active' => true,
+                'area'        => 'Matemáticas',
+                'tematica'    => 'Álgebra Elemental',
+                'description' => 'Introducción a expresiones algebraicas y ecuaciones',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Educación Física',
-                'description' => 'Importancia del deporte y hábitos saludables',
-                'url' => 'https://www.youtube.com/embed/ejemplo9',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Deporte',
-                'duration' => 30,
-                'is_active' => true,
+                'area'        => 'Matemáticas',
+                'tematica'    => 'Geometría y Medición',
+                'description' => 'Figuras geométricas, áreas, perímetros y volúmenes',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
+            ],
+
+            // ── INGLÉS ───────────────────────────────────────────────────────
+            [
+                'area'        => 'Inglés',
+                'tematica'    => 'Vocabulario Básico',
+                'description' => 'Aprende las palabras y expresiones más usadas en inglés',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
             [
-                'title' => 'Valores y Ética',
-                'description' => 'Formación en valores para una mejor convivencia social',
-                'url' => 'https://www.youtube.com/embed/ejemplo10',
-                'thumbnail' => 'https://via.placeholder.com/300x200?text=Valores',
-                'duration' => 45,
-                'is_active' => true,
+                'area'        => 'Inglés',
+                'tematica'    => 'Gramática Inglesa',
+                'description' => 'Tiempos verbales, sustantivos y estructuras básicas',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
+            ],
+            [
+                'area'        => 'Inglés',
+                'tematica'    => 'Conversación y Pronunciación',
+                'description' => 'Practica el inglés hablado con situaciones cotidianas',
+                'url'         => null,
+                'thumbnail'   => null,
+                'is_active'   => true,
             ],
         ];
 

@@ -40,7 +40,7 @@ export default function Edit({ user, roles }) {
     const confirmRegeneratePin = () => {
         setShowConfirmModal(false);
 
-        router.patch(route('admin.users.regeneratePin', user.id), {}, {
+        router.post(route('admin.users.regeneratePin', user.id), {}, {
             preserveScroll: true,
         });
     };

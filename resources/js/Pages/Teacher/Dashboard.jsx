@@ -9,6 +9,7 @@ import {
     TrendingUp, Award, FileText, MoreVertical, Star, Sparkles, UsersRound,
     Shield, Copy, Check
 } from "lucide-react";
+import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 
 export default function Dashboard({ courses = [], teacher = null }) {
     const [viewMode, setViewMode] = useState(() => {
@@ -18,12 +19,8 @@ export default function Dashboard({ courses = [], teacher = null }) {
         return "cards";
     });
 
-    const [sidebarOpen, setSidebarOpen] = useState(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("sidebarOpen") === "true";
-        }
-        return false;
-    });
+    // Usar el hook del sidebar compartido
+    const [collapsed] = useSidebarState();
 
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -41,41 +38,6 @@ export default function Dashboard({ courses = [], teacher = null }) {
     useEffect(() => {
         localStorage.setItem("teacherViewMode", viewMode);
     }, [viewMode]);
-
-    useEffect(() => {
-        localStorage.setItem("sidebarOpen", String(sidebarOpen));
-    }, [sidebarOpen]);
-
-    const navigation = {
-        principal: [
-            {
-                name: "Cursos",
-                href: route("teacher.dashboard"),
-                icon: BookOpen,
-                current: true
-            }
-        ],
-        academic: [
-            {
-                name: "Calendario",
-                href: "#",
-                icon: Calendar,
-                current: false
-            },
-            {
-                name: "Evaluaciones",
-                href: "#",
-                icon: ClipboardList,
-                current: false
-            },
-            {
-                name: "Reportes",
-                href: "#",
-                icon: BarChart3,
-                current: false
-            }
-        ]
-    };
 
     const grades = [
         { value: "primero", label: "Primero" },
@@ -179,7 +141,11 @@ export default function Dashboard({ courses = [], teacher = null }) {
         <>
             <Head title="Cursos" />
 
-            <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? "lg:ml-72" : "lg:ml-20"} min-h-screen`}>
+            {/* AppSidebar compartido */}
+            <AppSidebar currentRoute="teacher.dashboard" />
+
+            {/* Main content */}
+            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
                     {/* Breadcrumb */}
                     <div className="mb-6">
@@ -616,134 +582,130 @@ export default function Dashboard({ courses = [], teacher = null }) {
                                         /* Vista de Tabla - Mejorada con líneas de color */
                                         <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
                                             <div className="overflow-x-auto">
-                                                <table className="w-full">
-                                                    <thead className="bg-gray-50 border-b border-gray-200">
-                                                        <tr>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2">
-                                                                    <School className="w-4 h-4" /> Curso
-                                                                </div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2">
-                                                                    <User className="w-4 h-4" /> Profesor
-                                                                </div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Users className="w-4 h-4" /> Estudiantes
-                                                                </div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2">
-                                                                    <CheckCircle className="w-4 h-4" /> Estado
-                                                                </div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                Acciones
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-100">
-                                                        {filteredCourses.map((course, index) => {
-                                                            const gradient = courseGradients[index % courseGradients.length];
-                                                            return (
-                                                                <tr key={course.id} className="hover:bg-gray-50 transition-colors group">
-                                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <div className="flex items-center gap-3">
-                                                                            {/* Línea de color en lugar de icono con fondo */}
-                                                                            <div className="w-1 h-10 rounded-full" style={{ background: "linear-gradient(to bottom, #540D6E, #EE4266)" }} />
-                                                                            <div>
-                                                                                <p className="text-sm font-semibold text-gray-900 capitalize">
-                                                                                    {getGradeLabel(course.grade)} {course.section}
-                                                                                </p>
-                                                                                {course.description && (
-                                                                                    <p className="text-xs text-gray-500 truncate max-w-xs">
-                                                                                        {course.description}
-                                                                                    </p>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                                                                                <span className="text-xs font-semibold text-gray-700">
-                                                                                    {teacher?.name?.charAt(0) || "P"}
-                                                                                </span>
-                                                                            </div>
-                                                                            <span className="text-sm text-gray-700">
-                                                                                {teacher?.name?.split(' ')[0] || "Profesor"}
-                                                                            </span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <span className="text-sm font-medium text-gray-900">
-                                                                            {course.students_count || 0}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <div className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border ${
-                                                                            course.is_active 
-                                                                                ? "bg-green-50 border-green-200" 
-                                                                                : "bg-gray-50 border-gray-200"
-                                                                        }`}>
-                                                                            <div className={`w-2 h-2 rounded-full ${
-                                                                                course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"
-                                                                            }`} />
-                                                                            <span className={`text-xs font-medium ${
-                                                                                course.is_active ? "text-green-700" : "text-gray-600"
-                                                                            }`}>
-                                                                                {course.is_active ? "Activo" : "Inactivo"}
-                                                                            </span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                                        <div className="flex items-center justify-end gap-2">
-                                                                            <button
-                                                                                onClick={() => confirmToggleStatus(course)}
-                                                                                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                                                                    course.is_active
-                                                                                        ? "text-gray-700 bg-gray-100 hover:bg-gray-200"
-                                                                                        : "text-white"
-                                                                                }`}
-                                                                                style={!course.is_active ? { backgroundColor: "#0EAD69" } : {}}
-                                                                            >
-                                                                                {course.is_active ? (
-                                                                                    <>
-                                                                                        <EyeOff className="w-4 h-4" /> Desactivar
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        <Power className="w-4 h-4" /> Activar
-                                                                                    </>
-                                                                                )}
-                                                                            </button>
-                                                                            <Link
-                                                                                href={route("teacher.courses.edit", course.id)}
-                                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all"
-                                                                                style={{ backgroundColor: "#FFD23F" }}
-                                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
-                                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
-                                                                            >
-                                                                                <Edit2 className="w-4 h-4" /> Editar
-                                                                            </Link>
-                                                                            <button
-                                                                                onClick={() => confirmDelete(course)}
-                                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all"
-                                                                                style={{ backgroundColor: "#EE4266" }}
-                                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
-                                                                            >
-                                                                                <Trash2 className="w-4 h-4" /> Eliminar
-                                                                            </button>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody>
-                                                </table>
+                                               <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                            <div className="flex items-center gap-2">
+                                <School className="w-4 h-4" /> Curso
+                            </div>
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                            <div className="flex items-center gap-2">
+                                <User className="w-4 h-4" /> Profesor
+                            </div>
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                            <div className="flex items-center gap-2">
+                                <Users className="w-4 h-4" /> Estudiantes
+                            </div>
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4" /> Estado
+                            </div>
+                        </th>
+                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                    {filteredCourses.map((course, index) => (
+                        <tr key={course.id} className="hover:bg-gray-50 transition-colors group">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-1 h-10 rounded-full" style={{ background: "linear-gradient(to bottom, #540D6E, #EE4266)" }} />
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900 capitalize">
+                                            {getGradeLabel(course.grade)} {course.section}
+                                        </p>
+                                        {course.description && (
+                                            <p className="text-xs text-gray-500 truncate max-w-xs">
+                                                {course.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span className="text-xs font-semibold text-gray-700">
+                                            {teacher?.name?.charAt(0) || "P"}
+                                        </span>
+                                    </div>
+                                    <span className="text-sm text-gray-700">
+                                        {teacher?.name?.split(' ')[0] || "Profesor"}
+                                    </span>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="text-sm font-medium text-gray-900">
+                                    {course.students_count || 0}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border ${
+                                    course.is_active 
+                                        ? "bg-green-50 border-green-200" 
+                                        : "bg-gray-50 border-gray-200"
+                                }`}>
+                                    <div className={`w-2 h-2 rounded-full ${
+                                        course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"
+                                    }`} />
+                                    <span className={`text-xs font-medium ${
+                                        course.is_active ? "text-green-700" : "text-gray-600"
+                                    }`}>
+                                        {course.is_active ? "Activo" : "Inactivo"}
+                                    </span>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                    <button
+                                        onClick={() => confirmToggleStatus(course)}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                                            course.is_active
+                                                ? "text-gray-700 bg-gray-100 hover:bg-gray-200"
+                                                : "text-white"
+                                        }`}
+                                        style={!course.is_active ? { backgroundColor: "#0EAD69" } : {}}
+                                    >
+                                        {course.is_active ? (
+                                            <>
+                                                <EyeOff className="w-4 h-4" /> Desactivar
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Power className="w-4 h-4" /> Activar
+                                            </>
+                                        )}
+                                    </button>
+                                    <Link
+                                        href={route("teacher.courses.edit", course.id)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all"
+                                        style={{ backgroundColor: "#FFD23F" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
+                                    >
+                                        <Edit2 className="w-4 h-4" /> Editar
+                                    </Link>
+                                    <button
+                                        onClick={() => confirmDelete(course)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                                        style={{ backgroundColor: "#EE4266" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
+                                    >
+                                        <Trash2 className="w-4 h-4" /> Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
                                             </div>
                                         </div>
                                     )}
@@ -909,117 +871,6 @@ export default function Dashboard({ courses = [], teacher = null }) {
                 <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(84, 13, 110, 0.08) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
                 <div className="absolute top-0 left-0 w-full h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F, #3BCEAC, #0EAD69)" }} />
             </div>
-
-            {/* Mobile sidebar backdrop */}
-            {mobileSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />}
-
-            {/* Mobile menu button */}
-            <button
-                onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden fixed bottom-4 right-4 z-30 p-3 rounded-full shadow-lg text-white"
-                style={{ backgroundColor: "#540D6E" }}
-            >
-                <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Sidebar */}
-            <aside className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? "w-72" : "w-20"} ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-                <div className="h-full bg-white/90 backdrop-blur-xl border-r border-gray-200 shadow-xl flex flex-col">
-                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <div className={`flex items-center gap-2 ${!sidebarOpen && "lg:justify-center w-full"}`}>
-                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#540D6E20" }}>
-                                <GraduationCap className="w-6 h-6" style={{ color: "#540D6E" }} />
-                            </div>
-                            {sidebarOpen && <span className="font-bold text-lg text-gray-900">EVA Platform</span>}
-                        </div>
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-100"
-                        >
-                            {sidebarOpen ? <ChevronLeft className="w-4 h-4 text-gray-600" /> : <ChevronRight className="w-4 h-4 text-gray-600" />}
-                        </button>
-                    </div>
-
-                    <nav className="flex-1 overflow-visible py-4 px-2">
-                        {Object.entries(navigation).map(([key, items]) => (
-                            <div key={key} className="mb-4">
-                                {sidebarOpen && (
-                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
-                                        {key === 'principal' ? 'Principal' : 'Académico'}
-                                    </p>
-                                )}
-                                <ul className="space-y-1">
-                                    {items.map(item => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <li key={item.name}>
-                                                <Link
-                                                    href={item.href}
-                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
-                                                        item.current ? "text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"
-                                                    }`}
-                                                    style={item.current ? { backgroundColor: "#540D6E" } : {}}
-                                                >
-                                                    <Icon className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                                    {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
-                                                    {!sidebarOpen && (
-                                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                                            {item.name}
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        ))}
-                    </nav>
-
-                    <div className="border-t border-gray-200 p-2">
-                        <ul className="space-y-1">
-                            <li>
-                                <div className="w-full flex items-center gap-3 px-3 py-2.5">
-                                    <div
-                                        className={`w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold text-gray-700 ${
-                                            !sidebarOpen && "mx-auto"
-                                        }`}
-                                    >
-                                        {teacher?.name?.charAt(0)?.toUpperCase() || "P"}
-                                    </div>
-
-                                    {sidebarOpen && (
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-800 truncate">
-                                                {teacher?.name || "Profesor"}
-                                            </span>
-                                            <span className="text-xs text-gray-400 truncate">
-                                                {teacher?.email || ""}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            </li>
-                            <li>
-                                <Link
-                                    href={route("logout")}
-                                    method="post"
-                                    as="button"
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all group"
-                                >
-                                    <LogOut className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                    {sidebarOpen && <span className="text-sm font-medium">Cerrar Sesión</span>}
-                                    {!sidebarOpen && (
-                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                            Cerrar Sesión
-                                        </span>
-                                    )}
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
 
             <style>{`
                 @keyframes fadeIn {

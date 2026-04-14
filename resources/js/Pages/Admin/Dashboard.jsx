@@ -1,6 +1,6 @@
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
-import Dropdown from '@/Components/Dropdown';
+import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 import {
     UserPlus, Edit2, Trash2, Mail, User, Shield, Users, Search, Filter, X,
     RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
@@ -16,10 +16,11 @@ export default function Dashboard({ users = [], section = "users" }) {
     const { auth } = usePage().props;
     const user = auth?.user ?? { name: "Usuario" };
 
+    // Usar el hook del sidebar compartido (solo lectura)
+    const [collapsed] = useSidebarState();
+
     // Extraer stats de las props
     const stats = props.stats || {};
-
-    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("all");
@@ -41,17 +42,6 @@ export default function Dashboard({ users = [], section = "users" }) {
     const [warningAction, setWarningAction] = useState('');
 
     const [copied, setCopied] = useState({ username: false, pin: false });
-
-    const [sidebarOpen, setSidebarOpen] = useState(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("sidebarOpen") === "true";
-        }
-        return false;
-    });
-
-    useEffect(() => {
-        localStorage.setItem("sidebarOpen", String(sidebarOpen));
-    }, [sidebarOpen]);
 
     useEffect(() => {
         if (flash?.credentials) {
@@ -205,473 +195,432 @@ export default function Dashboard({ users = [], section = "users" }) {
 
     const pageNumbers = buildPageNumbers();
 
-    const navigation = {
-        principal: [
-            {
-                name: "Usuarios",
-                href: route("admin.dashboard", { section: "users" }),
-                icon: Users,
-                current: section === "users"
-            }
-        ],
-        academic: [
-            {
-                name: "Cursos",
-                href: route("admin.dashboard", { section: "courses" }),
-                icon: BookOpen,
-                current: section === "courses"
-            },
-            {
-                name: "Calendario",
-                href: route("admin.dashboard", { section: "calendar" }),
-                icon: Calendar,
-                current: section === "calendar"
-            },
-            {
-                name: "Evaluaciones",
-                href: route("admin.dashboard", { section: "evaluations" }),
-                icon: ClipboardList,
-                current: section === "evaluations"
-            },
-            {
-                name: "Reportes",
-                href: route("admin.dashboard", { section: "reports" }),
-                icon: BarChart3,
-                current: section === "reports"
-            }
-        ]
-    };
-
-    const bottomNavigation = [
-        { name: "Configuración", href: "#", icon: Settings, current: false },
-        { name: "Ayuda", href: "#", icon: HelpCircle, current: false }
-    ];
-
     return (
         <>
             <Head title="Usuarios" />
 
-            {section === "users" && (
-                <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? "lg:ml-72" : "lg:ml-20"} min-h-screen`}>
-                    <div className="py-8 px-4 sm:px-6 lg:px-8">
-                        {/* Breadcrumb */}
-                        <div className="mb-6">
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Gestión de Usuarios</Link>
-                                <span>/</span>
-                                <span style={{ color: "#540D6E" }} className="font-medium">Usuarios</span>
+            {/* AppSidebar compartido */}
+            <AppSidebar currentRoute="admin.dashboard" />
+
+            {/* Main content - usando collapsed del hook */}
+            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
+                <div className="py-8 px-4 sm:px-6 lg:px-8">
+                    {/* Breadcrumb */}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Gestión de Usuarios</Link>
+                            <span>/</span>
+                            <span style={{ color: "#540D6E" }} className="font-medium">Usuarios</span>
+                        </div>
+                    </div>
+
+                    {/* Mensaje Flash */}
+                    {flash?.message && (
+                        <div className="max-w-7xl mx-auto mb-6">
+                            <div className="p-4 rounded-lg border border-red-300 bg-red-50 text-red-700 font-semibold shadow-sm">
+                                {flash.message}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8 animate-fade-in">
+                            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-4 rounded-xl shadow-sm border" style={{ backgroundColor: "white", borderColor: "#540D6E" }}>
+                                        <Users className="w-10 h-10" style={{ color: "#540D6E" }} />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
+                                        <p className="text-gray-600 text-base">Administración y supervisión de usuarios institucionales</p>
+                                    </div>
+                                </div>
+                                <Link href={route("admin.users.create")}
+                                    className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+                                    style={{ backgroundColor: "#540D6E" }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
+                                    <UserPlus className="w-5 h-5" /> Registrar Usuario
+                                </Link>
                             </div>
                         </div>
 
-                        {/* Mensaje Flash */}
-                        {flash?.message && (
-                            <div className="max-w-7xl mx-auto mb-6">
-                                <div className="p-4 rounded-lg border border-red-300 bg-red-50 text-red-700 font-semibold shadow-sm">
-                                    {flash.message}
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                            {[
+                                { 
+                                    icon: UsersRound, 
+                                    bg: "#F3E8FF", 
+                                    color: "#540D6E", 
+                                    label: "Total Usuarios", 
+                                    desc: "Registrados en el sistema", 
+                                    value: stats.total || total || usersData.length 
+                                },
+                                { 
+                                    icon: CheckCircle, 
+                                    bg: "#E8F5F0", 
+                                    color: "#0EAD69", 
+                                    label: "Usuarios Activos", 
+                                    desc: "Con acceso habilitado", 
+                                    value: stats.active || usersData.filter(isUserActive).length 
+                                },
+                                { 
+                                    icon: Shield, 
+                                    bg: "#F3E8FF", 
+                                    color: "#540D6E", 
+                                    label: "Roles Asignados", 
+                                    desc: "Perfiles diferentes", 
+                                    value: stats.unique_roles || 0 
+                                }
+                            ].map((stat, i) => (
+                                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start gap-3">
+                                            <div className="p-3 rounded-lg" style={{ backgroundColor: stat.bg }}>
+                                                <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">{stat.label}</p>
+                                                <p className="text-sm text-gray-600 mt-0.5">{stat.desc}</p>
+                                            </div>
+                                        </div>
+                                        <p className="text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Filtros */}
+                        <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input type="text" placeholder="Buscar por nombre o correo..." value={searchTerm}
+                                        onChange={e => setSearchTerm(e.target.value)}
+                                        className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
+                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
+                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
+                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} />
+                                    {searchTerm && (
+                                        <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="relative">
+                                    <select value={filterRole} onChange={e => setFilterRole(e.target.value)}
+                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
+                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
+                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}>
+                                        <option value="all">Todos los roles</option>
+                                        {roles.map((role) => (<option key={role} value={role}>{getRoleLabel(role)}</option>))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                                    </div>
+                                </div>
+                                <div className="relative">
+                                    <select
+                                        value={filterStatus}
+                                        onChange={e => setFilterStatus(e.target.value)}
+                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
+                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
+                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
+                                    >
+                                        <option value="all">Todos los estados</option>
+                                        <option value="active">Activos</option>
+                                        <option value="inactive">Inactivos</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Indicador de filtros activos */}
+                        {hasActiveFilters && (
+                            <div className="mb-6 animate-fade-in">
+                                <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                                            <Filter className="w-4 h-4" style={{ color: "#540D6E" }} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Filtros Aplicados</p>
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {searchTerm && (
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
+                                                        Búsqueda: "{searchTerm}"
+                                                        <button onClick={() => setSearchTerm("")} className="hover:bg-white/50 p-0.5 rounded">
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </span>
+                                                )}
+                                                {filterRole !== "all" && (
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
+                                                        Rol: {filterRole}
+                                                        <button onClick={() => setFilterRole("all")} className="hover:bg-white/50 p-0.5 rounded">
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </span>
+                                                )}
+                                                {filterStatus !== "all" && (
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
+                                                        Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
+                                                        <button onClick={() => setFilterStatus("all")} className="hover:bg-white/50 p-0.5 rounded">
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
+                                        <RotateCcw className="w-4 h-4" /> Limpiar
+                                    </button>
                                 </div>
                             </div>
                         )}
 
-                        <div className="max-w-7xl mx-auto">
-                            {/* Header */}
-                            <div className="mb-8 animate-fade-in">
-                                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="p-4 rounded-xl shadow-sm border" style={{ backgroundColor: "white", borderColor: "#540D6E" }}>
-                                            <Users className="w-10 h-10" style={{ color: "#540D6E" }} />
-                                        </div>
-                                        <div>
-                                            <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
-                                            <p className="text-gray-600 text-base">Administración y supervisión de usuarios institucionales</p>
-                                        </div>
-                                    </div>
-                                    <Link href={route("admin.users.create")}
-                                        className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
-                                        style={{ backgroundColor: "#540D6E" }}
-                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                        <UserPlus className="w-5 h-5" /> Registrar Usuario
-                                    </Link>
+                   {/* Tabla de usuarios */}
+<div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+    {filteredUsers.length > 0 ? (
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        {[
+                            { icon: User, label: "Usuario" },
+                            { icon: Mail, label: "Correo / Username" },
+                            { icon: Shield, label: "Rol" },
+                            { icon: CheckCircle, label: "Estado" }
+                        ].map((col, i) => (
+                            <th key={i} className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                <div className="flex items-center gap-2">
+                                    <col.icon className="w-4 h-4" /> {col.label}
                                 </div>
-                            </div>
-
-                            {/* Stats Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                                {[
-                                    { 
-                                        icon: UsersRound, 
-                                        bg: "#F3E8FF", 
-                                        color: "#540D6E", 
-                                        label: "Total Usuarios", 
-                                        desc: "Registrados en el sistema", 
-                                        value: stats.total || total || usersData.length 
-                                    },
-                                    { 
-                                        icon: CheckCircle, 
-                                        bg: "#E8F5F0", 
-                                        color: "#0EAD69", 
-                                        label: "Usuarios Activos", 
-                                        desc: "Con acceso habilitado", 
-                                        value: stats.active || usersData.filter(isUserActive).length 
-                                    },
-                                    { 
-                                        icon: Shield, 
-                                        bg: "#F3E8FF", 
-                                        color: "#540D6E", 
-                                        label: "Roles Asignados", 
-                                        desc: "Perfiles diferentes", 
-                                        value: stats.unique_roles || 0 
-                                    }
-                                ].map((stat, i) => (
-                                    <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-3 rounded-lg" style={{ backgroundColor: stat.bg }}>
-                                                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">{stat.label}</p>
-                                                    <p className="text-sm text-gray-600 mt-0.5">{stat.desc}</p>
-                                                </div>
-                                            </div>
-                                            <p className="text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
+                            </th>
+                        ))}
+                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                    {filteredUsers.map(u => {
+                        const active = isUserActive(u);
+                        return (
+                            <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
+                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
+                                            {u.name.charAt(0).toUpperCase()}
                                         </div>
+                                        <p className="text-sm font-semibold text-gray-900">{u.name}</p>
                                     </div>
-                                ))}
-                            </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center gap-2 text-sm text-gray-700">
+                                        <Mail className="w-4 h-4 text-gray-400" />
+                                        <span className="font-medium">
+                                            {u.role?.slug === "student" ? u.username : u.email}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white shadow-sm"
+                                        style={{ backgroundColor: "#540D6E" }}>
+                                        <Shield className="w-3.5 h-3.5" /> {u.role?.name}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border w-auto"
+                                        style={active ? { backgroundColor: "#E8F5F0", borderColor: "#3BCEAC" } : { backgroundColor: "#F9FAFB", borderColor: "#E5E7EB" }}>
+                                        <div className={`w-2 h-2 rounded-full ${active ? "animate-pulse" : ""}`}
+                                            style={{ backgroundColor: active ? "#0EAD69" : "#9CA3AF" }} />
+                                        <span className="text-xs font-medium" style={{ color: active ? "#0EAD69" : "#6B7280" }}>
+                                            {active ? "Activo" : "Inactivo"}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <button onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
+                                            style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = active ? "#6B7280" : "#0EAD69"}>
+                                            {active ? <><EyeOff className="w-4 h-4" /> Desactivar</> : <><Power className="w-4 h-4" /> Activar</>}
+                                        </button>
+                                        <Link href={route("admin.users.edit", u.id)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
+                                            style={{ backgroundColor: "#FFD23F" }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}>
+                                            <Edit2 className="w-4 h-4" /> Editar
+                                        </Link>
+                                        <button onClick={() => handleDeleteClick(u)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
+                                            style={{ backgroundColor: "#EE4266" }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
+                                            <Trash2 className="w-4 h-4" /> Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    ) : (
+        <div className="text-center py-16 px-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
+                style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
+                <User className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {searchTerm || filterRole !== "all" ? "No se encontraron usuarios" : "No hay usuarios registrados"}
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                {searchTerm || filterRole !== "all" ? "Intente modificar los criterios de búsqueda" : "Registre el primer usuario para comenzar"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href={route("admin.users.create")}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                    style={{ backgroundColor: "#540D6E" }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
+                    <UserPlus className="w-5 h-5" /> Registrar Usuario
+                </Link>
+                {hasActiveFilters && (
+                    <button onClick={clearFilters}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
+                        <RotateCcw className="w-5 h-5" /> Limpiar Filtros
+                    </button>
+                )}
+            </div>
+        </div>
+    )}
+</div>
+                        {/* ── PAGINACIÓN ── */}
+                        {lastPage > 1 && (
+                            <div className="mt-6 bg-white rounded-lg border border-gray-200 shadow-sm px-6 py-4">
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 
-                            {/* Filtros */}
-                            <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                <div className="flex flex-col lg:flex-row gap-4">
-                                    <div className="relative flex-1">
-                                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                        <input type="text" placeholder="Buscar por nombre o correo..." value={searchTerm}
-                                            onChange={e => setSearchTerm(e.target.value)}
-                                            className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
-                                            style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                            onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                            onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} />
-                                        {searchTerm && (
-                                            <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div className="relative">
-                                        <select value={filterRole} onChange={e => setFilterRole(e.target.value)}
-                                            className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
-                                            style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                            onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                            onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}>
-                                            <option value="all">Todos los roles</option>
-                                            {roles.map((role) => (<option key={role} value={role}>{getRoleLabel(role)}</option>))}
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        </div>
-                                    </div>
-                                    <div className="relative">
-                                        <select
-                                            value={filterStatus}
-                                            onChange={e => setFilterStatus(e.target.value)}
-                                            className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
-                                            style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                            onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                            onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
+                                    {/* Info de registros */}
+                                    <p className="text-sm text-gray-600 order-2 sm:order-1">
+                                        Mostrando{" "}
+                                        <span className="font-bold text-gray-900">{from}</span>
+                                        {" "}–{" "}
+                                        <span className="font-bold text-gray-900">{to}</span>
+                                        {" "}de{" "}
+                                        <span className="font-bold" style={{ color: "#540D6E" }}>{total}</span>
+                                        {" "}usuarios
+                                    </p>
+
+                                    {/* Controles de página */}
+                                    <div className="flex items-center gap-1 order-1 sm:order-2">
+
+                                        {/* Primera página */}
+                                        <button
+                                            onClick={() => goToPage(links[0]?.url)}
+                                            disabled={currentPage === 1}
+                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                            title="Primera página"
                                         >
-                                            <option value="all">Todos los estados</option>
-                                            <option value="active">Activos</option>
-                                            <option value="inactive">Inactivos</option>
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                            <ChevronsLeft className="w-4 h-4" />
+                                        </button>
 
-                            {/* Indicador de filtros activos */}
-                            {hasActiveFilters && (
-                                <div className="mb-6 animate-fade-in">
-                                    <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
-                                                <Filter className="w-4 h-4" style={{ color: "#540D6E" }} />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-900">Filtros Aplicados</p>
-                                                <div className="flex flex-wrap gap-2 mt-1">
-                                                    {searchTerm && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                            style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                            Búsqueda: "{searchTerm}"
-                                                            <button onClick={() => setSearchTerm("")} className="hover:bg-white/50 p-0.5 rounded">
-                                                                <X className="w-3 h-3" />
-                                                            </button>
-                                                        </span>
-                                                    )}
-                                                    {filterRole !== "all" && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                            style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                            Rol: {filterRole}
-                                                            <button onClick={() => setFilterRole("all")} className="hover:bg-white/50 p-0.5 rounded">
-                                                                <X className="w-3 h-3" />
-                                                            </button>
-                                                        </span>
-                                                    )}
-                                                    {filterStatus !== "all" && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                            style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                            Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
-                                                            <button onClick={() => setFilterStatus("all")} className="hover:bg-white/50 p-0.5 rounded">
-                                                                <X className="w-3 h-3" />
-                                                            </button>
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-                                            <RotateCcw className="w-4 h-4" /> Limpiar
+                                        {/* Página anterior */}
+                                        <button
+                                            onClick={() => goToPage(links[currentPage - 1]?.url ?? null)}
+                                            disabled={currentPage === 1}
+                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                            title="Página anterior"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </button>
+
+                                        {/* Números de página */}
+                                        {pageNumbers.map((page, idx) =>
+                                            page === null ? (
+                                                <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 select-none">…</span>
+                                            ) : (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => {
+                                                        // Find the link whose label matches this page number
+                                                        const link = links.find(l => l.label === String(page));
+                                                        goToPage(link?.url ?? null);
+                                                    }}
+                                                    className="min-w-[36px] h-9 px-2 rounded-lg border text-sm font-semibold transition-all"
+                                                    style={
+                                                        page === currentPage
+                                                            ? { backgroundColor: "#540D6E", borderColor: "#540D6E", color: "#fff" }
+                                                            : { backgroundColor: "#fff", borderColor: "#E5E7EB", color: "#374151" }
+                                                    }
+                                                    onMouseEnter={e => {
+                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#F3E8FF";
+                                                    }}
+                                                    onMouseLeave={e => {
+                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#fff";
+                                                    }}
+                                                >
+                                                    {page}
+                                                </button>
+                                            )
+                                        )}
+
+                                        {/* Página siguiente */}
+                                        <button
+                                            onClick={() => goToPage(links[currentPage + 1]?.url ?? null)}
+                                            disabled={currentPage === lastPage}
+                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                            title="Página siguiente"
+                                        >
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
+
+                                        {/* Última página */}
+                                        <button
+                                            onClick={() => goToPage(links[links.length - 1]?.url)}
+                                            disabled={currentPage === lastPage}
+                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                            title="Última página"
+                                        >
+                                            <ChevronsRight className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Tabla de usuarios */}
-                            <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-                                {filteredUsers.length > 0 ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                            <thead className="bg-gray-50 border-b border-gray-200">
-                                                <tr>
-                                                    {[
-                                                        { icon: User, label: "Usuario" },
-                                                        { icon: Mail, label: "Correo / Username" },
-                                                        { icon: Shield, label: "Rol" },
-                                                        { icon: CheckCircle, label: "Estado" }
-                                                    ].map((col, i) => (
-                                                        <th key={i} className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                            <div className="flex items-center gap-2">
-                                                                <col.icon className="w-4 h-4" /> {col.label}
-                                                            </div>
-                                                        </th>
-                                                    ))}
-                                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-100">
-                                                {filteredUsers.map(u => {
-                                                    const active = isUserActive(u);
-                                                    return (
-                                                        <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                                                        style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                                                        {u.name.charAt(0).toUpperCase()}
-                                                                    </div>
-                                                                    <p className="text-sm font-semibold text-gray-900">{u.name}</p>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                                    <Mail className="w-4 h-4 text-gray-400" />
-                                                                    <span className="font-medium">
-                                                                        {u.role?.slug === "student" ? u.username : u.email}
-                                                                    </span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white shadow-sm"
-                                                                    style={{ backgroundColor: "#540D6E" }}>
-                                                                    <Shield className="w-3.5 h-3.5" /> {u.role?.name}
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border w-auto"
-                                                                    style={active ? { backgroundColor: "#E8F5F0", borderColor: "#3BCEAC" } : { backgroundColor: "#F9FAFB", borderColor: "#E5E7EB" }}>
-                                                                    <div className={`w-2 h-2 rounded-full ${active ? "animate-pulse" : ""}`}
-                                                                        style={{ backgroundColor: active ? "#0EAD69" : "#9CA3AF" }} />
-                                                                    <span className="text-xs font-medium" style={{ color: active ? "#0EAD69" : "#6B7280" }}>
-                                                                        {active ? "Activo" : "Inactivo"}
-                                                                    </span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                                <div className="flex items-center justify-end gap-2">
-                                                                    <button onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
-                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                                                        style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
-                                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
-                                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = active ? "#6B7280" : "#0EAD69"}>
-                                                                        {active ? <><EyeOff className="w-4 h-4" /> Desactivar</> : <><Power className="w-4 h-4" /> Activar</>}
-                                                                    </button>
-                                                                    <Link href={route("admin.users.edit", u.id)}
-                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
-                                                                        style={{ backgroundColor: "#FFD23F" }}
-                                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
-                                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}>
-                                                                        <Edit2 className="w-4 h-4" /> Editar
-                                                                    </Link>
-                                                                    <button onClick={() => handleDeleteClick(u)}
-                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                                                        style={{ backgroundColor: "#EE4266" }}
-                                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                                                        <Trash2 className="w-4 h-4" /> Eliminar
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-16 px-6">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
-                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                            <User className="w-10 h-10 text-white" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                            {searchTerm || filterRole !== "all" ? "No se encontraron usuarios" : "No hay usuarios registrados"}
-                                        </h3>
-                                        <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                            {searchTerm || filterRole !== "all" ? "Intente modificar los criterios de búsqueda" : "Registre el primer usuario para comenzar"}
-                                        </p>
-                                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                            <Link href={route("admin.users.create")}
-                                                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                                style={{ backgroundColor: "#540D6E" }}
-                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                                <UserPlus className="w-5 h-5" /> Registrar Usuario
-                                            </Link>
-                                            {hasActiveFilters && (
-                                                <button onClick={clearFilters}
-                                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
-                                                    <RotateCcw className="w-5 h-5" /> Limpiar Filtros
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
+                        )}
 
-                            {/* ── PAGINACIÓN ── */}
-                            {lastPage > 1 && (
-                                <div className="mt-6 bg-white rounded-lg border border-gray-200 shadow-sm px-6 py-4">
-                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-
-                                        {/* Info de registros */}
-                                        <p className="text-sm text-gray-600 order-2 sm:order-1">
-                                            Mostrando{" "}
-                                            <span className="font-bold text-gray-900">{from}</span>
-                                            {" "}–{" "}
-                                            <span className="font-bold text-gray-900">{to}</span>
-                                            {" "}de{" "}
-                                            <span className="font-bold" style={{ color: "#540D6E" }}>{total}</span>
-                                            {" "}usuarios
-                                        </p>
-
-                                        {/* Controles de página */}
-                                        <div className="flex items-center gap-1 order-1 sm:order-2">
-
-                                            {/* Primera página */}
-                                            <button
-                                                onClick={() => goToPage(links[0]?.url)}
-                                                disabled={currentPage === 1}
-                                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                                title="Primera página"
-                                            >
-                                                <ChevronsLeft className="w-4 h-4" />
-                                            </button>
-
-                                            {/* Página anterior */}
-                                            <button
-                                                onClick={() => goToPage(links[currentPage - 1]?.url ?? null)}
-                                                disabled={currentPage === 1}
-                                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                                title="Página anterior"
-                                            >
-                                                <ChevronLeft className="w-4 h-4" />
-                                            </button>
-
-                                            {/* Números de página */}
-                                            {pageNumbers.map((page, idx) =>
-                                                page === null ? (
-                                                    <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 select-none">…</span>
-                                                ) : (
-                                                    <button
-                                                        key={page}
-                                                        onClick={() => {
-                                                            // Find the link whose label matches this page number
-                                                            const link = links.find(l => l.label === String(page));
-                                                            goToPage(link?.url ?? null);
-                                                        }}
-                                                        className="min-w-[36px] h-9 px-2 rounded-lg border text-sm font-semibold transition-all"
-                                                        style={
-                                                            page === currentPage
-                                                                ? { backgroundColor: "#540D6E", borderColor: "#540D6E", color: "#fff" }
-                                                                : { backgroundColor: "#fff", borderColor: "#E5E7EB", color: "#374151" }
-                                                        }
-                                                        onMouseEnter={e => {
-                                                            if (page !== currentPage) e.currentTarget.style.backgroundColor = "#F3E8FF";
-                                                        }}
-                                                        onMouseLeave={e => {
-                                                            if (page !== currentPage) e.currentTarget.style.backgroundColor = "#fff";
-                                                        }}
-                                                    >
-                                                        {page}
-                                                    </button>
-                                                )
-                                            )}
-
-                                            {/* Página siguiente */}
-                                            <button
-                                                onClick={() => goToPage(links[currentPage + 1]?.url ?? null)}
-                                                disabled={currentPage === lastPage}
-                                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                                title="Página siguiente"
-                                            >
-                                                <ChevronRight className="w-4 h-4" />
-                                            </button>
-
-                                            {/* Última página */}
-                                            <button
-                                                onClick={() => goToPage(links[links.length - 1]?.url)}
-                                                disabled={currentPage === lastPage}
-                                                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                                title="Última página"
-                                            >
-                                                <ChevronsRight className="w-4 h-4" />
-                                            </button>
-                                        </div>
+                        {/* Info adicional (cuando hay una sola página) */}
+                        {lastPage <= 1 && usersData.length > 0 && (
+                            <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-600">
+                                    <div className="flex items-center gap-2">
+                                        <span>Mostrando <span className="font-bold" style={{ color: "#540D6E" }}>{filteredUsers.length}</span> de <span className="font-bold text-gray-900">{total || usersData.length}</span> usuarios</span>
+                                        <span className="mx-2">•</span>
+                                        <span className="font-bold" style={{ color: "#0EAD69" }}>{usersData.filter(isUserActive).length}</span> activos
+                                    </div>
+                                    <div className="text-gray-500">
+                                        Actualizado: {new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Info adicional (cuando hay una sola página) */}
-                            {lastPage <= 1 && usersData.length > 0 && (
-                                <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-                                    <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-600">
-                                        <div className="flex items-center gap-2">
-                                            <span>Mostrando <span className="font-bold" style={{ color: "#540D6E" }}>{filteredUsers.length}</span> de <span className="font-bold text-gray-900">{total || usersData.length}</span> usuarios</span>
-                                            <span className="mx-2">•</span>
-                                            <span className="font-bold" style={{ color: "#0EAD69" }}>{usersData.filter(isUserActive).length}</span> activos
-                                        </div>
-                                        <div className="text-gray-500">
-                                            Actualizado: {new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
-                </main>
-            )}
+                </div>
+            </main>
 
             {/* Modal de Confirmación Eliminación */}
             {showDeleteModal && (
@@ -923,102 +872,6 @@ export default function Dashboard({ users = [], section = "users" }) {
                     </div>
                 </div>
             )}
-
-            {/* Fondo académico */}
-            <div className="fixed inset-0 -z-10 overflow-hidden bg-gray-50">
-                <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(84, 13, 110, 0.08) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
-                <div className="absolute top-0 left-0 w-full h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F, #3BCEAC, #0EAD69)" }} />
-            </div>
-
-            {/* Mobile sidebar backdrop */}
-            {mobileSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />}
-
-            {/* Mobile menu button */}
-            <button onClick={() => setMobileSidebarOpen(true)} className="lg:hidden fixed bottom-4 right-4 z-30 p-3 rounded-full shadow-lg text-white" style={{ backgroundColor: "#540D6E" }}>
-                <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Sidebar */}
-            <aside className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? "w-72" : "w-20"} ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-                <div className="h-full bg-white/90 backdrop-blur-xl border-r border-gray-200 shadow-xl flex flex-col">
-                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <div className={`flex items-center gap-2 ${!sidebarOpen && "lg:justify-center w-full"}`}>
-                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#540D6E20" }}>
-                                <GraduationCap className="w-6 h-6" style={{ color: "#540D6E" }} />
-                            </div>
-                            {sidebarOpen && <span className="font-bold text-lg text-gray-900">EVA Platform</span>}
-                        </div>
-                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-100">
-                            {sidebarOpen ? <ChevronLeft className="w-4 h-4 text-gray-600" /> : <ChevronRight className="w-4 h-4 text-gray-600" />}
-                        </button>
-                    </div>
-
-                    <nav className="flex-1 overflow-visible py-4 px-2">
-                        {Object.entries(navigation).map(([key, items]) => (
-                            <div key={key} className="mb-4">
-                                {sidebarOpen && <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">{key === 'principal' ? 'Gestión de Usuarios' : 'Académico'}</p>}
-                                <ul className="space-y-1">
-                                    {items.map(item => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <li key={item.name}>
-                                                <Link href={item.href}
-                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${item.current ? "text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"}`}
-                                                    style={item.current ? { backgroundColor: "#540D6E" } : {}}>
-                                                    <Icon className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                                    {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
-                                                    {!sidebarOpen && (
-                                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                                            {item.name}
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        ))}
-                    </nav>
-
-                    <div className="border-t border-gray-200 p-2">
-                        <ul className="space-y-1">
-                            <li>
-                                <div className="w-full flex items-center gap-3 px-3 py-2.5">
-                                    <div className={`w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold text-gray-700 ${!sidebarOpen && "mx-auto"}`}>
-                                        {user?.name?.charAt(0)?.toUpperCase()}
-                                    </div>
-                                    {sidebarOpen && (
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-800 truncate">{user?.name}</span>
-                                            <span className="text-xs text-gray-400 truncate">{user?.email}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </li>
-                            <li>
-                                <Link href={route("logout")} method="post" as="button"
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all group">
-                                    <LogOut className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                    {sidebarOpen && <span className="text-sm font-medium">Cerrar Sesión</span>}
-                                    {!sidebarOpen && (
-                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                            Cerrar Sesión
-                                        </span>
-                                    )}
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
-
-            <style>{`
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-                .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-                .animate-slide-up { animation: slideUp 0.6s ease-out; }
-            `}</style>
         </>
     );
 }

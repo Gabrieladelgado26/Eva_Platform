@@ -14,24 +14,20 @@ class Ova extends Model
     protected $table = 'ovas';
 
     protected $fillable = [
-        'title',
-        'description', 
+        'area',
+        'tematica',
+        'description',
         'url',
         'thumbnail',
-        'duration',
         'is_active'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'duration' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
 
-    /**
-     * Relación con cursos (muchos a muchos)
-     */
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_ova')
@@ -40,19 +36,8 @@ class Ova extends Model
                     ->orderBy('pivot_order');
     }
 
-    /**
-     * Obtener OVAs activas
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Obtener OVAs por duración
-     */
-    public function scopeDurationGreaterThan($query, $minutes)
-    {
-        return $query->where('duration', '>', $minutes);
     }
 }

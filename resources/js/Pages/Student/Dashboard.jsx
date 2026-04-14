@@ -1,316 +1,434 @@
-import { Head, Link, usePage, router } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import {
-    UserPlus, Edit2, Trash2, Mail, User, Shield, Users, Search, Filter, X,
-    RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
-    LayoutDashboard, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home,
-    Calendar, ClipboardList, BarChart3, HelpCircle, ChevronDown, Eye, Copy, Check
+    BookOpen, Layers, Eye, ChevronRight, GraduationCap,
+    Video, Clock, X, ChevronLeft, FlaskConical,
+    Globe, BookMarked, Calculator, Languages, Sparkles,
+    PlayCircle, Lock
 } from "lucide-react";
+import AppSidebar, { useSidebarState } from "@/Components/AppSidebar";
 
-export default function Index({ users = [], section = "users" }) {
-    const { props } = usePage();
-    const user = props.auth.user;
-    const flash = usePage().props.flash || {};
+const MATERIAS = [
+    {
+        area:        'Ciencias Naturales',
+        icon:        FlaskConical,
+        color:       '#0EAD69',
+        bg:          '#E8F5F0',
+        bgCard:      'linear-gradient(135deg, #0EAD6920, #3BCEAC10)',
+        border:      '#0EAD6930',
+        emoji:       '🔬',
+    },
+    {
+        area:        'Ciencias Sociales',
+        icon:        Globe,
+        color:       '#EE4266',
+        bg:          '#FEE2E2',
+        bgCard:      'linear-gradient(135deg, #EE426620, #FFD23F10)',
+        border:      '#EE426630',
+        emoji:       '🌍',
+    },
+    {
+        area:        'Español',
+        icon:        BookMarked,
+        color:       '#540D6E',
+        bg:          '#F3E8FF',
+        bgCard:      'linear-gradient(135deg, #540D6E20, #EE426610)',
+        border:      '#540D6E30',
+        emoji:       '📖',
+    },
+    {
+        area:        'Matemáticas',
+        icon:        Calculator,
+        color:       '#1D4ED8',
+        bg:          '#DBEAFE',
+        bgCard:      'linear-gradient(135deg, #1D4ED820, #60A5FA10)',
+        border:      '#1D4ED830',
+        emoji:       '📐',
+    },
+    {
+        area:        'Inglés',
+        icon:        Languages,
+        color:       '#D97706',
+        bg:          '#FEF3C7',
+        bgCard:      'linear-gradient(135deg, #D9770620, #FFD23F10)',
+        border:      '#D9770630',
+        emoji:       '🗣️',
+    },
+];
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [filterRole, setFilterRole] = useState("all");
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
-    const [showCredentialsModal, setShowCredentialsModal] = useState(false);
-    const [credentials, setCredentials] = useState(null);
-    const [copied, setCopied] = useState({ username: false, pin: false });
+const GRADE_LABELS = {
+    primero: 'Primero', segundo: 'Segundo', tercero: 'Tercero',
+    cuarto: 'Cuarto', quinto: 'Quinto',
+};
+
+function groupOvasByArea(courses) {
+    const grouped = {};
+    courses.forEach(course => {
+        course.ovas.forEach(ova => {
+            if (!grouped[ova.area]) grouped[ova.area] = [];
+            if (!grouped[ova.area].find(o => o.id === ova.id)) {
+                grouped[ova.area].push({ ...ova, course });
+            }
+        });
+    });
+    return grouped;
+}
+
+export default function StudentDashboard({ courses = [] }) {
+    const [collapsed]  = useSidebarState();
+    const [activeArea, setActiveArea] = useState(null);
+    const [search,     setSearch]     = useState("");
+    const [visible,    setVisible]    = useState(false);
+
+    const course     = courses[0] ?? null;
+    const ovasByArea = groupOvasByArea(courses);
+    const totalOvas  = Object.values(ovasByArea).flat().length;
 
     useEffect(() => {
-        if (flash?.credentials) {
-            setCredentials(flash.credentials);
-            setShowCredentialsModal(true);
-        }
-    }, [flash?.credentials]);
+        const t = setTimeout(() => setVisible(true), 100);
+        return () => clearTimeout(t);
+    }, []);
 
-    const roles = [...new Set(users.map(u => u.role))];
-    const filteredUsers = users.filter(u => 
-        (u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         u.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (filterRole === "all" || u.role === filterRole)
-    );
+    const activeOvas = activeArea
+        ? (ovasByArea[activeArea] ?? []).filter(o =>
+            o.tematica.toLowerCase().includes(search.toLowerCase()) ||
+            (o.description ?? "").toLowerCase().includes(search.toLowerCase())
+          )
+        : [];
 
-    const clearFilters = () => { setSearchTerm(""); setFilterRole("all"); };
-    const hasActiveFilters = searchTerm || filterRole !== "all";
-
-    const handleDeleteClick = (user) => { setUserToDelete(user); setShowDeleteModal(true); };
-    
-    const handleConfirmDelete = () => {
-        router.delete(route("admin.users.destroy", userToDelete.id), {
-            preserveScroll: true,
-            onSuccess: () => { setShowDeleteModal(false); setUserToDelete(null); }
-        });
-    };
-
-    const toggleUserStatus = (user) => {
-        if (!confirm(`¿Está seguro de ${isUserActive(user) ? "desactivar" : "activar"} a ${user.name}?`)) return;
-        router.patch(route("admin.users.toggleStatus", user.id), {}, { preserveScroll: true, preserveState: true });
-    };
-
-    const isUserActive = (user) => {
-        if (typeof user.is_active === "boolean") return user.is_active;
-        if (typeof user.is_active === "number") return user.is_active === 1;
-        return user.is_active === "1" || user.is_active === "true";
-    };
-
-    const copyToClipboard = (text, type) => {
-        navigator.clipboard.writeText(text);
-        setCopied({ ...copied, [type]: true });
-        setTimeout(() => setCopied({ ...copied, [type]: false }), 2000);
-    };
-
-    const navigation = {
-        principal: [{ name: "Usuarios", href: route("admin.dashboard", { section: "users" }), icon: Users, current: section === "users" }],
-        academic: [
-            { name: "Cursos", href: route("admin.dashboard", { section: "courses" }), icon: BookOpen, current: section === "courses" },
-            { name: "Calendario", href: route("admin.dashboard", { section: "calendar" }), icon: Calendar, current: section === "calendar" },
-            { name: "Evaluaciones", href: route("admin.dashboard", { section: "evaluations" }), icon: ClipboardList, current: section === "evaluations" },
-            { name: "Reportes", href: route("admin.dashboard", { section: "reports" }), icon: BarChart3, current: section === "reports" }
-        ]
-    };
-
-    const bottomNavigation = [
-        { name: "Configuración", href: "#", icon: Settings, current: false },
-        { name: "Ayuda", href: "#", icon: HelpCircle, current: false }
-    ];
+    const activeMateria = MATERIAS.find(m => m.area === activeArea);
 
     return (
         <>
-            <Head title="Usuarios" />
+            <Head title="Mis Materias" />
+            <AppSidebar currentRoute="student.dashboard" />
 
-            {/* Modal de Confirmación Eliminación */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up">
-                        <div className="p-6 border-b border-gray-200">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FECACA" }}>
-                                    <Trash2 className="w-6 h-6" style={{ color: "#EE4266" }} />
+            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen`}
+               >
+
+                <div className="py-8 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-6xl mx-auto">
+
+                        {/* ── Hero Banner ── */}
+                        <div className={`mb-8 rounded-2xl overflow-hidden shadow-lg transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+                            style={{ background: "linear-gradient(135deg, #540D6E 0%, #7C3AED 50%, #EE4266 100%)" }}>
+                            <div className="relative px-8 py-8 flex items-center justify-between">
+                                {/* Círculos decorativos */}
+                                <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10"
+                                    style={{ background: "white", transform: "translate(30%, -30%)" }} />
+                                <div className="absolute bottom-0 left-1/2 w-40 h-40 rounded-full opacity-10"
+                                    style={{ background: "white", transform: "translate(-50%, 50%)" }} />
+
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Sparkles className="w-5 h-5 text-yellow-300" />
+                                        <span className="text-yellow-300 text-sm font-semibold">¡Bienvenido de vuelta!</span>
+                                    </div>
+                                    <h1 className="text-3xl font-black text-white mb-1">
+                                        Mis Materias
+                                    </h1>
+                                    {course ? (
+                                        <p className="text-purple-200 text-sm">
+                                            {GRADE_LABELS[course.grade] ?? course.grade} · Sección {course.section} · Año {course.school_year}
+                                        </p>
+                                    ) : (
+                                        <p className="text-purple-200 text-sm">Explora tus recursos educativos</p>
+                                    )}
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900">Confirmar Eliminación</h3>
-                            </div>
-                            <p className="text-gray-600 text-sm">Esta acción es irreversible y eliminará permanentemente al usuario</p>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex items-start gap-3 p-4 rounded-lg border mb-4" style={{ backgroundColor: "#FEE2E2", borderColor: "#FECACA" }}>
-                                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EE4266" }} />
-                                <div className="space-y-2">
-                                    <p className="text-sm font-semibold text-gray-900">Usuario a eliminar:</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                            {userToDelete?.name?.charAt(0).toUpperCase() || "U"}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-gray-900">{userToDelete?.name || "Usuario"}</p>
-                                            <p className="text-sm text-gray-600">{userToDelete?.email || ""}</p>
-                                        </div>
+
+                                <div className="relative z-10 hidden sm:block">
+                                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center"
+                                        style={{ backgroundColor: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
+                                        <GraduationCap className="w-10 h-10 text-white" />
                                     </div>
                                 </div>
                             </div>
-                            {["Se eliminarán todos los datos asociados al usuario", "El acceso al sistema será revocado inmediatamente"].map((text, i) => (
-                                <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                                    <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#EE4266" }} />
-                                    <span>{text}</span>
+
+                            {/* Barra de progreso decorativa */}
+                            <div className="px-8 pb-5 relative z-10">
+                                <div className="flex items-center justify-between text-xs text-purple-200 mb-1.5">
+                                    <span>{totalOvas} OVAs disponibles en tu curso</span>
+                                    <span>{MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).length} de {MATERIAS.length} materias activas</span>
                                 </div>
-                            ))}
+                                <div className="h-1.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
+                                    <div className="h-1.5 rounded-full transition-all duration-1000"
+                                        style={{
+                                            width: `${(MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).length / MATERIAS.length) * 100}%`,
+                                            background: "linear-gradient(to right, #FFD23F, #3BCEAC)"
+                                        }} />
+                                </div>
+                            </div>
                         </div>
-                        <div className="p-6 pt-4 border-t border-gray-200 flex items-center justify-end gap-3">
-                            <button onClick={() => setShowDeleteModal(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-                                Cancelar
-                            </button>
-                            <button onClick={handleConfirmDelete}
-                                className="px-6 py-2.5 text-sm font-bold text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all shadow-sm hover:shadow-md"
-                                style={{ backgroundColor: "#EE4266", "--tw-ring-color": "rgba(238, 66, 102, 0.5)" }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                <span className="flex items-center gap-2"><Trash2 className="w-4 h-4" /> Confirmar Eliminación</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {/* Modal de Credenciales */}
-            {showCredentialsModal && credentials && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCredentialsModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        {/* Barra superior delgada como la de la página principal - con los colores originales */}
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
-                        
-                        <div className="p-6">
-                            {/* Header con icono al lado del título - icono más grande */}
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                                    <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
+                        {/* ── Sin curso ── */}
+                        {!course && (
+                            <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 py-16 text-center transition-all duration-700 delay-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+                                <div className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                                    style={{ background: "linear-gradient(135deg,#540D6E15,#EE426615)" }}>
+                                    <BookOpen className="w-12 h-12" style={{ color: "#540D6E40" }} />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Credenciales de Acceso</h2>
-                                    <p className="text-sm text-gray-600">Guarda estas credenciales para el inicio de sesión del estudiante</p>
-                                </div>
+                                <p className="text-lg font-bold text-gray-700 mb-2">Aún no estás inscrito en un curso</p>
+                                <p className="text-sm text-gray-400">Tu profesor te agregará próximamente</p>
                             </div>
+                        )}
 
-                            {/* Usuario */}
-                            <div className="mb-4">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Usuario</label>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <User className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800">{credentials.username}</span>
-                                    </div>
-                                    <button onClick={() => copyToClipboard(credentials.username, 'username')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
-                                        style={{ borderColor: copied.username ? "#0EAD69" : "#540D6E", backgroundColor: copied.username ? "#E8F5F0" : "white" }}>
-                                        {copied.username ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
-                                    </button>
-                                </div>
-                                {copied.username && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ Usuario copiado</p>}
-                            </div>
-
-                            {/* PIN */}
-                            <div className="mb-6">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">PIN de Acceso</label>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <Shield className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800 text-lg tracking-wider font-bold">{credentials.pin}</span>
-                                    </div>
-                                    <button onClick={() => copyToClipboard(credentials.pin, 'pin')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
-                                        style={{ borderColor: copied.pin ? "#0EAD69" : "#540D6E", backgroundColor: copied.pin ? "#E8F5F0" : "white" }}>
-                                        {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
-                                    </button>
-                                </div>
-                                {copied.pin && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ PIN copiado</p>}
-                            </div>
-
-                            {/* Nota de seguridad */}
-                            <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
-                                <p className="text-xs text-gray-700 flex items-start gap-2">
-                                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
-                                    <span>Estas credenciales son únicas, asegúrate de compartirlas de forma segura con el estudiante.</span>
+                        {/* ── Vista principal: materias ── */}
+                        {course && !activeArea && (
+                            <>
+                                <p className={`text-xs font-bold text-gray-400 uppercase tracking-wider mb-5 transition-all duration-700 delay-100 ${visible ? "opacity-100" : "opacity-0"}`}>
+                                    Selecciona una materia para ver sus recursos
                                 </p>
-                            </div>
 
-                            {/* Botón */}
-                            <button onClick={() => setShowCredentialsModal(false)}
-                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                style={{ backgroundColor: "#540D6E" }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                Entendido
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    {MATERIAS.map((materia, i) => {
+                                        const Icon    = materia.icon;
+                                        const ovas    = ovasByArea[materia.area] ?? [];
+                                        const hasOvas = ovas.length > 0;
 
-            {/* Fondo académico */}
-            <div className="fixed inset-0 -z-10 overflow-hidden bg-gray-50">
-                <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(84, 13, 110, 0.08) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
-                <div className="absolute top-0 left-0 w-full h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F, #3BCEAC, #0EAD69)" }} />
-            </div>
-
-            {/* Mobile sidebar backdrop */}
-            {mobileSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />}
-
-            {/* Mobile menu button */}
-            <button onClick={() => setMobileSidebarOpen(true)} className="lg:hidden fixed bottom-4 right-4 z-30 p-3 rounded-full shadow-lg text-white" style={{ backgroundColor: "#540D6E" }}>
-                <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Sidebar */}
-            <aside className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? "w-72" : "w-20"} ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-                <div className="h-full bg-white/90 backdrop-blur-xl border-r border-gray-200 shadow-xl flex flex-col">
-                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <div className={`flex items-center gap-2 ${!sidebarOpen && "lg:justify-center w-full"}`}>
-                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#540D6E20" }}>
-                                <GraduationCap className="w-6 h-6" style={{ color: "#540D6E" }} />
-                            </div>
-                            {sidebarOpen && <span className="font-bold text-lg text-gray-900">EVA Platform</span>}
-                        </div>
-                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-100">
-                            {sidebarOpen ? <ChevronLeft className="w-4 h-4 text-gray-600" /> : <ChevronRight className="w-4 h-4 text-gray-600" />}
-                        </button>
-                    </div>
-
-                    <nav className="flex-1 overflow-y-auto py-4 px-2">
-                        {Object.entries(navigation).map(([key, items]) => (
-                            <div key={key} className="mb-4">
-                                {sidebarOpen && <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">{key === 'principal' ? 'Gestión de Usuarios' : 'Académico'}</p>}
-                                <ul className="space-y-1">
-                                    {items.map(item => {
-                                        const Icon = item.icon;
                                         return (
-                                            <li key={item.name}>
-                                                <Link href={item.href}
-                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${item.current ? "text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"}`}
-                                                    style={item.current ? { backgroundColor: "#540D6E" } : {}}>
-                                                    <Icon className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                                    {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
-                                                    {!sidebarOpen && (
-                                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                                            {item.name}
-                                                        </span>
+                                            <button key={materia.area}
+                                                onClick={() => hasOvas && setActiveArea(materia.area)}
+                                                disabled={!hasOvas}
+                                                className={`text-left rounded-2xl border-2 overflow-hidden transition-all duration-500 group relative
+                                                    ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+                                                    ${hasOvas ? "cursor-pointer hover:shadow-xl hover:-translate-y-1" : "cursor-not-allowed"}
+                                                `}
+                                                style={{
+                                                    borderColor:     hasOvas ? materia.border : "#E5E7EB",
+                                                    backgroundColor: "white",
+                                                    transitionDelay: `${150 + i * 80}ms`,
+                                                }}
+                                                onMouseEnter={e => { if (hasOvas) e.currentTarget.style.borderColor = materia.color; }}
+                                                onMouseLeave={e => { if (hasOvas) e.currentTarget.style.borderColor = materia.border; }}
+                                            >
+                                                {/* Franja de color superior */}
+                                                <div className="h-1.5 w-full"
+                                                    style={{ background: hasOvas ? `linear-gradient(to right, ${materia.color}, ${materia.color}88)` : "#E5E7EB" }} />
+
+                                                {/* Fondo hover */}
+                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                                    style={{ background: materia.bgCard }} />
+
+                                                <div className="relative p-6">
+                                                    <div className="flex items-start justify-between mb-5">
+                                                        <div className="relative">
+                                                            <div className="p-3.5 rounded-2xl transition-transform duration-300 group-hover:scale-110"
+                                                                style={{ backgroundColor: materia.bg }}>
+                                                                <Icon className="w-7 h-7" style={{ color: materia.color }} />
+                                                            </div>
+                                                            {/* Emoji flotante */}
+                                                            <span className="absolute -top-1 -right-1 text-base">{materia.emoji}</span>
+                                                        </div>
+
+                                                        {hasOvas ? (
+                                                            <div className="text-right">
+                                                                <span className="text-2xl font-black" style={{ color: materia.color }}>
+                                                                    {ovas.length}
+                                                                </span>
+                                                                <p className="text-xs text-gray-400 leading-none">
+                                                                    OVA{ovas.length !== 1 ? 's' : ''}
+                                                                </p>
+                                                            </div>
+                                                        ) : (
+                                                            <Lock className="w-4 h-4 text-gray-300 mt-1" />
+                                                        )}
+                                                    </div>
+
+                                                    <h3 className="text-base font-bold text-gray-900 mb-1">{materia.area}</h3>
+
+                                                    {hasOvas ? (
+                                                        <div className="flex items-center justify-between mt-3">
+                                                            {/* Mini pills de OVAs */}
+                                                            <div className="flex -space-x-1">
+                                                                {ovas.slice(0, 3).map((_, idx) => (
+                                                                    <div key={idx} className="w-5 h-5 rounded-full border-2 border-white"
+                                                                        style={{ backgroundColor: materia.color + (idx === 0 ? 'FF' : idx === 1 ? 'BB' : '77') }} />
+                                                                ))}
+                                                                {ovas.length > 3 && (
+                                                                    <div className="w-5 h-5 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center">
+                                                                        <span className="text-gray-600 font-bold" style={{ fontSize: "8px" }}>+{ovas.length - 3}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-1 text-xs font-bold transition-transform duration-300 group-hover:translate-x-1"
+                                                                style={{ color: materia.color }}>
+                                                                Explorar <ChevronRight className="w-3.5 h-3.5" />
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-xs text-gray-400 mt-1">Sin recursos asignados</p>
                                                     )}
-                                                </Link>
-                                            </li>
+                                                </div>
+                                            </button>
                                         );
                                     })}
-                                </ul>
-                            </div>
-                        ))}
-                    </nav>
+                                </div>
+                            </>
+                        )}
 
-                    <div className="border-t border-gray-200 p-2">
-                        <ul className="space-y-1">
-                            {bottomNavigation.map(item => {
-                                const Icon = item.icon;
-                                return (
-                                    <li key={item.name}>
-                                        <Link href={item.href} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all group">
-                                            <Icon className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                            {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
-                                            {!sidebarOpen && (
-                                                <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                                    {item.name}
-                                                </span>
-                                            )}
-                                        </Link>
-                                    </li>
-                                );
-                            })}
-                            <li>
-                                <Link href={route("logout")} method="post" as="button"
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all group">
-                                    <LogOut className={`w-5 h-5 ${!sidebarOpen && "mx-auto"}`} />
-                                    {sidebarOpen && <span className="text-sm font-medium">Cerrar Sesión</span>}
-                                    {!sidebarOpen && (
-                                        <span className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                                            Cerrar Sesión
-                                        </span>
+                        {/* ── Vista de OVAs de una materia ── */}
+                        {activeArea && activeMateria && (
+                            <div className={`transition-all duration-500 ${visible ? "opacity-100" : "opacity-0"}`}>
+
+                                {/* Header de la materia */}
+                                <div className="flex items-center gap-4 mb-6">
+                                    <button onClick={() => { setActiveArea(null); setSearch(""); }}
+                                        className="p-2.5 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-white bg-white/80 transition-all shadow-sm">
+                                        <ChevronLeft className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                    <div className="flex items-center gap-3 flex-1">
+                                        <div className="p-3 rounded-2xl" style={{ backgroundColor: activeMateria.bg }}>
+                                            <activeMateria.icon className="w-6 h-6" style={{ color: activeMateria.color }} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-2xl font-black text-gray-900">{activeArea}</h2>
+                                            <p className="text-sm text-gray-500">
+                                                {ovasByArea[activeArea]?.length ?? 0} recurso{(ovasByArea[activeArea]?.length ?? 0) !== 1 ? "s" : ""} · {course ? `${GRADE_LABELS[course.grade]} ${course.section}` : ""}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Buscador */}
+                                <div className="relative mb-6">
+                                    <input type="text"
+                                        placeholder={`Buscar en ${activeArea}...`}
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                        className="w-full pl-5 pr-10 py-3.5 text-sm border-2 rounded-xl focus:outline-none transition-all bg-white shadow-sm"
+                                        style={{ borderColor: "#E5E7EB" }}
+                                        onFocus={e => e.currentTarget.style.borderColor = activeMateria.color}
+                                        onBlur={e  => e.currentTarget.style.borderColor = "#E5E7EB"}
+                                    />
+                                    {search && (
+                                        <button onClick={() => setSearch("")}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                            <X className="w-4 h-4" />
+                                        </button>
                                     )}
-                                </Link>
-                            </li>
-                        </ul>
+                                </div>
+
+                                {/* Sin resultados */}
+                                {activeOvas.length === 0 && (
+                                    <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center shadow-sm">
+                                        <Layers className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                                        <p className="text-base font-semibold text-gray-500">
+                                            {search ? "Sin resultados para esta búsqueda" : "No hay OVAs en esta materia"}
+                                        </p>
+                                        {search && (
+                                            <button onClick={() => setSearch("")}
+                                                className="text-sm mt-2 font-semibold hover:underline"
+                                                style={{ color: activeMateria.color }}>
+                                                Limpiar búsqueda
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Grid OVAs */}
+                                {activeOvas.length > 0 && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                        {activeOvas.map((ova, i) => (
+                                            <OvaCard key={ova.id} ova={ova} materia={activeMateria} index={i} />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                     </div>
                 </div>
-            </aside>
+            </main>
+
+            {/* Fondo */}
+            <div className="fixed inset-0 -z-10">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: "radial-gradient(circle at 1px 1px,rgba(84,13,110,0.04) 1px,transparent 0)",
+                    backgroundSize: "32px 32px"
+                }} />
+                <div className="absolute top-0 left-0 w-full h-1" style={{
+                    background: "linear-gradient(to right,#540D6E,#EE4266,#FFD23F,#3BCEAC,#0EAD69)"
+                }} />
+            </div>
 
             <style>{`
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-                .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-                .animate-slide-up { animation: slideUp 0.6s ease-out; }
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                @keyframes fadeUp {
+                    from { opacity: 0; transform: translateY(16px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-up { animation: fadeUp 0.5s ease-out forwards; }
             `}</style>
         </>
+    );
+}
+
+// ─── Tarjeta OVA ──────────────────────────────────────────────────────────────
+function OvaCard({ ova, materia, index }) {
+    return (
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group animate-fade-up border border-gray-100"
+            style={{ animationDelay: `${index * 80}ms` }}>
+
+            {/* Thumbnail */}
+            {ova.thumbnail ? (
+                <div className="relative overflow-hidden h-44">
+                    <img src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
+                        alt={ova.tematica}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                </div>
+            ) : (
+                <div className="h-44 flex flex-col items-center justify-center relative overflow-hidden"
+                    style={{ background: materia.bgCard }}>
+                    <materia.icon className="w-14 h-14 mb-2 opacity-20 transition-transform duration-300 group-hover:scale-110"
+                        style={{ color: materia.color }} />
+                    <span className="text-3xl">{materia.emoji}</span>
+                    {/* Círculos decorativos */}
+                    <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-10"
+                        style={{ backgroundColor: materia.color }} />
+                    <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full opacity-10"
+                        style={{ backgroundColor: materia.color }} />
+                </div>
+            )}
+
+            <div className="p-5">
+                {/* Badge área */}
+                <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
+                    style={{ backgroundColor: materia.bg, color: materia.color }}>
+                    <materia.icon className="w-3 h-3" />
+                    {ova.area}
+                </span>
+
+                {/* Temática */}
+                <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 leading-snug">
+                    {ova.tematica}
+                </h3>
+
+                {/* Descripción */}
+                {ova.description && (
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{ova.description}</p>
+                )}
+
+                {/* Botón */}
+                {ova.url ? (
+                    <a href={ova.url} target="_blank" rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                        style={{ backgroundColor: materia.color }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+                        onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+                        <PlayCircle className="w-4 h-4" /> Abrir recurso OVA
+                    </a>
+                ) : (
+                    <div className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-gray-400 rounded-xl bg-gray-50 border border-gray-100">
+                        <Clock className="w-4 h-4" /> Recurso próximamente
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
