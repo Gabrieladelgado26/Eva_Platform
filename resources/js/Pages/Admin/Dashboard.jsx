@@ -1,877 +1,536 @@
-import { Head, Link, usePage, router } from "@inertiajs/react";
+// Resources/js/Pages/Admin/Dashboard.jsx
+import { Head, Link, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 import {
-    UserPlus, Edit2, Trash2, Mail, User, Shield, Users, Search, Filter, X,
-    RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
-    LayoutDashboard, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home,
-    Calendar, ClipboardList, BarChart3, HelpCircle, ChevronDown, Eye, Copy, Check,
-    UsersRound, ChevronsLeft, ChevronsRight
+    Users, UserCheck, UserX, GraduationCap, BookOpen, TrendingUp, TrendingDown,
+    Calendar, ChevronLeft, ChevronRight, Download, RefreshCw, Eye, EyeOff,
+    Menu, X, ChevronDown, Filter, Search, Bell, Settings, LogOut, Home,
+    BarChart3, PieChart, LineChart, Activity, Zap, Target, Award, Clock, UserPlus
 } from "lucide-react";
 
-export default function Dashboard({ users = [], section = "users" }) {
+// Componentes de gráficas (instala: npm install recharts)
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+    LineChart as ReLineChart, Line, PieChart as RePieChart, Pie, Cell, AreaChart, Area,
+    RadialBarChart, RadialBar, ComposedChart, Scatter
+} from 'recharts';
 
+export default function Dashboard() {
     const { props } = usePage();
-    const flash = props.flash || {};
-    const { auth } = usePage().props;
-    const user = auth?.user ?? { name: "Usuario" };
-
-    // Usar el hook del sidebar compartido (solo lectura)
+    const { auth, stats, recentUsers, activityLogs, userGrowth, roleDistribution, monthlyActivity } = props;
+    const user = auth?.user ?? { name: "Usuario", role: { name: "Administrador" } };
+    
     const [collapsed] = useSidebarState();
+    const [dateRange, setDateRange] = useState("month");
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
-    // Extraer stats de las props
-    const stats = props.stats || {};
-
-    const [searchTerm, setSearchTerm] = useState("");
-    const [filterRole, setFilterRole] = useState("all");
-    const [filterStatus, setFilterStatus] = useState("all");
-
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
-
-    const [showCredentialsModal, setShowCredentialsModal] = useState(false);
-    const [credentials, setCredentials] = useState(null);
-
-    const [showActivateModal, setShowActivateModal] = useState(false);
-    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
-    const [userToActivate, setUserToActivate] = useState(null);
-    const [userToDeactivate, setUserToDeactivate] = useState(null);
-
-    const [showUniqueAdminWarning, setShowUniqueAdminWarning] = useState(false);
-    const [uniqueAdminName, setUniqueAdminName] = useState('');
-    const [warningAction, setWarningAction] = useState('');
-
-    const [copied, setCopied] = useState({ username: false, pin: false });
-
-    useEffect(() => {
-        if (flash?.credentials) {
-            setCredentials(flash.credentials);
-            setShowCredentialsModal(true);
-        }
-    }, [flash?.credentials]);
-
-    useEffect(() => {
-        if (flash?.unique_admin_error) {
-            setUniqueAdminName(flash.unique_admin_name);
-            setWarningAction(flash.unique_admin_action);
-            setShowUniqueAdminWarning(true);
-        }
-    }, [flash]);
-
-    const normalize = (value) => (value ?? "").toLowerCase();
-
-    const usersData = users?.data ?? [];
-
-    // Pagination metadata from Laravel paginator
-    const currentPage = users?.current_page ?? 1;
-    const lastPage = users?.last_page ?? 1;
-    const from = users?.from ?? 0;
-    const to = users?.to ?? 0;
-    const total = users?.total ?? 0;
-    const links = users?.links ?? [];
-
-    const roles = [...new Set(usersData.map(u => u.role?.slug))].filter(Boolean);
-
-    const isUserActive = (user) => {
-        if (typeof user.is_active === "boolean") return user.is_active;
-        if (typeof user.is_active === "number") return user.is_active === 1;
-        return user.is_active === "1" || user.is_active === "true";
+    // Datos de ejemplo (deberías reemplazar con datos reales del backend)
+    const dashboardStats = stats || {
+        totalUsers: 1248,
+        activeUsers: 1024,
+        inactiveUsers: 224,
+        totalStudents: 980,
+        totalTeachers: 48,
+        totalAdmins: 12,
+        totalOVAs: 156,
+        completedActivities: 3420,
+        avgProgress: 78,
+        activeCourses: 24
     };
 
-    const handleActivateClick = (user) => {
-        setUserToActivate(user);
-        setShowActivateModal(true);
-    };
+    const roleDistributionData = roleDistribution || [
+        { name: 'Estudiantes', value: dashboardStats.totalStudents, color: '#540D6E', icon: GraduationCap },
+        { name: 'Docentes', value: dashboardStats.totalTeachers, color: '#EE4266', icon: BookOpen },
+        { name: 'Administradores', value: dashboardStats.totalAdmins, color: '#FFD23F', icon: Users }
+    ];
 
-    const handleDeactivateClick = (user) => {
-        setUserToDeactivate(user);
-        setShowDeactivateModal(true);
-    };
+    const userGrowthData = userGrowth || [
+        { month: 'Ene', users: 120, active: 98 },
+        { month: 'Feb', users: 135, active: 112 },
+        { month: 'Mar', users: 148, active: 125 },
+        { month: 'Abr', users: 162, active: 138 },
+        { month: 'May', users: 180, active: 152 },
+        { month: 'Jun', users: 195, active: 168 },
+        { month: 'Jul', users: 210, active: 182 },
+        { month: 'Ago', users: 228, active: 198 },
+        { month: 'Sep', users: 245, active: 215 },
+        { month: 'Oct', users: 260, active: 228 },
+        { month: 'Nov', users: 275, active: 242 },
+        { month: 'Dic', users: 290, active: 256 }
+    ];
 
-    const confirmActivateUser = () => {
-        router.patch(
-            route("admin.users.toggleStatus", userToActivate.id),
-            {},
-            { preserveScroll: true, preserveState: true }
-        );
-        setShowActivateModal(false);
-        setUserToActivate(null);
-    };
+    const monthlyActivityData = monthlyActivity || [
+        { month: 'Ene', ovas: 12, quizzes: 45, assignments: 28 },
+        { month: 'Feb', ovas: 15, quizzes: 52, assignments: 32 },
+        { month: 'Mar', ovas: 18, quizzes: 58, assignments: 35 },
+        { month: 'Abr', ovas: 22, quizzes: 65, assignments: 40 },
+        { month: 'May', ovas: 25, quizzes: 72, assignments: 44 },
+        { month: 'Jun', ovas: 28, quizzes: 78, assignments: 48 }
+    ];
 
-    const confirmDeactivateUser = () => {
-        router.patch(
-            route("admin.users.toggleStatus", userToDeactivate.id),
-            {},
-            { preserveScroll: true, preserveState: true }
-        );
-        setShowDeactivateModal(false);
-        setUserToDeactivate(null);
-    };
+    const recentActivities = activityLogs || [
+        { id: 1, user: 'María González', action: 'Completó OVA', target: 'Matemáticas - Álgebra', time: 'Hace 5 min', icon: '📚' },
+        { id: 2, user: 'Carlos Ruiz', action: 'Inició curso', target: 'Ciencias Naturales', time: 'Hace 15 min', icon: '🎓' },
+        { id: 3, user: 'Ana Martínez', action: 'Subió recurso', target: 'Historia - Documental', time: 'Hace 1 hora', icon: '📤' },
+        { id: 4, user: 'Luis Fernández', action: 'Completó quiz', target: 'Matemáticas - Examen', time: 'Hace 2 horas', icon: '✅' },
+        { id: 5, user: 'Elena Torres', action: 'Registró estudiante', target: 'Nuevo ingreso', time: 'Hace 3 horas', icon: '👤' }
+    ];
 
-    const roleLabels = {
-        admin: "Administrador",
-        teacher: "Docente",
-        student: "Estudiante"
-    };
-
-    const getRoleLabel = (slug) => roleLabels[slug] ?? slug;
-
-    const filteredUsers = usersData.filter((u) => {
-        const matchesSearch =
-            normalize(u.name).includes(searchTerm.toLowerCase()) ||
-            normalize(u.email).includes(searchTerm.toLowerCase()) ||
-            normalize(u.username).includes(searchTerm.toLowerCase());
-
-        const matchesRole =
-            filterRole === "all" || u.role?.slug === filterRole;
-
-        const matchesStatus =
-            filterStatus === "all" ||
-            (filterStatus === "active" && isUserActive(u)) ||
-            (filterStatus === "inactive" && !isUserActive(u));
-
-        return matchesSearch && matchesRole && matchesStatus;
-    });
-
-    const hasActiveFilters =
-        searchTerm ||
-        filterRole !== "all" ||
-        filterStatus !== "all";
-
-    const clearFilters = () => {
-        setSearchTerm("");
-        setFilterRole("all");
-        setFilterStatus("all");
-    };
-
-    const handleDeleteClick = (user) => {
-        setUserToDelete(user);
-        setShowDeleteModal(true);
-    };
-
-    const handleConfirmDelete = () => {
-        router.delete(route("admin.users.destroy", userToDelete.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                setShowDeleteModal(false);
-                setUserToDelete(null);
-            }
-        });
-    };
-
-    const copyToClipboard = (text, type) => {
-        navigator.clipboard.writeText(text);
-        setCopied((prev) => ({ ...prev, [type]: true }));
+    const refreshData = () => {
+        setRefreshing(true);
         setTimeout(() => {
-            setCopied((prev) => ({ ...prev, [type]: false }));
-        }, 2000);
+            setRefreshing(false);
+        }, 1000);
     };
 
-    // Navigate to a paginator URL while preserving the section param
-    const goToPage = (url) => {
-        if (!url) return;
-        router.get(url, { section }, { preserveScroll: true, preserveState: false });
-    };
+    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color, bgColor, subtitle }) => (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 group">
+            <div className="flex items-start justify-between">
+                <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
+                    {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+                    {trend && (
+                        <div className="flex items-center gap-1 mt-2">
+                            {trend === 'up' ? (
+                                <TrendingUp className="w-4 h-4 text-green-500" />
+                            ) : (
+                                <TrendingDown className="w-4 h-4 text-red-500" />
+                            )}
+                            <span className={`text-xs font-semibold ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                {trendValue}
+                            </span>
+                            <span className="text-xs text-gray-500">vs mes anterior</span>
+                        </div>
+                    )}
+                </div>
+                <div className={`p-3 rounded-xl ${bgColor} group-hover:scale-110 transition-transform duration-200`}>
+                    <Icon className={`w-6 h-6 ${color}`} />
+                </div>
+            </div>
+        </div>
+    );
 
-    // Build a clean array of page numbers to show (with ellipsis as null)
-    const buildPageNumbers = () => {
-        if (lastPage <= 7) {
-            return Array.from({ length: lastPage }, (_, i) => i + 1);
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">{label}</p>
+                    {payload.map((p, idx) => (
+                        <p key={idx} className="text-xs" style={{ color: p.color }}>
+                            {p.name}: {p.value}
+                        </p>
+                    ))}
+                </div>
+            );
         }
-        const pages = [];
-        pages.push(1);
-        if (currentPage > 3) pages.push(null); // left ellipsis
-        for (
-            let p = Math.max(2, currentPage - 1);
-            p <= Math.min(lastPage - 1, currentPage + 1);
-            p++
-        ) {
-            pages.push(p);
-        }
-        if (currentPage < lastPage - 2) pages.push(null); // right ellipsis
-        pages.push(lastPage);
-        return pages;
+        return null;
     };
-
-    const pageNumbers = buildPageNumbers();
 
     return (
         <>
-            <Head title="Usuarios" />
+            <Head title="Dashboard - Personal" />
 
-            {/* AppSidebar compartido */}
             <AppSidebar currentRoute="admin.dashboard" />
 
-            {/* Main content - usando collapsed del hook */}
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
                     {/* Breadcrumb */}
                     <div className="mb-6">
                         <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Gestión de Usuarios</Link>
+                            <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Panel de Control</Link>
                             <span>/</span>
-                            <span style={{ color: "#540D6E" }} className="font-medium">Usuarios</span>
+                            <Link href={route("admin.dashboard")} className="hover:text-purple-600 transition-colors">Administración</Link>
+                            <span>/</span>
+                            <span style={{ color: "#540D6E" }} className="font-medium">Estadísticas</span>
                         </div>
                     </div>
 
-                    {/* Mensaje Flash */}
-                    {flash?.message && (
-                        <div className="max-w-7xl mx-auto mb-6">
-                            <div className="p-4 rounded-lg border border-red-300 bg-red-50 text-red-700 font-semibold shadow-sm">
-                                {flash.message}
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="max-w-7xl mx-auto">
-                        {/* Header */}
-                        <div className="mb-8 animate-fade-in">
-                            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div className="max-w-8xl mx-auto">
+                        {/* Header con bienvenida y acciones */}
+                        <div className="mb-8">
+                            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-4 rounded-xl shadow-sm border" style={{ backgroundColor: "white", borderColor: "#540D6E" }}>
-                                        <Users className="w-10 h-10" style={{ color: "#540D6E" }} />
-                                    </div>
-                                    <div>
-                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
-                                        <p className="text-gray-600 text-base">Administración y supervisión de usuarios institucionales</p>
-                                    </div>
-                                </div>
-                                <Link href={route("admin.users.create")}
-                                    className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
-                                    style={{ backgroundColor: "#540D6E" }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                    <UserPlus className="w-5 h-5" /> Registrar Usuario
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                            {[
-                                { 
-                                    icon: UsersRound, 
-                                    bg: "#F3E8FF", 
-                                    color: "#540D6E", 
-                                    label: "Total Usuarios", 
-                                    desc: "Registrados en el sistema", 
-                                    value: stats.total || total || usersData.length 
-                                },
-                                { 
-                                    icon: CheckCircle, 
-                                    bg: "#E8F5F0", 
-                                    color: "#0EAD69", 
-                                    label: "Usuarios Activos", 
-                                    desc: "Con acceso habilitado", 
-                                    value: stats.active || usersData.filter(isUserActive).length 
-                                },
-                                { 
-                                    icon: Shield, 
-                                    bg: "#F3E8FF", 
-                                    color: "#540D6E", 
-                                    label: "Roles Asignados", 
-                                    desc: "Perfiles diferentes", 
-                                    value: stats.unique_roles || 0 
-                                }
-                            ].map((stat, i) => (
-                                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-start gap-3">
-                                            <div className="p-3 rounded-lg" style={{ backgroundColor: stat.bg }}>
-                                                <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">{stat.label}</p>
-                                                <p className="text-sm text-gray-600 mt-0.5">{stat.desc}</p>
-                                            </div>
-                                        </div>
-                                        <p className="text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Filtros */}
-                        <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex flex-col lg:flex-row gap-4">
-                                <div className="relative flex-1">
-                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input type="text" placeholder="Buscar por nombre o correo..." value={searchTerm}
-                                        onChange={e => setSearchTerm(e.target.value)}
-                                        className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
-                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} />
-                                    {searchTerm && (
-                                        <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="relative">
-                                    <select value={filterRole} onChange={e => setFilterRole(e.target.value)}
-                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
-                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}>
-                                        <option value="all">Todos los roles</option>
-                                        {roles.map((role) => (<option key={role} value={role}>{getRoleLabel(role)}</option>))}
-                                    </select>
-                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                                    </div>
-                                </div>
-                                <div className="relative">
-                                    <select
-                                        value={filterStatus}
-                                        onChange={e => setFilterStatus(e.target.value)}
-                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
-                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                        onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
+                                    <div 
+                                        className="p-4 rounded-xl shadow-sm border"
+                                        style={{ backgroundColor: "white", borderColor: "#540D6E" }}
                                     >
-                                        <option value="all">Todos los estados</option>
-                                        <option value="active">Activos</option>
-                                        <option value="inactive">Inactivos</option>
-                                    </select>
-                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                                        <BarChart3 className="w-10 h-10" style={{ color: "#540D6E" }} />
+                                    </div>
+
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                                            ¡Bienvenido, {user.name}!
+                                        </h1>
+                                        <p className="text-gray-600">
+                                            Panel de control del sistema educativo -{" "}
+                                            {new Date().toLocaleDateString("es-ES", {
+                                                weekday: "long",
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                            })}
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div className="flex items-center gap-3">
+                                    <button 
+                                        onClick={refreshData}
+                                        className={`p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all ${refreshing ? 'animate-spin' : ''}`}
+                                    >
+                                        <RefreshCw className="w-5 h-5 text-gray-600" />
+                                    </button>
 
-                        {/* Indicador de filtros activos */}
-                        {hasActiveFilters && (
-                            <div className="mb-6 animate-fade-in">
-                                <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
-                                            <Filter className="w-4 h-4" style={{ color: "#540D6E" }} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900">Filtros Aplicados</p>
-                                            <div className="flex flex-wrap gap-2 mt-1">
-                                                {searchTerm && (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                        Búsqueda: "{searchTerm}"
-                                                        <button onClick={() => setSearchTerm("")} className="hover:bg-white/50 p-0.5 rounded">
-                                                            <X className="w-3 h-3" />
-                                                        </button>
-                                                    </span>
-                                                )}
-                                                {filterRole !== "all" && (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                        Rol: {filterRole}
-                                                        <button onClick={() => setFilterRole("all")} className="hover:bg-white/50 p-0.5 rounded">
-                                                            <X className="w-3 h-3" />
-                                                        </button>
-                                                    </span>
-                                                )}
-                                                {filterStatus !== "all" && (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
-                                                        style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                        Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
-                                                        <button onClick={() => setFilterStatus("all")} className="hover:bg-white/50 p-0.5 rounded">
-                                                            <X className="w-3 h-3" />
-                                                        </button>
-                                                    </span>
-                                                )}
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => setShowNotifications(!showNotifications)}
+                                            className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all relative"
+                                        >
+                                            <Bell className="w-5 h-5 text-gray-600" />
+                                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                                        </button>
+
+                                        {showNotifications && (
+                                            <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
+                                                <div className="p-4 border-b border-gray-200">
+                                                    <h3 className="font-semibold text-gray-900">Notificaciones</h3>
+                                                </div>
+                                                <div className="max-h-96 overflow-y-auto">
+                                                    <div className="p-4 hover:bg-gray-50 cursor-pointer">
+                                                        <p className="text-sm font-medium text-gray-900">Nuevo estudiante registrado</p>
+                                                        <p className="text-xs text-gray-500 mt-1">Hace 10 minutos</p>
+                                                    </div>
+                                                    <div className="p-4 hover:bg-gray-50 cursor-pointer border-t border-gray-100">
+                                                        <p className="text-sm font-medium text-gray-900">OVA actualizado</p>
+                                                        <p className="text-xs text-gray-500 mt-1">Hace 1 hora</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                    <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-                                        <RotateCcw className="w-4 h-4" /> Limpiar
+
+                                    <button className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all">
+                                        <Download className="w-5 h-5 text-gray-600" />
                                     </button>
                                 </div>
                             </div>
-                        )}
+                        </div>
 
-                   {/* Tabla de usuarios */}
-<div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-    {filteredUsers.length > 0 ? (
-        <div className="overflow-x-auto">
-            <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        {[
-                            { icon: User, label: "Usuario" },
-                            { icon: Mail, label: "Correo / Username" },
-                            { icon: Shield, label: "Rol" },
-                            { icon: CheckCircle, label: "Estado" }
-                        ].map((col, i) => (
-                            <th key={i} className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                <div className="flex items-center gap-2">
-                                    <col.icon className="w-4 h-4" /> {col.label}
+                        {/* Filtro de rango de fechas */}
+                        <div className="mb-6 flex justify-end">
+                            <div className="flex gap-2 bg-white rounded-lg border border-gray-200 p-1">
+                                {['semana', 'mes', 'año'].map((range) => (
+                                    <button
+                                        key={range}
+                                        onClick={() => setDateRange(range)}
+                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                                            dateRange === range 
+                                                ? 'text-white' 
+                                                : 'text-gray-600 hover:bg-gray-100'
+                                        }`}
+                                        style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
+                                    >
+                                        {range.charAt(0).toUpperCase() + range.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stats Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard 
+                            title="Total Usuarios" 
+                            value={dashboardStats.totalUsers.toLocaleString()} 
+                            icon={Users}
+                            trend="up"
+                            trendValue="+12.5%"
+                            color="text-purple-600"
+                            bgColor="bg-purple-50"
+                            subtitle="Registrados en el sistema"
+                        />
+                        <StatCard 
+                            title="Usuarios Activos" 
+                            value={dashboardStats.activeUsers.toLocaleString()} 
+                            icon={UserCheck}
+                            trend="up"
+                            trendValue="+8.2%"
+                            color="text-green-600"
+                            bgColor="bg-green-50"
+                            subtitle="Con acceso habilitado"
+                        />
+                        <StatCard 
+                            title="Usuarios Inactivos" 
+                            value={dashboardStats.inactiveUsers.toLocaleString()} 
+                            icon={UserX}
+                            trend="down"
+                            trendValue="-3.1%"
+                            color="text-red-600"
+                            bgColor="bg-red-50"
+                            subtitle="Sin acceso"
+                        />
+                        <StatCard
+                            title="Total Docentes"
+                            value={dashboardStats.totalTeachers}
+                            icon={BookOpen}
+                            trend="up"
+                            trendValue="+1 nuevo"
+                            color="text-purple-900"
+                            bgColor="bg-purple-90"
+                            subtitle="Personal docente registrado"
+                        />
+                    </div>
+
+                    {/* Segunda fila de stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard 
+                            title="Total OVAs" 
+                            value={dashboardStats.totalOVAs} 
+                            icon={BookOpen}
+                            trend="up"
+                            trendValue="+4.2%"
+                            color="text-blue-600"
+                            bgColor="bg-blue-50"
+                            subtitle="Recursos educativos"
+                        />
+                        <StatCard 
+                            title="Actividades Completadas" 
+                            value={dashboardStats.completedActivities.toLocaleString()} 
+                            icon={Activity}
+                            trend="up"
+                            trendValue="+15.3%"
+                            color="text-indigo-600"
+                            bgColor="bg-indigo-50"
+                            subtitle="Este mes"
+                        />
+                        <StatCard 
+                            title="Progreso Promedio" 
+                            value={`${dashboardStats.avgProgress}%`} 
+                            icon={Target}
+                            trend="up"
+                            trendValue="+6.7%"
+                            color="text-teal-600"
+                            bgColor="bg-teal-50"
+                            subtitle="Nivel de avance"
+                        />
+                        <StatCard 
+                            title="Cursos Activos" 
+                            value={dashboardStats.activeCourses} 
+                            icon={Zap}
+                            trend="up"
+                            trendValue="+2 cursos"
+                            color="text-yellow-400"
+                            bgColor="bg-yellow-50"
+                            subtitle="En este período"
+                        />
+                    </div>
+
+                    {/* Gráficas principales */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        {/* Gráfica de crecimiento de usuarios */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Crecimiento de Usuarios</h3>
+                                    <p className="text-sm text-gray-500">Evolución mensual de usuarios registrados</p>
                                 </div>
-                            </th>
-                        ))}
-                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                    {filteredUsers.map(u => {
-                        const active = isUserActive(u);
-                        return (
-                            <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                            {u.name.charAt(0).toUpperCase()}
+                                <BarChart3 className="w-5 h-5 text-gray-400" />
+                            </div>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <ComposedChart data={userGrowthData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                                    <XAxis dataKey="month" stroke="#6B7280" />
+                                    <YAxis stroke="#6B7280" />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Legend />
+                                    <Bar dataKey="users" fill="#540D6E" name="Usuarios Totales" radius={[4, 4, 0, 0]} />
+                                    <Line type="monotone" dataKey="active" stroke="#EE4266" name="Usuarios Activos" strokeWidth={2} dot={{ r: 4 }} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Gráfica de distribución de roles */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Distribución por Roles</h3>
+                                    <p className="text-sm text-gray-500">Composición actual del sistema</p>
+                                </div>
+                                <PieChart className="w-5 h-5 text-gray-400" />
+                            </div>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <RePieChart>
+                                    <Pie
+                                        data={roleDistributionData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                        labelLine={false}
+                                    >
+                                        {roleDistributionData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Legend />
+                                </RePieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* Segunda fila de gráficas */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        {/* Actividad mensual */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Actividad Mensual</h3>
+                                    <p className="text-sm text-gray-500">OVAs iniciadas y completadas por mes</p>
+                                </div>
+                                <Activity className="w-5 h-5 text-gray-400" />
+                            </div>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <AreaChart data={monthlyActivityData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                                    <XAxis dataKey="month" stroke="#6B7280" />
+                                    <YAxis stroke="#6B7280" />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Legend />
+                                    <Area type="monotone" dataKey="ovas" stroke="#540D6E" fill="#540D6E" fillOpacity={0.3} name="OVAs Completadas" />
+                                    <Area type="monotone" dataKey="iniciadas" stroke="#3BCEAC" fill="#3BCEAC" fillOpacity={0.3} name="OVAs Iniciadas" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Actividades Recientes */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Actividades Recientes</h3>
+                                    <p className="text-sm text-gray-500">Últimas acciones en el sistema</p>
+                                </div>
+                                <Clock className="w-5 h-5 text-gray-400" />
+                            </div>
+                            <div className="space-y-4 max-h-[300px] overflow-y-auto">
+                                {recentActivities.map((activity) => (
+                                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <div className="text-2xl">{activity.icon}</div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-gray-900">{activity.user}</p>
+                                            <p className="text-sm text-gray-600">
+                                                {activity.action}: <span className="font-medium">{activity.target}</span>
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
                                         </div>
-                                        <p className="text-sm font-semibold text-gray-900">{u.name}</p>
                                     </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <Mail className="w-4 h-4 text-gray-400" />
-                                        <span className="font-medium">
-                                            {u.role?.slug === "student" ? u.username : u.email}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white shadow-sm"
-                                        style={{ backgroundColor: "#540D6E" }}>
-                                        <Shield className="w-3.5 h-3.5" /> {u.role?.name}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border w-auto"
-                                        style={active ? { backgroundColor: "#E8F5F0", borderColor: "#3BCEAC" } : { backgroundColor: "#F9FAFB", borderColor: "#E5E7EB" }}>
-                                        <div className={`w-2 h-2 rounded-full ${active ? "animate-pulse" : ""}`}
-                                            style={{ backgroundColor: active ? "#0EAD69" : "#9CA3AF" }} />
-                                        <span className="text-xs font-medium" style={{ color: active ? "#0EAD69" : "#6B7280" }}>
-                                            {active ? "Activo" : "Inactivo"}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                            style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
-                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
-                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = active ? "#6B7280" : "#0EAD69"}>
-                                            {active ? <><EyeOff className="w-4 h-4" /> Desactivar</> : <><Power className="w-4 h-4" /> Activar</>}
-                                        </button>
-                                        <Link href={route("admin.users.edit", u.id)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
-                                            style={{ backgroundColor: "#FFD23F" }}
-                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
-                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}>
-                                            <Edit2 className="w-4 h-4" /> Editar
-                                        </Link>
-                                        <button onClick={() => handleDeleteClick(u)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                            style={{ backgroundColor: "#EE4266" }}
-                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                            <Trash2 className="w-4 h-4" /> Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
-    ) : (
-        <div className="text-center py-16 px-6">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
-                style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                <User className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {searchTerm || filterRole !== "all" ? "No se encontraron usuarios" : "No hay usuarios registrados"}
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {searchTerm || filterRole !== "all" ? "Intente modificar los criterios de búsqueda" : "Registre el primer usuario para comenzar"}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href={route("admin.users.create")}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                    style={{ backgroundColor: "#540D6E" }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                    <UserPlus className="w-5 h-5" /> Registrar Usuario
-                </Link>
-                {hasActiveFilters && (
-                    <button onClick={clearFilters}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
-                        <RotateCcw className="w-5 h-5" /> Limpiar Filtros
-                    </button>
-                )}
-            </div>
-        </div>
-    )}
-</div>
-                        {/* ── PAGINACIÓN ── */}
-                        {lastPage > 1 && (
-                            <div className="mt-6 bg-white rounded-lg border border-gray-200 shadow-sm px-6 py-4">
-                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                ))}
+                            </div>
+                        </div>
+                    </div>
 
-                                    {/* Info de registros */}
-                                    <p className="text-sm text-gray-600 order-2 sm:order-1">
-                                        Mostrando{" "}
-                                        <span className="font-bold text-gray-900">{from}</span>
-                                        {" "}–{" "}
-                                        <span className="font-bold text-gray-900">{to}</span>
-                                        {" "}de{" "}
-                                        <span className="font-bold" style={{ color: "#540D6E" }}>{total}</span>
-                                        {" "}usuarios
-                                    </p>
-
-                                    {/* Controles de página */}
-                                    <div className="flex items-center gap-1 order-1 sm:order-2">
-
-                                        {/* Primera página */}
-                                        <button
-                                            onClick={() => goToPage(links[0]?.url)}
-                                            disabled={currentPage === 1}
-                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                            title="Primera página"
-                                        >
-                                            <ChevronsLeft className="w-4 h-4" />
-                                        </button>
-
-                                        {/* Página anterior */}
-                                        <button
-                                            onClick={() => goToPage(links[currentPage - 1]?.url ?? null)}
-                                            disabled={currentPage === 1}
-                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                            title="Página anterior"
-                                        >
-                                            <ChevronLeft className="w-4 h-4" />
-                                        </button>
-
-                                        {/* Números de página */}
-                                        {pageNumbers.map((page, idx) =>
-                                            page === null ? (
-                                                <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 select-none">…</span>
-                                            ) : (
-                                                <button
-                                                    key={page}
-                                                    onClick={() => {
-                                                        // Find the link whose label matches this page number
-                                                        const link = links.find(l => l.label === String(page));
-                                                        goToPage(link?.url ?? null);
-                                                    }}
-                                                    className="min-w-[36px] h-9 px-2 rounded-lg border text-sm font-semibold transition-all"
-                                                    style={
-                                                        page === currentPage
-                                                            ? { backgroundColor: "#540D6E", borderColor: "#540D6E", color: "#fff" }
-                                                            : { backgroundColor: "#fff", borderColor: "#E5E7EB", color: "#374151" }
-                                                    }
-                                                    onMouseEnter={e => {
-                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#F3E8FF";
-                                                    }}
-                                                    onMouseLeave={e => {
-                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#fff";
-                                                    }}
-                                                >
-                                                    {page}
-                                                </button>
-                                            )
-                                        )}
-
-                                        {/* Página siguiente */}
-                                        <button
-                                            onClick={() => goToPage(links[currentPage + 1]?.url ?? null)}
-                                            disabled={currentPage === lastPage}
-                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                            title="Página siguiente"
-                                        >
-                                            <ChevronRight className="w-4 h-4" />
-                                        </button>
-
-                                        {/* Última página */}
-                                        <button
-                                            onClick={() => goToPage(links[links.length - 1]?.url)}
-                                            disabled={currentPage === lastPage}
-                                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                            title="Última página"
-                                        >
-                                            <ChevronsRight className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                    {/* Indicadores de progreso y métricas adicionales */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        {/* Progreso general del sistema */}
+                        <div className="bg-[#540D6E] rounded-xl shadow-sm p-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E", color: "#540D6E" }}>
+                            <h3 className="text-lg font-bold mb-4">Progreso General</h3>
+                            <div className="relative">
+                                <div className="text-center">
+                                    <p className="text-5xl font-bold mb-2">{dashboardStats.avgProgress}%</p>
+                                    <p className="text-sm">del contenido completado</p>
+                                </div>
+                                <div className="mt-4 h-2 bg-purple-900 rounded-full overflow-hidden">
+                                    <div 
+                                        className="h-full bg-white rounded-full transition-all duration-500"
+                                        style={{ width: `${dashboardStats.avgProgress}%` }}
+                                    ></div>
                                 </div>
                             </div>
-                        )}
+                        </div>
 
-                        {/* Info adicional (cuando hay una sola página) */}
-                        {lastPage <= 1 && usersData.length > 0 && (
-                            <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-                                <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        <span>Mostrando <span className="font-bold" style={{ color: "#540D6E" }}>{filteredUsers.length}</span> de <span className="font-bold text-gray-900">{total || usersData.length}</span> usuarios</span>
-                                        <span className="mx-2">•</span>
-                                        <span className="font-bold" style={{ color: "#0EAD69" }}>{usersData.filter(isUserActive).length}</span> activos
+                        {/* Usuarios por hora (pico de actividad) */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Horas Pico de Actividad</h3>
+                            <div className="space-y-3">
+                                {[
+                                    { hour: '8:00 - 10:00', activity: 85, label: 'Mañana' },
+                                    { hour: '10:00 - 12:00', activity: 92, label: 'Media mañana' },
+                                    { hour: '14:00 - 16:00', activity: 78, label: 'Tarde' },
+                                    { hour: '18:00 - 20:00', activity: 65, label: 'Noche' }
+                                ].map((item, idx) => (
+                                    <div key={idx}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-gray-600">{item.hour}</span>
+                                            <span className="text-gray-900 font-medium">{item.activity}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${item.activity}%`, backgroundColor: '#540D6E' }}
+                                            ></div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-500">
-                                        Actualizado: {new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Rendimiento de OVAs */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Rendimiento de OVAs</h3>
+                            <div className="space-y-4">
+                                {[
+                                    { name: 'Matemáticas', score: 88, color: '#540D6E' },
+                                    { name: 'Ciencias', score: 76, color: '#EE4266' },
+                                    { name: 'Historia', score: 92, color: '#FFD23F' },
+                                    { name: 'Lenguaje', score: 84, color: '#0EAD69' }
+                                ].map((item, idx) => (
+                                    <div key={idx}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-gray-700">{item.name}</span>
+                                            <span className="text-gray-900 font-medium">{item.score}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${item.score}%`, backgroundColor: item.color }}
+                                            ></div>
+                                        </div>
                                     </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer del dashboard */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <Activity className="w-4 h-4" />
+                                <span>Sistema actualizado al día de hoy</span>
+                            </div>
+                            <div className="flex gap-6">
+                                <div className="text-center">
+                                    <p className="text-xs text-gray-500">Total OVAs</p>
+                                    <p className="text-lg font-bold" style={{ color: "#540D6E" }}>{dashboardStats.totalOVAs}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-gray-500">Cursos Activos</p>
+                                    <p className="text-lg font-bold" style={{ color: "#0EAD69" }}>{dashboardStats.activeCourses}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-gray-500">Progreso Promedio</p>
+                                    <p className="text-lg font-bold" style={{ color: "#EE4266" }}>{dashboardStats.avgProgress}%</p>
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </main>
-
-            {/* Modal de Confirmación Eliminación */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up">
-                        <div className="p-6 border-b border-gray-200">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FECACA" }}>
-                                    <Trash2 className="w-6 h-6" style={{ color: "#EE4266" }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Confirmar Eliminación</h3>
-                            </div>
-                            <p className="text-gray-600 text-sm">Esta acción es irreversible y eliminará permanentemente al usuario</p>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex items-start gap-3 p-4 rounded-lg border mb-4" style={{ backgroundColor: "#FEE2E2", borderColor: "#FECACA" }}>
-                                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EE4266" }} />
-                                <div className="space-y-2">
-                                    <p className="text-sm font-semibold text-gray-900">Usuario a eliminar:</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                            {userToDelete?.name?.charAt(0).toUpperCase() || "U"}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-gray-900">{userToDelete?.name || "Usuario"}</p>
-                                            <p className="text-sm text-gray-600">{userToDelete?.email || ""}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {["Se eliminarán todos los datos asociados al usuario", "El acceso al sistema será revocado inmediatamente"].map((text, i) => (
-                                <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                                    <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#EE4266" }} />
-                                    <span>{text}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="p-6 pt-4 border-t border-gray-200 flex items-center justify-end gap-3">
-                            <button onClick={() => setShowDeleteModal(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-                                Cancelar
-                            </button>
-                            <button onClick={handleConfirmDelete}
-                                className="px-6 py-2.5 text-sm font-bold text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all shadow-sm hover:shadow-md"
-                                style={{ backgroundColor: "#EE4266", "--tw-ring-color": "rgba(238, 66, 102, 0.5)" }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                <span className="flex items-center gap-2"><Trash2 className="w-4 h-4" /> Confirmar Eliminación</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal de Credenciales */}
-            {showCredentialsModal && credentials && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCredentialsModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
-                        <div className="p-6">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                                    <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Credenciales de Acceso</h2>
-                                    <p className="text-sm text-gray-600">Guarda estas credenciales para el inicio de sesión del estudiante</p>
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Usuario</label>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <User className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800">{credentials.username}</span>
-                                    </div>
-                                    <button onClick={() => copyToClipboard(credentials.username, 'username')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
-                                        style={{ borderColor: copied.username ? "#0EAD69" : "#540D6E", backgroundColor: copied.username ? "#E8F5F0" : "white" }}>
-                                        {copied.username ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
-                                    </button>
-                                </div>
-                                {copied.username && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ Usuario copiado</p>}
-                            </div>
-                            <div className="mb-6">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">PIN de Acceso</label>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <Shield className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800 text-lg tracking-wider font-bold">{credentials.pin}</span>
-                                    </div>
-                                    <button onClick={() => copyToClipboard(credentials.pin, 'pin')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
-                                        style={{ borderColor: copied.pin ? "#0EAD69" : "#540D6E", backgroundColor: copied.pin ? "#E8F5F0" : "white" }}>
-                                        {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
-                                    </button>
-                                </div>
-                                {copied.pin && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ PIN copiado</p>}
-                            </div>
-                            <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
-                                <p className="text-xs text-gray-700 flex items-start gap-2">
-                                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
-                                    <span>Estas credenciales son únicas, asegúrate de compartirlas de forma segura con el estudiante.</span>
-                                </p>
-                            </div>
-                            <button onClick={() => setShowCredentialsModal(false)}
-                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                style={{ backgroundColor: "#540D6E" }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                Entendido
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal de Confirmación para Activar Usuario */}
-            {showActivateModal && userToActivate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowActivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #0EAD69, #3BCEAC)" }} />
-                        <div className="p-6">
-                            <button onClick={() => setShowActivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#E8F5F0" }}>
-                                    <Power className="w-6 h-6" style={{ color: "#0EAD69" }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Activar Usuario</h3>
-                            </div>
-                            <p className="text-gray-600 mb-4">
-                                ¿Estás seguro de activar a <span className="font-semibold text-gray-900">{userToActivate.name}</span>?
-                            </p>
-                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: "#E8F5F0", borderLeft: "4px solid #0EAD69" }}>
-                                <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#0EAD69" }} />
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
-                                    <p className="text-xs text-gray-600">El usuario podrá acceder al sistema y realizar las acciones permitidas según su rol.</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <button onClick={() => setShowActivateModal(false)} className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
-                                    Cancelar
-                                </button>
-                                <button onClick={confirmActivateUser} className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md" style={{ backgroundColor: "#0EAD69" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#059669"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#0EAD69"}>
-                                    Activar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal de Confirmación para Desactivar Usuario */}
-            {showDeactivateModal && userToDeactivate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeactivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #DC2F55)" }} />
-                        <div className="p-6">
-                            <button onClick={() => setShowDeactivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
-                                    <EyeOff className="w-6 h-6" style={{ color: "#EE4266" }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Desactivar Usuario</h3>
-                            </div>
-                            <p className="text-gray-600 mb-4">
-                                ¿Estás seguro de desactivar a <span className="font-semibold text-gray-900">{userToDeactivate.name}</span>?
-                            </p>
-                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: "#FEE2E2", borderLeft: "4px solid #EE4266" }}>
-                                <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#EE4266" }} />
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
-                                    <p className="text-xs text-gray-600">El usuario perderá acceso al sistema inmediatamente. No podrá iniciar sesión hasta que sea reactivado.</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <button onClick={() => setShowDeactivateModal(false)} className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
-                                    Cancelar
-                                </button>
-                                <button onClick={confirmDeactivateUser} className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md" style={{ backgroundColor: "#EE4266" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                    Desactivar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal de Advertencia - Único Administrador */}
-            {showUniqueAdminWarning && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowUniqueAdminWarning(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #FFD23F)" }} />
-                        <div className="p-6">
-                            <button onClick={() => setShowUniqueAdminWarning(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FEF2F2" }}>
-                                    <AlertCircle className="w-6 h-6" style={{ color: "#EE4266" }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Acción no permitida</h3>
-                            </div>
-                            <div className="mb-4">
-                                <p className="text-gray-700 mb-2">
-                                    No se puede <span className="font-semibold">{warningAction}</span> a <span className="font-semibold text-gray-900">{uniqueAdminName}</span>.
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Es el <span className="font-semibold text-purple-700">único administrador activo</span> en el sistema.
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg mb-6 bg-amber-50 border border-amber-200">
-                                <div className="flex gap-3">
-                                    <Shield className="w-5 h-5 flex-shrink-0" style={{ color: "#D97706" }} />
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-900 mb-1">Requisito del sistema</p>
-                                        <p className="text-xs text-gray-600">Debe existir al menos un administrador activo. Puedes:</p>
-                                        <ul className="mt-2 space-y-1.5">
-                                            <li className="flex items-start gap-2 text-xs">
-                                                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#D97706" }} />
-                                                <span className="text-gray-600">Asignar rol de administrador a otro usuario primero</span>
-                                            </li>
-                                            <li className="flex items-start gap-2 text-xs">
-                                                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#D97706" }} />
-                                                <span className="text-gray-600">Activar otro administrador si hay uno inactivo</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowUniqueAdminWarning(false)}
-                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                style={{ backgroundColor: "#540D6E" }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                                Entendido
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 }

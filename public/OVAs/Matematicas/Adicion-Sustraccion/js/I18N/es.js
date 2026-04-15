@@ -9,7 +9,7 @@ var propiedades={
 
     //RETROALIMENTACION
 
-    "introduccion": "Te explicaremos como te fue en el reto. ¡ Descubre, cuantos puntos obtuviste !",
+    "introduccion": "Te explicaremos como te fue en el reto. Descubre, cuantos puntos obtuviste!",
      "introevaluacion" : "Hola, aquí encontrarás una serie de preguntas tipo saber, con las cuales podrás conocer tus  fortalezas y debilidades sobre lo aprendido y cómo aplicas estos aprendizajes en tu vida diaria. Así tus profesores, compañeros y todas las personas de tu institución tendrán la posibilidad de ayudar a reforzar y mejorar tus conocimientos y habilidades.",
 
     //----------------------------------------ADICION DE NUMEROS DE TRES CIFRAS--------------------------------------------

@@ -27,6 +27,7 @@
         "framer-motion": "^12.34.0",
         "lucide-react": "^0.563.0",
         "papaparse": "^5.5.3",
+        "recharts": "^3.8.1",
         "xlsx": "^0.18.5",
         "ziggy-js": "^2.6.0"
     }

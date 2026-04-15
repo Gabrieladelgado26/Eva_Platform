@@ -12,8 +12,13 @@ body
 }
 @font-face
 {
- font-family:Roboto;
- src: url(../../../../Shared/fonts/Roboto-Regular.ttf);
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
 }
 
 .Skin2 img {
@@ -392,7 +397,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 37%;
     background-color: rgba(156,39,175,0.8);
     padding: 3%;
-    font-family:Roboto; 
+    font-family:Nunito; 
     font-size: 25px;
     color: #fff;
     text-align: center;
@@ -444,7 +449,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 107%;
     background-color: rgba(156,39,175,0.8);
     padding: 5%;
-    font-family: Roboto;
+    font-family: Nunito;
     font-size: 21px;
     color: #fff;
     text-align: justify;
@@ -487,7 +492,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 25%;
     background-color: rgba(156,39,175,0.8);
     padding: 4%;
-    font-family: Roboto;
+    font-family: Nunito;
     font-size: 21px;
     color: #fff;
     text-align: justify;

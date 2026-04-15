@@ -1,46 +1,69 @@
+// Resources/js/Components/AppSidebar.jsx
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight, Menu, GraduationCap } from 'lucide-react';
 import {
-    LayoutDashboard, Users, BookOpen, Layers, Home,
+    LayoutDashboard, Users, BookOpen, Layers, Home, UserCog, GraduationCap as StudentIcon, Briefcase,
 } from 'lucide-react';
 import NavMain from '@/Components/NavMain';
 import NavUser from '@/Components/NavUser';
+import { label } from 'framer-motion/client';
 
 function buildNavGroups(role, currentRoute) {
     const is = (...names) => names.includes(currentRoute);
 
+    // Función segura para obtener rutas
+    const safeRoute = (name, params = {}) => {
+        try {
+            return route(name, params);
+        } catch (e) {
+            console.warn(`Ruta no encontrada: ${name}`);
+            return '#';
+        }
+    };
+
     const menus = {
-        admin: [
-            {
-                label: 'Gestión de Usuarios',
-                items: [
-                    {
-                        title: 'Dashboard',
-                        href: route('admin.dashboard'),
-                        icon: LayoutDashboard,
-                        current: is('admin.dashboard'),
-                    },
-                    {
-                        title: 'Usuarios',
-                        href: route('admin.dashboard', { section: 'users' }),
-                        icon: Users,
-                        current: is('admin.users.index', 'admin.users.create', 'admin.users.edit'),
-                    },
-                ],
-            },
-            {
-                label: 'Contenido Educativo',
-                items: [
-                    {
-                        title: 'Gestionar OVAs',
-                        href: route('admin.ovas.index'),
-                        icon: Layers,
-                        current: is('admin.ovas.index', 'admin.ovas.create', 'admin.ovas.edit', 'admin.ovas.show'),
-                    },
-                ],
-            },
-        ],
+       admin: [
+        {
+            label: 'Principal',
+            items: [
+                {
+                    title: 'Dashboard',
+                    href: safeRoute('admin.dashboard'),
+                    icon: LayoutDashboard,
+                    current: is('admin.dashboard'),
+                },
+            ],
+        },
+        {
+            label: 'Gestión de Usuarios',
+            items: [
+                {
+                    title: 'Personal Administrativo',
+                    href: safeRoute('admin.staff'),
+                    icon: UserCog,
+                    current: is('admin.staff', 'admin.users.create', 'admin.users.edit'),
+                },
+                {
+                    title: 'Estudiantes',
+                    href: safeRoute('admin.students'),
+                    icon: StudentIcon,
+                    current: is('admin.students'),
+                },
+            ],
+        },
+        {
+            label: 'Contenido Educativo',
+            items: [
+                {
+                    title: 'Gestionar OVAs',
+                    href: safeRoute('admin.ovas.index'),
+                    icon: Layers,
+                    current: is('admin.ovas.index', 'admin.ovas.create', 'admin.ovas.edit', 'admin.ovas.show'),
+                },
+            ],
+        },
+    ],
 
         teacher: [
             {
@@ -48,7 +71,7 @@ function buildNavGroups(role, currentRoute) {
                 items: [
                     {
                         title: 'Dashboard',
-                        href: route('teacher.dashboard'),
+                        href: safeRoute('teacher.dashboard'),
                         icon: Home,
                         current: is('teacher.dashboard'),
                     },
@@ -59,7 +82,7 @@ function buildNavGroups(role, currentRoute) {
                 items: [
                     {
                         title: 'Mis Cursos',
-                        href: route('teacher.dashboard'),
+                        href: safeRoute('teacher.dashboard'),
                         icon: BookOpen,
                         current: is(
                             'teacher.courses.show',
@@ -79,7 +102,7 @@ function buildNavGroups(role, currentRoute) {
                 items: [
                     {
                         title: 'Inicio',
-                        href: route('student.dashboard'),
+                        href: safeRoute('student.dashboard'),
                         icon: Home,
                         current: is('student.dashboard', 'student.courses.index'),
                     },
@@ -90,13 +113,13 @@ function buildNavGroups(role, currentRoute) {
                 items: [
                     {
                         title: 'Mis Cursos',
-                        href: route('student.courses.index'),
+                        href: safeRoute('student.courses.index'),
                         icon: BookOpen,
                         current: is('student.courses.show'),
                     },
                     {
                         title: 'Recursos OVA',
-                        href: route('student.courses.index'),
+                        href: safeRoute('student.courses.index'),
                         icon: Layers,
                         current: is('student.ovas.show'),
                     },
@@ -136,8 +159,13 @@ export default function AppSidebar({ currentRoute = '' }) {
 
     const [collapsed, setCollapsed] = useSidebarState();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [groups, setGroups] = useState([]);
 
-    const groups   = buildNavGroups(role, currentRoute);
+    useEffect(() => {
+        // Construir los grupos después de que el componente se monte
+        setGroups(buildNavGroups(role, currentRoute));
+    }, [role, currentRoute]);
+
     const subtitle = roleSubtitle[role] ?? '';
 
     return (

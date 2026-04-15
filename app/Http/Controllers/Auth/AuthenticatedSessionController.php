@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
     {
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
+            'status'           => session('status'),
         ]);
     }
 
@@ -43,24 +43,19 @@ class AuthenticatedSessionController extends Controller
         // Verificar bloqueo previo
         if (RateLimiter::tooManyAttempts($key, 5)) {
 
-            $seconds = RateLimiter::availableIn($key);
-            $minutes = floor($seconds / 60);
-            $remainingSeconds = $seconds % 60;
+            $seconds  = RateLimiter::availableIn($key);
+            $minutes  = floor($seconds / 60);
+            $remaining = $seconds % 60;
 
             $message = "Demasiados intentos! Intente nuevamente en ";
-
             if ($minutes > 0) {
                 $message .= "{$minutes} minuto(s)";
-                if ($remainingSeconds > 0) {
-                    $message .= " y {$remainingSeconds} segundo(s)";
-                }
+                if ($remaining > 0) $message .= " y {$remaining} segundo(s)";
             } else {
-                $message .= "{$remainingSeconds} segundo(s)";
+                $message .= "{$remaining} segundo(s)";
             }
 
-            throw ValidationException::withMessages([
-                $field => $message
-            ]);
+            throw ValidationException::withMessages([$field => $message]);
         }
 
         // Validaciones según tipo de login
@@ -68,7 +63,7 @@ class AuthenticatedSessionController extends Controller
 
             $request->validate([
                 'username' => ['required', 'string'],
-                'pin' => ['required', 'digits:4'],
+                'pin'      => ['required', 'digits:4'],
             ]);
 
             $user = User::where('username', $request->username)
@@ -78,10 +73,11 @@ class AuthenticatedSessionController extends Controller
             $credentialsValid = $user
                 && $user->pin
                 && Hash::check($request->pin, $user->pin);
+
         } else {
 
             $request->validate([
-                'email' => ['required', 'email'],
+                'email'    => ['required', 'email'],
                 'password' => ['required'],
             ]);
 
@@ -93,19 +89,17 @@ class AuthenticatedSessionController extends Controller
             $user = $credentialsValid ? Auth::user() : null;
         }
 
-        // Si credenciales incorrectas
+        // Credenciales incorrectas
         if (!$credentialsValid) {
 
             RateLimiter::hit($key, 300);
 
-            $attempts = RateLimiter::attempts($key);
+            $attempts          = RateLimiter::attempts($key);
             $remainingAttempts = 5 - $attempts;
 
             if ($remainingAttempts <= 0) {
-
                 $seconds = RateLimiter::availableIn($key);
                 $minutes = ceil($seconds / 60);
-
                 return back()->withErrors([
                     $field => "Demasiados intentos! Intente nuevamente en {$minutes} minuto(s)."
                 ]);
@@ -118,12 +112,8 @@ class AuthenticatedSessionController extends Controller
 
         // Usuario inactivo
         if (!$user->is_active) {
-
             Auth::logout();
-
-            return back()->withErrors([
-                $field => 'Su cuenta está inactiva.',
-            ]);
+            return back()->withErrors([$field => 'Su cuenta está inactiva.']);
         }
 
         // Login exitoso
@@ -134,12 +124,18 @@ class AuthenticatedSessionController extends Controller
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
+        // Registrar log de login
         LoginLog::create([
             'user_id'    => $user->id,
             'login_at'   => now(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        // ── Si es estudiante y NO tiene avatar → marcar primer login ──────────
+        if ($user->role?->slug === 'student' && is_null($user->avatar)) {
+            session(['needs_avatar' => true]);
+        }
 
         return redirect()->route($user->redirectRoute());
     }
@@ -156,13 +152,10 @@ class AuthenticatedSessionController extends Controller
                 ->whereNull('logout_at')
                 ->latest('login_at')
                 ->first()
-                ?->update([
-                    'logout_at' => now(),
-                ]);
+                ?->update(['logout_at' => now()]);
         }
 
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

@@ -12,8 +12,13 @@ body
 }
 @font-face
 {
- font-family:Roboto;
- src: url(../../../../Shared/fonts/Roboto-Regular.ttf);
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
 }
 
 .Skin2 img {
@@ -67,7 +72,7 @@ body
 .antes:hover
 {
     
-cursor:url(../../images/hand.cur) , auto!important;
+cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 
 }
 
@@ -314,7 +319,7 @@ cursor:url(../../images/hand.cur) , auto!important;
 
 .siguiente:hover
 {
-    cursor:url(../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 
 }
 
@@ -328,7 +333,7 @@ cursor:url(../../images/hand.cur) , auto!important;
 
 .siguiente2:hover
 {
-     cursor:url(../../images/hand.cur) , auto!important;
+     cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 
@@ -504,7 +509,7 @@ cursor:url(../../images/hand.cur) , auto!important;
 
 .verresultados:hover
 {
-    cursor:url(../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 /*RETROALIMENTACION*/
@@ -539,7 +544,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 37%;
     background-color: rgba(156,39,175,0.8);
     padding: 3%;
-    font-family:Roboto; 
+    font-family:Nunito; 
     font-size: 25px;
     color: #fff;
     text-align: center;
@@ -591,7 +596,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 107%;
     background-color: rgba(156,39,175,0.8);
     padding: 5%;
-    font-family: Roboto;
+    font-family: Nunito;
     font-size: 21px;
     color: #fff;
     text-align: justify;
@@ -603,7 +608,7 @@ cursor:url(../../images/hand.cur) , auto!important;
 
 #perdiste:hover
 {
-     cursor:url(../../images/hand.cur) , auto!important;
+     cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 /*NUEVOS ELEMENTOS*/
@@ -633,7 +638,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     top: 25%;
     background-color: rgba(156,39,175,0.8);
     padding: 4%;
-    font-family: Roboto;
+    font-family: Nunito;
     font-size: 21px;
     color: #fff;
     text-align: justify;
@@ -734,7 +739,7 @@ cursor:url(../../images/hand.cur) , auto!important;
 
 .opcion:hover
 {
-    cursor:url(../../images/hand.cur) , auto!important;
+    cursor:url(../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
     color: #FFF;
     background: #9C2AB3;
 }
@@ -755,7 +760,7 @@ cursor:url(../../images/hand.cur) , auto!important;
     font-size: 15px;
     padding: 1%;
     margin-top: 3px !important;
-    font-family: Roboto;
+    font-family: Nunito;
     height: 35px;
 }
 

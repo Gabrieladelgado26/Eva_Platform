@@ -383,23 +383,39 @@ export default function Create() {
                                         )}
                                     </div>
 
-                                    {/* ── Estado Activo ── */}
-                                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                                        <input
-                                            type="checkbox"
-                                            id="is_active"
-                                            checked={data.is_active}
-                                            onChange={(e) => setData("is_active", e.target.checked)}
-                                            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                                        />
-                                        <div>
-                                            <label htmlFor="is_active" className="text-sm font-semibold text-gray-700 cursor-pointer">
-                                                Activo
-                                            </label>
-                                            <p className="text-xs text-gray-500">
-                                                Las OVAs activas estarán disponibles para ser asignadas a cursos
-                                            </p>
+                                    {/* ── Estado del OVA ── */}
+                                    <div
+                                        className="flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer select-none"
+                                        style={{
+                                            borderColor: data.is_active ? '#0EAD69' : '#E5E7EB',
+                                            backgroundColor: data.is_active ? '#E8F5F0' : '#F9FAFB',
+                                        }}
+                                        onClick={() => setData("is_active", !data.is_active)}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg transition-colors duration-200"
+                                                style={{ backgroundColor: data.is_active ? '#CCF2E5' : '#E5E7EB' }}>
+                                                <Layers className="w-4 h-4 transition-colors duration-200"
+                                                    style={{ color: data.is_active ? '#0EAD69' : '#9CA3AF' }} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-gray-900">Estado del OVA</p>
+                                                <p className="text-xs mt-0.5" style={{ color: data.is_active ? '#059669' : '#6B7280' }}>
+                                                    {data.is_active
+                                                        ? 'Activo — Disponible para asignarse a cursos'
+                                                        : 'Inactivo — No aparecerá en los cursos'}
+                                                </p>
+                                            </div>
                                         </div>
+                                        {/* Toggle visual */}
+                                        <div className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0"
+                                            style={{ backgroundColor: data.is_active ? '#0EAD69' : '#D1D5DB' }}>
+                                            <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                                                style={{ transform: data.is_active ? 'translateX(24px)' : 'translateX(0)' }} />
+                                        </div>
+                                        <input type="checkbox" id="is_active" className="sr-only"
+                                            checked={data.is_active}
+                                            onChange={(e) => setData("is_active", e.target.checked)} />
                                     </div>
 
                                     {/* ── Botones de acción ── */}

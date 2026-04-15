@@ -12,8 +12,13 @@ body
 }
 @font-face
 {
- font-family:Roboto;
- src: url(../../../../../Shared/fonts/Roboto-Regular.ttf);
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
 }
 
 .Skin2 img {
@@ -57,7 +62,7 @@ body
     width: 17%;
     bottom: 23%;
     left: 5%;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 
@@ -70,7 +75,7 @@ body
     left: 39%;
     top: 7%;
     background: rgba(255,255,255, 1.6);
-    font-family: Roboto;
+    font-family: Nunito;;
       border-radius: 13px 13px 13px 13px;
     -moz-border-radius: 13px 13px 13px 13px;
     -webkit-border-radius: 13px 13px 13px 13px;
@@ -88,7 +93,7 @@ body
     padding: 2%;
     left: 39%;
     top:5%;
-    font-family: Roboto;
+    font-family: Nunito;;
    border-radius: 13px 13px 13px 13px;
     -moz-border-radius: 13px 13px 13px 13px;
     -webkit-border-radius: 13px 13px 13px 13px;
@@ -100,7 +105,7 @@ body
     width: 19%;
     bottom: 2%;
     right: 12%;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 
 }
 
@@ -119,7 +124,7 @@ body
     left: 33%;
     top: 12%;
     z-index: 1;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .iconoSonido2
@@ -127,7 +132,7 @@ body
     left: 33%;
     top: 8%;
     z-index: 1;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 
@@ -165,7 +170,7 @@ body
     width: 24%;
     right: 35%;
     bottom: 31%;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 
@@ -224,7 +229,7 @@ body
     width: 2%;
     top: 57.5%;
     left: 37%;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .busqueda2
@@ -235,7 +240,7 @@ body
     width: 2%;
     top: 57.5%;
     right: 19%;
-    cursor:url(../../../../../images/hand.cur) , auto!important;
+    cursor:url(../../../../../Matematicas/Adicion-Sustraccion/images/hand.cur) , auto!important;
 }
 
 .manzanas
