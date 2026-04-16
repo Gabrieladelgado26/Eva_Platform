@@ -160,6 +160,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('ovas', OvaController::class)->except(['show']);
         Route::get('ovas/{ova}',                 [OvaController::class, 'show'])->name('ovas.show');
         Route::patch('ovas/{ova}/toggle-status', [OvaController::class, 'toggleStatus'])->name('ovas.toggle-status');
+
+        Route::get('evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'index'])
+    ->name('evaluations.index');
     });
 
 /*
@@ -194,6 +197,8 @@ Route::middleware(['auth', 'role:teacher'])
         Route::post('courses/{course}/students',           [CourseStudentController::class, 'store'])->name('courses.students.store');
         Route::post('courses/{course}/students/bulk',      [CourseStudentController::class, 'storeBulk'])->name('courses.students.bulk');
         Route::delete('courses/{course}/students/{student}',[CourseStudentController::class, 'destroy'])->name('courses.students.destroy');
+        Route::get('evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'index'])
+    ->name('evaluations.index');
     });
 
 /*
@@ -212,6 +217,7 @@ Route::middleware(['auth', 'role:teacher'])
         Route::put('/order',       [CourseOvaController::class, 'updateOrder'])->name('update-order');
         Route::put('/{ova}/config',[CourseOvaController::class, 'updateConfig'])->name('update-config');
         Route::get('/stats',       [CourseOvaController::class, 'stats'])->name('stats');
+        
     });
 
 /*

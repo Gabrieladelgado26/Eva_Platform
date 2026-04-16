@@ -6,7 +6,9 @@ import {
     Users, UserCheck, UserX, GraduationCap, BookOpen, TrendingUp, TrendingDown,
     Calendar, ChevronLeft, ChevronRight, Download, RefreshCw, Eye, EyeOff,
     Menu, X, ChevronDown, Filter, Search, Bell, Settings, LogOut, Home,
-    BarChart3, PieChart, LineChart, Activity, Zap, Target, Award, Clock, UserPlus
+    BarChart3, PieChart, LineChart, Activity, Zap, Target, Award, Clock,
+    UserPlus, CheckCircle, PlayCircle, Upload, Key,
+    Pencil, Trash2, Lock, XCircle
 } from "lucide-react";
 
 // Componentes de gráficas (instala: npm install recharts)
@@ -16,7 +18,52 @@ import {
     RadialBarChart, RadialBar, ComposedChart, Scatter
 } from 'recharts';
 
+// ─── Helpers para Actividades Recientes ───────────────────────────────────────
+
+const ACTION_META = {
+    created_user:    { label: "Usuario creado",      Icon: UserPlus,    bg: "bg-[#E1F5EE]", border: "border-[#5DCAA5]", stroke: "text-[#085041]" },
+    updated_user:    { label: "Usuario editado",     Icon: Pencil,      bg: "bg-[#EEEDFE]", border: "border-[#AFA9EC]", stroke: "text-[#3C3489]" },
+    deleted_user:    { label: "Usuario eliminado",   Icon: Trash2,      bg: "bg-[#FAECE7]", border: "border-[#F0997B]", stroke: "text-[#712B13]" },
+    pin_regenerated: { label: "PIN regenerado",      Icon: Lock,        bg: "bg-[#FAEEDA]", border: "border-[#EF9F27]", stroke: "text-[#633806]" },
+    user_activated:  { label: "Usuario activado",    Icon: CheckCircle, bg: "bg-[#EAF3DE]", border: "border-[#97C459]", stroke: "text-[#3B6D11]" },
+    user_deactivated:{ label: "Usuario desactivado", Icon: XCircle,     bg: "bg-[#F1EFE8]", border: "border-[#B4B2A9]", stroke: "text-[#5F5E5A]" },
+    default:         { label: "Acción del sistema",  Icon: Activity,    bg: "bg-gray-50",   border: "border-gray-200",  stroke: "text-gray-500"  },
+};
+
+function getTargetName(activity) {
+    try {
+        const src = activity.new_values || activity.old_values;
+        const obj = typeof src === "string" ? JSON.parse(src) : src;
+        if (obj?.name) return obj.name;
+    } catch {}
+    return `#${activity.auditable_id}`;
+}
+
+function getChangeSummary(activity) {
+    try {
+        const nv = activity.new_values ? JSON.parse(activity.new_values) : null;
+        const ov = activity.old_values ? JSON.parse(activity.old_values) : null;
+        if (!nv || Array.isArray(nv)) return null;
+        const keys = Object.keys(nv).filter(k => !["updated_at", "id"].includes(k));
+        if (keys.length === 1 && keys[0] === "name" && ov?.name) return `${ov.name} → ${nv.name}`;
+        if (keys.some(k => ["password", "pin"].includes(k))) return "Credenciales actualizadas";
+        if (keys.length) return keys.map(k => k.replace(/_/g, " ")).join(", ");
+    } catch {}
+    return null;
+}
+
+function relativeTime(dateStr) {
+    const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+    if (diff < 60)    return `Hace ${diff}s`;
+    if (diff < 3600)  return `Hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} h`;
+    const days = Math.floor(diff / 86400);
+    if (days < 30)    return `Hace ${days}d`;
+    return new Date(dateStr).toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
+}
+
 export default function Dashboard() {
+
     const { props } = usePage();
     const { auth, stats, recentUsers, activityLogs, userGrowth, roleDistribution, monthlyActivity } = props;
     const user = auth?.user ?? { name: "Usuario", role: { name: "Administrador" } };
@@ -176,65 +223,26 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <button 
-                                        onClick={refreshData}
-                                        className={`p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all ${refreshing ? 'animate-spin' : ''}`}
-                                    >
-                                        <RefreshCw className="w-5 h-5 text-gray-600" />
-                                    </button>
-
-                                    <div className="relative">
-                                        <button 
-                                            onClick={() => setShowNotifications(!showNotifications)}
-                                            className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all relative"
-                                        >
-                                            <Bell className="w-5 h-5 text-gray-600" />
-                                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-                                        </button>
-
-                                        {showNotifications && (
-                                            <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
-                                                <div className="p-4 border-b border-gray-200">
-                                                    <h3 className="font-semibold text-gray-900">Notificaciones</h3>
-                                                </div>
-                                                <div className="max-h-96 overflow-y-auto">
-                                                    <div className="p-4 hover:bg-gray-50 cursor-pointer">
-                                                        <p className="text-sm font-medium text-gray-900">Nuevo estudiante registrado</p>
-                                                        <p className="text-xs text-gray-500 mt-1">Hace 10 minutos</p>
-                                                    </div>
-                                                    <div className="p-4 hover:bg-gray-50 cursor-pointer border-t border-gray-100">
-                                                        <p className="text-sm font-medium text-gray-900">OVA actualizado</p>
-                                                        <p className="text-xs text-gray-500 mt-1">Hace 1 hora</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                                    {/* Filtro de rango de fechas */}
+                                    <div className="mb-6 flex justify-end">
+                                        <div className="flex gap-2 bg-white rounded-lg border border-gray-200 p-1">
+                                            {['semana', 'mes', 'año'].map((range) => (
+                                                <button
+                                                    key={range}
+                                                    onClick={() => setDateRange(range)}
+                                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                                                        dateRange === range 
+                                                            ? 'text-white' 
+                                                            : 'text-gray-600 hover:bg-gray-100'
+                                                    }`}
+                                                    style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
+                                                >
+                                                    {range.charAt(0).toUpperCase() + range.slice(1)}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-
-                                    <button className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all">
-                                        <Download className="w-5 h-5 text-gray-600" />
-                                    </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Filtro de rango de fechas */}
-                        <div className="mb-6 flex justify-end">
-                            <div className="flex gap-2 bg-white rounded-lg border border-gray-200 p-1">
-                                {['semana', 'mes', 'año'].map((range) => (
-                                    <button
-                                        key={range}
-                                        onClick={() => setDateRange(range)}
-                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                                            dateRange === range 
-                                                ? 'text-white' 
-                                                : 'text-gray-600 hover:bg-gray-100'
-                                        }`}
-                                        style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
-                                    >
-                                        {range.charAt(0).toUpperCase() + range.slice(1)}
-                                    </button>
-                                ))}
                             </div>
                         </div>
                     </div>
@@ -409,27 +417,44 @@ export default function Dashboard() {
                         </div>
 
                         {/* Actividades Recientes */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center justify-between mb-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div className="flex items-start justify-between px-5 py-4 border-b border-gray-100">
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900">Actividades Recientes</h3>
-                                    <p className="text-sm text-gray-500">Últimas acciones en el sistema</p>
+                                    <h3 className="text-base font-semibold text-gray-900">Actividades recientes</h3>
+                                    <p className="text-xs text-gray-400 mt-0.5">Últimas acciones registradas en el sistema</p>
                                 </div>
-                                <Clock className="w-5 h-5 text-gray-400" />
+                                <div className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-500">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#3C3489] animate-pulse" />
+                                    En vivo
+                                </div>
                             </div>
-                            <div className="space-y-4 max-h-[300px] overflow-y-auto">
-                                {recentActivities.map((activity) => (
-                                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <div className="text-2xl">{activity.icon}</div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                                            <p className="text-sm text-gray-600">
-                                                {activity.action}: <span className="font-medium">{activity.target}</span>
-                                            </p>
-                                            <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+
+                            <div className="max-h-[300px] overflow-y-auto divide-y divide-gray-100">
+                                {recentActivities.map((activity) => {
+                                    const meta = ACTION_META[activity.action] ?? ACTION_META.default;
+                                    const target = getTargetName(activity);
+                                    const change = getChangeSummary(activity);
+
+                                    return (
+                                        <div key={activity.id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-gray-50 transition-colors">
+                                            <div className={`w-[30px] h-[30px] rounded-lg border flex items-center justify-center flex-shrink-0 ${meta.bg} ${meta.border}`}>
+                                                <meta.Icon className={`w-3.5 h-3.5 ${meta.stroke}`} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-baseline gap-1.5 flex-wrap">
+                                                    <span className="text-xs font-medium text-gray-900 whitespace-nowrap">{meta.label}</span>
+                                                    <span className="text-xs text-gray-500 truncate max-w-[140px]" title={target}>{target}</span>
+                                                </div>
+                                                {change && (
+                                                    <p className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[240px]">{change}</p>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-gray-400 whitespace-nowrap pl-2 flex-shrink-0">
+                                                {relativeTime(activity.created_at)}
+                                            </span>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

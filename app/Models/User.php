@@ -19,6 +19,7 @@ class User extends Authenticatable
         'password',
         'username',
         'pin',
+        'avatar',
         'is_active',
         'role_id',
         'force_logout',

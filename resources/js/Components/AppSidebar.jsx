@@ -1,12 +1,12 @@
 // Resources/js/Components/AppSidebar.jsx
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Menu, GraduationCap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Menu, GraduationCap, ClipboardList } from 'lucide-react';
 import {
-    LayoutDashboard, Users, BookOpen, Layers, Home, UserCog, GraduationCap as StudentIcon, Briefcase,
+    LayoutDashboard, Users, BookOpen, Layers, Home, UserCog, GraduationCap as StudentIcon,
 } from 'lucide-react';
 import NavMain from '@/Components/NavMain';
-import NavUser from '@/Components/NavUser';
+import NavUser from '@/Components/NavUser';         
 import { label } from 'framer-motion/client';
 
 function buildNavGroups(role, currentRoute) {
@@ -39,9 +39,9 @@ function buildNavGroups(role, currentRoute) {
             label: 'Gestión de Usuarios',
             items: [
                 {
-                    title: 'Personal Administrativo',
-                    href: safeRoute('admin.staff'),
-                    icon: UserCog,
+                    title: 'Personal',
+                    href: safeRoute('admin.staff'),  
+                    icon: Users,
                     current: is('admin.staff', 'admin.users.create', 'admin.users.edit'),
                 },
                 {
@@ -63,6 +63,18 @@ function buildNavGroups(role, currentRoute) {
                 },
             ],
         },
+
+          {
+        label: 'Evaluaciones',
+        items: [
+            {
+                title: 'Todas las Evaluaciones',
+                href: route('admin.evaluations.index'), // Usa la ruta de admin
+                icon: ClipboardList,
+                current: is('admin.evaluations.index'),
+            },
+        ],
+    },
     ],
 
         teacher: [
@@ -92,6 +104,12 @@ function buildNavGroups(role, currentRoute) {
                             'teacher.courses.ovas.index'
                         ),
                     },
+                     {
+            title: 'Evaluaciones',
+            href: route('teacher.evaluations.index'),
+            icon: ClipboardList,   // importar de lucide-react
+            current: is('teacher.evaluations.index'),
+        },
                 ],
             },
         ],

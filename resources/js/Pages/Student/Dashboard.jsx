@@ -1,64 +1,75 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import {
-    BookOpen, Layers, Eye, ChevronRight, GraduationCap,
-    Video, Clock, X, ChevronLeft, FlaskConical,
+    BookOpen, Layers, ChevronRight, GraduationCap,
+    Clock, X, ChevronLeft, FlaskConical,
     Globe, BookMarked, Calculator, Languages, Sparkles,
-    PlayCircle, Lock
+    PlayCircle, Lock, CheckCircle
 } from "lucide-react";
 import AppSidebar, { useSidebarState } from "@/Components/AppSidebar";
 
+// ─── Configuración de materias ────────────────────────────────────────────────
 const MATERIAS = [
     {
-        area:        'Ciencias Naturales',
-        icon:        FlaskConical,
-        color:       '#0EAD69',
-        bg:          '#E8F5F0',
-        bgCard:      'linear-gradient(135deg, #0EAD6920, #3BCEAC10)',
-        border:      '#0EAD6930',
-        emoji:       '🔬',
+        area:    'Ciencias Naturales',
+        icon:    FlaskConical,
+        color:   '#0EAD69',
+        bg:      '#E8F5F0',
+        bgCard:  'linear-gradient(135deg, #0EAD6920, #3BCEAC10)',
+        border:  '#0EAD6930',
+        emoji:   '🔬',
     },
     {
-        area:        'Ciencias Sociales',
-        icon:        Globe,
-        color:       '#EE4266',
-        bg:          '#FEE2E2',
-        bgCard:      'linear-gradient(135deg, #EE426620, #FFD23F10)',
-        border:      '#EE426630',
-        emoji:       '🌍',
+        area:    'Ciencias Sociales',
+        icon:    Globe,
+        color:   '#EE4266',
+        bg:      '#FEE2E2',
+        bgCard:  'linear-gradient(135deg, #EE426620, #FFD23F10)',
+        border:  '#EE426630',
+        emoji:   '🌍',
     },
     {
-        area:        'Español',
-        icon:        BookMarked,
-        color:       '#540D6E',
-        bg:          '#F3E8FF',
-        bgCard:      'linear-gradient(135deg, #540D6E20, #EE426610)',
-        border:      '#540D6E30',
-        emoji:       '📖',
+        area:    'Español',
+        icon:    BookMarked,
+        color:   '#540D6E',
+        bg:      '#F3E8FF',
+        bgCard:  'linear-gradient(135deg, #540D6E20, #EE426610)',
+        border:  '#540D6E30',
+        emoji:   '📖',
     },
     {
-        area:        'Matemáticas',
-        icon:        Calculator,
-        color:       '#1D4ED8',
-        bg:          '#DBEAFE',
-        bgCard:      'linear-gradient(135deg, #1D4ED820, #60A5FA10)',
-        border:      '#1D4ED830',
-        emoji:       '📐',
+        area:    'Matemáticas',
+        icon:    Calculator,
+        color:   '#1D4ED8',
+        bg:      '#DBEAFE',
+        bgCard:  'linear-gradient(135deg, #1D4ED820, #60A5FA10)',
+        border:  '#1D4ED830',
+        emoji:   '📐',
     },
     {
-        area:        'Inglés',
-        icon:        Languages,
-        color:       '#D97706',
-        bg:          '#FEF3C7',
-        bgCard:      'linear-gradient(135deg, #D9770620, #FFD23F10)',
-        border:      '#D9770630',
-        emoji:       '🗣️',
+        area:    'Inglés',
+        icon:    Languages,
+        color:   '#D97706',
+        bg:      '#FEF3C7',
+        bgCard:  'linear-gradient(135deg, #D9770620, #FFD23F10)',
+        border:  '#D9770630',
+        emoji:   '🗣️',
     },
+];
+
+// ─── Opciones de avatares ─────────────────────────────────────────────────────
+const AVATARS = [
+    { id: 'avatar1', label: 'Explorador',   emoji: '🧑‍🚀' },
+    { id: 'avatar2', label: 'Científico',   emoji: '🧑‍🔬' },
+    { id: 'avatar3', label: 'Artista',      emoji: '🧑‍🎨' },
+    { id: 'avatar4', label: 'Deportista',   emoji: '🧑‍🎽' },
+    { id: 'avatar5', label: 'Músico',       emoji: '🧑‍🎤' },
+    { id: 'avatar6', label: 'Estudiante',   emoji: '🧑‍💻' },
 ];
 
 const GRADE_LABELS = {
     primero: 'Primero', segundo: 'Segundo', tercero: 'Tercero',
-    cuarto: 'Cuarto', quinto: 'Quinto',
+    cuarto: 'Cuarto',   quinto: 'Quinto',
 };
 
 function groupOvasByArea(courses) {
@@ -74,11 +85,134 @@ function groupOvasByArea(courses) {
     return grouped;
 }
 
+// ─── Modal de selección de avatar ────────────────────────────────────────────
+function AvatarPickerModal({ onClose }) {
+    const [selected,   setSelected]   = useState(null);
+    const [saving,     setSaving]     = useState(false);
+    const [confirmed,  setConfirmed]  = useState(false);
+
+    const handleSave = () => {
+        if (!selected || saving) return;
+        setSaving(true);
+
+        router.post(
+            route('student.avatar.store'),
+            { avatar: selected },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setConfirmed(true);
+                    setTimeout(() => onClose(), 1200);
+                },
+                onFinish: () => setSaving(false),
+            }
+        );
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }}>
+
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
+                style={{ animation: "modalPop 0.4s cubic-bezier(0.34,1.56,0.64,1)" }}>
+
+                {/* Header */}
+                <div className="relative px-8 pt-8 pb-6 text-center overflow-hidden"
+                    style={{ background: "linear-gradient(135deg, #540D6E, #7C3AED, #EE4266)" }}>
+                    <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10"
+                        style={{ background: "white", transform: "translate(30%,-30%)" }} />
+                    <div className="absolute bottom-0 left-0 w-28 h-28 rounded-full opacity-10"
+                        style={{ background: "white", transform: "translate(-30%,30%)" }} />
+
+                    <div className="relative z-10">
+                        <div className="text-4xl mb-3">🎭</div>
+                        <h2 className="text-2xl font-black text-white mb-1">¡Elige tu personaje!</h2>
+                        <p className="text-purple-200 text-sm">
+                            Selecciona el avatar que te represente
+                        </p>
+                    </div>
+                </div>
+
+                <div className="p-8">
+                    {/* Grid de avatares */}
+                    <div className="grid grid-cols-3 gap-4 mb-8">
+                        {AVATARS.map(av => {
+                            const isSelected = selected === av.id;
+                            return (
+                                <button
+                                    key={av.id}
+                                    onClick={() => setSelected(av.id)}
+                                    className="relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 group"
+                                    style={{
+                                        borderColor:     isSelected ? "#540D6E" : "#E5E7EB",
+                                        backgroundColor: isSelected ? "#F3E8FF" : "white",
+                                        transform:       isSelected ? "scale(1.05)" : "scale(1)",
+                                    }}
+                                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.borderColor = "#C4B5FD"; }}
+                                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                >
+                                    {/* Check */}
+                                    {isSelected && (
+                                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-md"
+                                            style={{ backgroundColor: "#540D6E" }}>
+                                            <CheckCircle className="w-4 h-4" />
+                                        </div>
+                                    )}
+
+                                    {/* Avatar image o emoji */}
+                                    <div className={`w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center transition-transform duration-200 ${!isSelected ? "group-hover:scale-110" : ""}`}
+                                        style={{ backgroundColor: isSelected ? "#EDE9FE" : "#F9FAFB" }}>
+                                        <img
+                                            src={`/avatars/${av.id}.png`}
+                                            alt={av.label}
+                                            className="w-full h-full object-cover"
+                                            onError={e => {
+                                                // Fallback si la imagen no existe
+                                                e.currentTarget.style.display = "none";
+                                                e.currentTarget.parentElement.innerHTML = `<span style="font-size:2.5rem">${av.emoji}</span>`;
+                                            }}
+                                        />
+                                    </div>
+
+                                    <span className="text-xs font-bold text-gray-600">{av.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Botón confirmar */}
+                    {confirmed ? (
+                        <div className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white"
+                            style={{ backgroundColor: "#0EAD69" }}>
+                            <CheckCircle className="w-5 h-5" /> ¡Perfecto! Bienvenido 🎉
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleSave}
+                            disabled={!selected || saving}
+                            className="w-full py-3.5 rounded-2xl text-sm font-black text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                            style={{ background: selected ? "linear-gradient(135deg, #540D6E, #EE4266)" : "#E5E7EB" }}
+                        >
+                            {saving ? "Guardando..." : selected ? `¡Elegir ${AVATARS.find(a => a.id === selected)?.label}!` : "Selecciona un personaje"}
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 export default function StudentDashboard({ courses = [] }) {
+    const { props }    = usePage();
+    const flash        = props.flash || {};
+    const pageProps    = props;
+
     const [collapsed]  = useSidebarState();
     const [activeArea, setActiveArea] = useState(null);
     const [search,     setSearch]     = useState("");
     const [visible,    setVisible]    = useState(false);
+    const [showAvatar, setShowAvatar] = useState(false);
 
     const course     = courses[0] ?? null;
     const ovasByArea = groupOvasByArea(courses);
@@ -89,6 +223,13 @@ export default function StudentDashboard({ courses = [] }) {
         return () => clearTimeout(t);
     }, []);
 
+    // Detectar si el estudiante necesita elegir avatar
+    useEffect(() => {
+        if (pageProps.needs_avatar) {
+            setTimeout(() => setShowAvatar(true), 600);
+        }
+    }, [pageProps.needs_avatar]);
+
     const activeOvas = activeArea
         ? (ovasByArea[activeArea] ?? []).filter(o =>
             o.tematica.toLowerCase().includes(search.toLowerCase()) ||
@@ -97,14 +238,20 @@ export default function StudentDashboard({ courses = [] }) {
         : [];
 
     const activeMateria = MATERIAS.find(m => m.area === activeArea);
+    const activeMaterias = MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).length;
 
     return (
         <>
             <Head title="Mis Materias" />
             <AppSidebar currentRoute="student.dashboard" />
 
+            {/* Modal avatar primer login */}
+            {showAvatar && (
+                <AvatarPickerModal onClose={() => setShowAvatar(false)} />
+            )}
+
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen`}
-               >
+                style={{ background: "linear-gradient(135deg, #F8F4FF 0%, #F0FDF4 50%, #FFF7ED 100%)" }}>
 
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-6xl mx-auto">
@@ -112,21 +259,19 @@ export default function StudentDashboard({ courses = [] }) {
                         {/* ── Hero Banner ── */}
                         <div className={`mb-8 rounded-2xl overflow-hidden shadow-lg transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
                             style={{ background: "linear-gradient(135deg, #540D6E 0%, #7C3AED 50%, #EE4266 100%)" }}>
+
                             <div className="relative px-8 py-8 flex items-center justify-between">
-                                {/* Círculos decorativos */}
                                 <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10"
-                                    style={{ background: "white", transform: "translate(30%, -30%)" }} />
+                                    style={{ background: "white", transform: "translate(30%,-30%)" }} />
                                 <div className="absolute bottom-0 left-1/2 w-40 h-40 rounded-full opacity-10"
-                                    style={{ background: "white", transform: "translate(-50%, 50%)" }} />
+                                    style={{ background: "white", transform: "translate(-50%,50%)" }} />
 
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Sparkles className="w-5 h-5 text-yellow-300" />
                                         <span className="text-yellow-300 text-sm font-semibold">¡Bienvenido de vuelta!</span>
                                     </div>
-                                    <h1 className="text-3xl font-black text-white mb-1">
-                                        Mis Materias
-                                    </h1>
+                                    <h1 className="text-3xl font-black text-white mb-1">Mis Materias</h1>
                                     {course ? (
                                         <p className="text-purple-200 text-sm">
                                             {GRADE_LABELS[course.grade] ?? course.grade} · Sección {course.section} · Año {course.school_year}
@@ -144,16 +289,16 @@ export default function StudentDashboard({ courses = [] }) {
                                 </div>
                             </div>
 
-                            {/* Barra de progreso decorativa */}
+                            {/* Barra de progreso */}
                             <div className="px-8 pb-5 relative z-10">
                                 <div className="flex items-center justify-between text-xs text-purple-200 mb-1.5">
                                     <span>{totalOvas} OVAs disponibles en tu curso</span>
-                                    <span>{MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).length} de {MATERIAS.length} materias activas</span>
+                                    <span>{activeMaterias} de {MATERIAS.length} materias activas</span>
                                 </div>
                                 <div className="h-1.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
                                     <div className="h-1.5 rounded-full transition-all duration-1000"
                                         style={{
-                                            width: `${(MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).length / MATERIAS.length) * 100}%`,
+                                            width: `${(activeMaterias / MATERIAS.length) * 100}%`,
                                             background: "linear-gradient(to right, #FFD23F, #3BCEAC)"
                                         }} />
                                 </div>
@@ -172,7 +317,7 @@ export default function StudentDashboard({ courses = [] }) {
                             </div>
                         )}
 
-                        {/* ── Vista principal: materias ── */}
+                        {/* ── Grid de materias ── */}
                         {course && !activeArea && (
                             <>
                                 <p className={`text-xs font-bold text-gray-400 uppercase tracking-wider mb-5 transition-all duration-700 delay-100 ${visible ? "opacity-100" : "opacity-0"}`}>
@@ -201,7 +346,7 @@ export default function StudentDashboard({ courses = [] }) {
                                                 onMouseEnter={e => { if (hasOvas) e.currentTarget.style.borderColor = materia.color; }}
                                                 onMouseLeave={e => { if (hasOvas) e.currentTarget.style.borderColor = materia.border; }}
                                             >
-                                                {/* Franja de color superior */}
+                                                {/* Franja superior */}
                                                 <div className="h-1.5 w-full"
                                                     style={{ background: hasOvas ? `linear-gradient(to right, ${materia.color}, ${materia.color}88)` : "#E5E7EB" }} />
 
@@ -216,18 +361,13 @@ export default function StudentDashboard({ courses = [] }) {
                                                                 style={{ backgroundColor: materia.bg }}>
                                                                 <Icon className="w-7 h-7" style={{ color: materia.color }} />
                                                             </div>
-                                                            {/* Emoji flotante */}
                                                             <span className="absolute -top-1 -right-1 text-base">{materia.emoji}</span>
                                                         </div>
 
                                                         {hasOvas ? (
                                                             <div className="text-right">
-                                                                <span className="text-2xl font-black" style={{ color: materia.color }}>
-                                                                    {ovas.length}
-                                                                </span>
-                                                                <p className="text-xs text-gray-400 leading-none">
-                                                                    OVA{ovas.length !== 1 ? 's' : ''}
-                                                                </p>
+                                                                <span className="text-2xl font-black" style={{ color: materia.color }}>{ovas.length}</span>
+                                                                <p className="text-xs text-gray-400 leading-none">OVA{ovas.length !== 1 ? 's' : ''}</p>
                                                             </div>
                                                         ) : (
                                                             <Lock className="w-4 h-4 text-gray-300 mt-1" />
@@ -238,7 +378,6 @@ export default function StudentDashboard({ courses = [] }) {
 
                                                     {hasOvas ? (
                                                         <div className="flex items-center justify-between mt-3">
-                                                            {/* Mini pills de OVAs */}
                                                             <div className="flex -space-x-1">
                                                                 {ovas.slice(0, 3).map((_, idx) => (
                                                                     <div key={idx} className="w-5 h-5 rounded-full border-2 border-white"
@@ -266,11 +405,10 @@ export default function StudentDashboard({ courses = [] }) {
                             </>
                         )}
 
-                        {/* ── Vista de OVAs de una materia ── */}
+                        {/* ── Vista OVAs de una materia ── */}
                         {activeArea && activeMateria && (
                             <div className={`transition-all duration-500 ${visible ? "opacity-100" : "opacity-0"}`}>
 
-                                {/* Header de la materia */}
                                 <div className="flex items-center gap-4 mb-6">
                                     <button onClick={() => { setActiveArea(null); setSearch(""); }}
                                         className="p-2.5 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-white bg-white/80 transition-all shadow-sm">
@@ -289,7 +427,6 @@ export default function StudentDashboard({ courses = [] }) {
                                     </div>
                                 </div>
 
-                                {/* Buscador */}
                                 <div className="relative mb-6">
                                     <input type="text"
                                         placeholder={`Buscar en ${activeArea}...`}
@@ -308,12 +445,11 @@ export default function StudentDashboard({ courses = [] }) {
                                     )}
                                 </div>
 
-                                {/* Sin resultados */}
                                 {activeOvas.length === 0 && (
                                     <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center shadow-sm">
                                         <Layers className="w-12 h-12 text-gray-200 mx-auto mb-3" />
                                         <p className="text-base font-semibold text-gray-500">
-                                            {search ? "Sin resultados para esta búsqueda" : "No hay OVAs en esta materia"}
+                                            {search ? "Sin resultados" : "No hay OVAs en esta materia"}
                                         </p>
                                         {search && (
                                             <button onClick={() => setSearch("")}
@@ -325,7 +461,6 @@ export default function StudentDashboard({ courses = [] }) {
                                     </div>
                                 )}
 
-                                {/* Grid OVAs */}
                                 {activeOvas.length > 0 && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                                         {activeOvas.map((ova, i) => (
@@ -362,6 +497,10 @@ export default function StudentDashboard({ courses = [] }) {
                     from { opacity: 0; transform: translateY(16px); }
                     to   { opacity: 1; transform: translateY(0); }
                 }
+                @keyframes modalPop {
+                    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+                    to   { opacity: 1; transform: scale(1) translateY(0); }
+                }
                 .animate-fade-up { animation: fadeUp 0.5s ease-out forwards; }
             `}</style>
         </>
@@ -371,15 +510,16 @@ export default function StudentDashboard({ courses = [] }) {
 // ─── Tarjeta OVA ──────────────────────────────────────────────────────────────
 function OvaCard({ ova, materia, index }) {
     return (
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group animate-fade-up border border-gray-100"
-            style={{ animationDelay: `${index * 80}ms` }}>
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border border-gray-100"
+            style={{ animation: `fadeUp 0.5s ease-out ${index * 80}ms both` }}>
 
-            {/* Thumbnail */}
             {ova.thumbnail ? (
                 <div className="relative overflow-hidden h-44">
-                    <img src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
+                    <img
+                        src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
                         alt={ova.tematica}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 </div>
             ) : (
@@ -388,7 +528,6 @@ function OvaCard({ ova, materia, index }) {
                     <materia.icon className="w-14 h-14 mb-2 opacity-20 transition-transform duration-300 group-hover:scale-110"
                         style={{ color: materia.color }} />
                     <span className="text-3xl">{materia.emoji}</span>
-                    {/* Círculos decorativos */}
                     <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-10"
                         style={{ backgroundColor: materia.color }} />
                     <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full opacity-10"
@@ -397,26 +536,26 @@ function OvaCard({ ova, materia, index }) {
             )}
 
             <div className="p-5">
-                {/* Badge área */}
                 <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
                     style={{ backgroundColor: materia.bg, color: materia.color }}>
                     <materia.icon className="w-3 h-3" />
                     {ova.area}
                 </span>
 
-                {/* Temática */}
                 <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 leading-snug">
                     {ova.tematica}
                 </h3>
 
-                {/* Descripción */}
                 {ova.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{ova.description}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+                        {ova.description}
+                    </p>
                 )}
 
-                {/* Botón */}
                 {ova.url ? (
-                    <a href={ova.url} target="_blank" rel="noopener noreferrer"
+                    <a href={`${ova.url}?ova_id=${ova.id}&course_id=${ova.course?.id}`}
+                    target="_blank"
+        rel="noopener noreferrer"
                         className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
                         style={{ backgroundColor: materia.color }}
                         onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
