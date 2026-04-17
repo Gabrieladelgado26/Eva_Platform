@@ -16,7 +16,7 @@ export default defineConfig({
     server: {
         // Ignorar archivos de Edge Animate en watch para evitar recargas innecesarias
         watch: {
-            ignored: ['**/public/js/jquery-1.10.2.min.js', '**/public/js/edge.6.0.0.min.js', '**/public/js/Menuprincipalovas5_edge.js']
+            ignored: ['**/public/js/jquery-1.10.2.min.js', '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/edge.6.0.0.min.js', '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/Menuprincipalovas5_edge.js']
         }
     },
     // Asegurar que los assets estáticos se sirvan correctamente

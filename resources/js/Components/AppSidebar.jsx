@@ -1,23 +1,27 @@
 // Resources/js/Components/AppSidebar.jsx
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Menu, GraduationCap, ClipboardList } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Menu, GraduationCap, ClipboardList, BarChart3, Users, Palette } from 'lucide-react';
 import {
-    LayoutDashboard, Users, BookOpen, Layers, Home, UserCog, GraduationCap as StudentIcon,
+    LayoutDashboard, BookOpen, Layers, Home, UserCog, GraduationCap as StudentIcon,
 } from 'lucide-react';
 import NavMain from '@/Components/NavMain';
 import NavUser from '@/Components/NavUser';         
-import { label } from 'framer-motion/client';
 
 function buildNavGroups(role, currentRoute) {
     const is = (...names) => names.includes(currentRoute);
 
-    // Función segura para obtener rutas
+    // Función segura para obtener rutas - MEJORADA
     const safeRoute = (name, params = {}) => {
         try {
-            return route(name, params);
+            // Verificar si route existe
+            if (typeof route === 'function') {
+                return route(name, params);
+            }
+            console.error(`La función route no está disponible`);
+            return '#';
         } catch (e) {
-            console.warn(`Ruta no encontrada: ${name}`);
+            console.error(`Ruta no encontrada: ${name}`, e.message);
             return '#';
         }
     };
@@ -39,7 +43,7 @@ function buildNavGroups(role, currentRoute) {
             label: 'Gestión de Usuarios',
             items: [
                 {
-                    title: 'Personal',
+                    title: 'Personal Administrativo',
                     href: safeRoute('admin.staff'),  
                     icon: Users,
                     current: is('admin.staff', 'admin.users.create', 'admin.users.edit'),
@@ -61,42 +65,37 @@ function buildNavGroups(role, currentRoute) {
                     icon: Layers,
                     current: is('admin.ovas.index', 'admin.ovas.create', 'admin.ovas.edit', 'admin.ovas.show'),
                 },
+                {
+                    title: 'Gestionar Cursos',
+                    href: safeRoute('admin.courses.index'),
+                    icon: BookOpen,
+                    current: is('admin.courses.index'),
+                },
             ],
         },
-
-          {
-        label: 'Evaluaciones',
-        items: [
-            {
-                title: 'Todas las Evaluaciones',
-                href: route('admin.evaluations.index'), // Usa la ruta de admin
-                icon: ClipboardList,
-                current: is('admin.evaluations.index'),
-            },
+        {
+            label: 'Evaluaciones',
+            items: [
+                {
+                    title: 'Todas las Evaluaciones',
+                    href: safeRoute('admin.evaluations.index'),
+                    icon: ClipboardList,
+                    current: is('admin.evaluations.index'),
+                },
+            ],
+        },
         ],
-    },
-    ],
 
         teacher: [
             {
                 label: 'Principal',
                 items: [
                     {
-                        title: 'Dashboard',
-                        href: safeRoute('teacher.dashboard'),
-                        icon: Home,
-                        current: is('teacher.dashboard'),
-                    },
-                ],
-            },
-            {
-                label: 'Académico',
-                items: [
-                    {
                         title: 'Mis Cursos',
                         href: safeRoute('teacher.dashboard'),
                         icon: BookOpen,
                         current: is(
+                            'teacher.dashboard',
                             'teacher.courses.show',
                             'teacher.courses.create',
                             'teacher.courses.edit',
@@ -104,12 +103,34 @@ function buildNavGroups(role, currentRoute) {
                             'teacher.courses.ovas.index'
                         ),
                     },
-                     {
-            title: 'Evaluaciones',
-            href: route('teacher.evaluations.index'),
-            icon: ClipboardList,   // importar de lucide-react
-            current: is('teacher.evaluations.index'),
-        },
+                ],
+            },
+            {
+                label: 'Académico',
+                items: [
+                    {
+                        title: 'Mis Estudiantes',
+                        href: safeRoute('teacher.students.index'),
+                        icon: Users,
+                        current: is('teacher.students.index', 'teacher.students.show'),
+                    },
+                    {
+                        title: 'Evaluaciones',
+                        href: safeRoute('teacher.evaluations.index'),
+                        icon: ClipboardList,
+                        current: is('teacher.evaluations.index'),
+                    },
+                ],
+            },
+            {
+                label: 'Dashboard',
+                items: [
+                    {
+                        title: 'Estadísticas',
+                        href: safeRoute('teacher.analytics'),
+                        icon: BarChart3,
+                        current: is('teacher.analytics'),
+                    },
                 ],
             },
         ],
@@ -122,7 +143,7 @@ function buildNavGroups(role, currentRoute) {
                         title: 'Inicio',
                         href: safeRoute('student.dashboard'),
                         icon: Home,
-                        current: is('student.dashboard', 'student.courses.index'),
+                        current: is('student.dashboard', 'student.courses.show'),
                     },
                 ],
             },
@@ -130,16 +151,21 @@ function buildNavGroups(role, currentRoute) {
                 label: 'Mi Aprendizaje',
                 items: [
                     {
-                        title: 'Mis Cursos',
-                        href: safeRoute('student.courses.index'),
-                        icon: BookOpen,
-                        current: is('student.courses.show'),
+                        title: 'Evaluaciones',
+                        href: safeRoute('student.evaluations.index'),
+                        icon: ClipboardList,
+                        current: is('student.evaluations.index'),
                     },
+                ],
+            },
+            {
+                label: 'Mi Personaje',
+                items: [
                     {
-                        title: 'Recursos OVA',
-                        href: safeRoute('student.courses.index'),
-                        icon: Layers,
-                        current: is('student.ovas.show'),
+                        title: 'Cambiar Avatar',
+                        href: safeRoute('student.avatar.index'),
+                        icon: Palette,
+                        current: is('student.avatar.index'),
                     },
                 ],
             },
@@ -163,11 +189,22 @@ export function useSidebarState() {
         return false;
     });
 
-    useEffect(() => {
-        localStorage.setItem('sidebarCollapsed', String(collapsed));
-    }, [collapsed]);
+    const setCollapsedAndBroadcast = (val) => {
+        const newVal = typeof val === 'function' ? val(collapsed) : val;
+        setCollapsed(newVal);
+        localStorage.setItem('sidebarCollapsed', String(newVal));
+        window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: { collapsed: newVal } }));
+    };
 
-    return [collapsed, setCollapsed];
+    useEffect(() => {
+        const handler = (e) => {
+            setCollapsed(e.detail.collapsed);
+        };
+        window.addEventListener('sidebarToggle', handler);
+        return () => window.removeEventListener('sidebarToggle', handler);
+    }, []);
+
+    return [collapsed, setCollapsedAndBroadcast];
 }
 
 export default function AppSidebar({ currentRoute = '' }) {
@@ -180,7 +217,6 @@ export default function AppSidebar({ currentRoute = '' }) {
     const [groups, setGroups] = useState([]);
 
     useEffect(() => {
-        // Construir los grupos después de que el componente se monte
         setGroups(buildNavGroups(role, currentRoute));
     }, [role, currentRoute]);
 
@@ -231,7 +267,8 @@ export default function AppSidebar({ currentRoute = '' }) {
                     </div>
 
                     <NavMain groups={groups} collapsed={collapsed} />
-                    <NavUser user={user}   collapsed={collapsed} />
+
+                    <NavUser user={user} collapsed={collapsed} />
                 </div>
             </aside>
         </>

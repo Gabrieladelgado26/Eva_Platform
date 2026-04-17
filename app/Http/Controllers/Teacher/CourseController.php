@@ -423,4 +423,177 @@ class CourseController extends Controller
 
         return response()->json($availableOvas);
     }
+
+    /**
+     * Teacher analytics dashboard
+     */
+    public function analytics()
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        abort_if(!$user, 403);
+        abort_unless($user->role->slug === 'teacher', 403);
+
+        try {
+            // Get teacher's course IDs
+            $courseIds = $user->courses()->pluck('id')->toArray();
+
+            // Stats
+            $totalCourses = count($courseIds);
+            $activeCourses = $user->courses()->where('is_active', true)->count();
+
+            // Total distinct students across all teacher's courses
+            $totalStudents = DB::table('course_user')
+                ->whereIn('course_id', $courseIds)
+                ->distinct('user_id')
+                ->count('user_id');
+
+            // Total unique OVAs assigned to teacher's courses
+            $totalOVAs = DB::table('course_ova')
+                ->whereIn('course_id', $courseIds)
+                ->distinct('ova_id')
+                ->count('ova_id');
+
+            // Completed activities: DISTINCT (user_id, ova_id) pairs from evaluations
+            $completedActivities = DB::table('evaluations')
+                ->whereIn('course_id', $courseIds)
+                ->distinct('user_id', 'ova_id')
+                ->count(DB::raw('DISTINCT CONCAT(user_id, "_", ova_id)'));
+
+            // Average score: AVG((score/total)*100)
+            $avgScoreResult = DB::table('evaluations')
+                ->whereIn('course_id', $courseIds)
+                ->selectRaw('AVG(CASE WHEN total > 0 THEN (score/total)*100 ELSE 0 END) as avg_score')
+                ->first();
+            $avgScore = $avgScoreResult ? (int)round($avgScoreResult->avg_score ?? 0) : 0;
+
+            // Average progress: (completedActivities) / (totalStudents × totalOVAs) × 100
+            $denominator = $totalStudents * $totalOVAs;
+            $avgProgress = $denominator > 0
+                ? min(100, max(0, (int)round(($completedActivities / $denominator) * 100)))
+                : 0;
+
+            // Monthly activity (last 6 months)
+            $monthlyActivity = DB::table('evaluations')
+                ->whereIn('course_id', $courseIds)
+                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count')
+                ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+                ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+                ->limit(6)
+                ->get()
+                ->map(function($row) {
+                    $monthNames = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                    return [
+                        'month' => $monthNames[$row->month] ?? 'Mes',
+                        'count' => $row->count
+                    ];
+                })
+                ->reverse()
+                ->values()
+                ->toArray();
+
+            // OVA performance by area
+            $ovaPerformanceByArea = DB::table('evaluations')
+                ->join('ovas', 'evaluations.ova_id', '=', 'ovas.id')
+                ->whereIn('evaluations.course_id', $courseIds)
+                ->where('evaluations.attempt', 1)
+                ->selectRaw('ovas.area, AVG(CASE WHEN evaluations.total > 0 THEN (evaluations.score/evaluations.total)*100 ELSE 0 END) as avg, COUNT(*) as count')
+                ->groupBy('ovas.area')
+                ->orderByRaw('avg DESC')
+                ->get()
+                ->map(function($row) {
+                    return [
+                        'area' => $row->area,
+                        'avg' => (int)round($row->avg ?? 0),
+                        'count' => $row->count
+                    ];
+                })
+                ->toArray();
+
+            // Peak hours: group by hour block
+            $peakHours = DB::table('evaluations')
+                ->whereIn('course_id', $courseIds)
+                ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+                ->groupByRaw('HOUR(created_at)')
+                ->get()
+                ->map(function($row) {
+                    $hourInt = $row->hour ?? 0;
+
+                    if ($hourInt >= 0 && $hourInt < 6) {
+                        $block = 'Madrugada';
+                    } elseif ($hourInt >= 6 && $hourInt < 12) {
+                        $block = 'Mañana';
+                    } elseif ($hourInt >= 12 && $hourInt < 18) {
+                        $block = 'Tarde';
+                    } else {
+                        $block = 'Noche';
+                    }
+
+                    return ['hour' => $block, 'count' => $row->count];
+                })
+                ->groupBy('hour')
+                ->map(function($group) {
+                    return [
+                        'label' => $group[0]['hour'],
+                        'count' => $group->sum('count')
+                    ];
+                })
+                ->values()
+                ->toArray();
+
+            // Calculate percentages for peak hours
+            $totalEvals = array_sum(array_column($peakHours, 'count'));
+            $peakHours = array_map(function($item) use ($totalEvals) {
+                return [
+                    'label' => $item['label'],
+                    'count' => $item['count'],
+                    'pct' => $totalEvals > 0 ? (int)round(($item['count'] / $totalEvals) * 100) : 0
+                ];
+            }, $peakHours);
+
+            // Sort by defined order
+            $peakOrder = ['Madrugada', 'Mañana', 'Tarde', 'Noche'];
+            usort($peakHours, function($a, $b) use ($peakOrder) {
+                return array_search($a['label'], $peakOrder) - array_search($b['label'], $peakOrder);
+            });
+
+            $stats = [
+                'totalCourses' => $totalCourses,
+                'activeCourses' => $activeCourses,
+                'totalStudents' => $totalStudents,
+                'totalOVAs' => $totalOVAs,
+                'completedActivities' => $completedActivities,
+                'avgScore' => $avgScore,
+                'avgProgress' => $avgProgress,
+            ];
+
+            return Inertia::render('Teacher/Analytics', [
+                'auth' => ['user' => $user],
+                'stats' => $stats,
+                'monthlyActivity' => $monthlyActivity,
+                'peakHours' => $peakHours,
+                'ovaPerformanceByArea' => $ovaPerformanceByArea
+            ]);
+
+        } catch (\Exception $e) {
+            // If evaluations table doesn't exist or error occurs, return empty defaults
+            return Inertia::render('Teacher/Analytics', [
+                'auth' => ['user' => $user],
+                'stats' => [
+                    'totalCourses' => $user->courses()->count(),
+                    'activeCourses' => $user->courses()->where('is_active', true)->count(),
+                    'totalStudents' => 0,
+                    'totalOVAs' => 0,
+                    'completedActivities' => 0,
+                    'avgScore' => 0,
+                    'avgProgress' => 0,
+                ],
+                'monthlyActivity' => [],
+                'peakHours' => [],
+                'ovaPerformanceByArea' => []
+            ]);
+        }
+    }
 }

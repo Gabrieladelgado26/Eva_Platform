@@ -545,35 +545,28 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
         }
     };
 
-    const handleAssign = async () => {
+    const handleAssign = () => {
         if (selectedOvas.length === 0) return;
         setSubmitting(true);
         setError(null);
-        try {
-            const response = await fetch(route('teacher.courses.ovas.assign', course.id), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+        router.post(
+            route('teacher.courses.ovas.assign', course.id),
+            { ova_ids: selectedOvas },
+            {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    if (onSuccess) onSuccess(null);
+                    onClose();
                 },
-                credentials: 'same-origin',
-                body: JSON.stringify({ ova_ids: selectedOvas })
-            });
-            if (response.status === 419) { alert('La sesión ha expirado. Recargando...'); window.location.reload(); return; }
-            const result = await response.json();
-            if (response.ok && result.success) {
-                if (onSuccess) await onSuccess(result.data && Array.isArray(result.data) ? result.data : null);
-                onClose();
-            } else {
-                setError(result.message || 'Error al asignar los OVAs');
+                onError: (errors) => {
+                    setError(Object.values(errors)[0] || 'Error al asignar los OVAs');
+                    setSubmitting(false);
+                },
+                onFinish: () => {
+                    setSubmitting(false);
+                }
             }
-        } catch (err) {
-            setError('Error de red al asignar los OVAs');
-        } finally {
-            setSubmitting(false);
-        }
+        );
     };
 
     const toggleSelect = (ovaId) => {
@@ -658,6 +651,230 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
                         Asignar ({selectedOvas.length})
                     </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── RENDIMIENTO ACADÉMICO ────────────────────────────────────────────────────
+function RendimientoTab({ course, students, ovas }) {
+    const [evaluations, setEvaluations] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadEvaluations = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`/teacher/evaluations?course_id=${course.id}`, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                });
+                if (response.status === 419) { window.location.reload(); return; }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                let evalArray = [];
+                if (Array.isArray(data)) evalArray = data;
+                else if (data?.data && Array.isArray(data.data)) evalArray = data.data;
+                setEvaluations(evalArray);
+            } catch (err) {
+                setError('No se pudieron cargar los datos de evaluación.');
+                setEvaluations([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadEvaluations();
+    }, [course.id]);
+
+    if (loading) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" style={{ color: "#540D6E" }} />
+                <p className="text-sm text-gray-600">Cargando datos de evaluación...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+                <p className="text-base font-semibold text-gray-700 mb-2">Error</p>
+                <p className="text-sm text-gray-500">{error}</p>
+            </div>
+        );
+    }
+
+    if (evaluations.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
+                <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                    style={{ background: "linear-gradient(135deg, #540D6E10, #EE426610)" }}>
+                    <BarChart3 className="w-10 h-10" style={{ color: "#540D6E40" }} />
+                </div>
+                <p className="text-base font-bold text-gray-700 mb-1">Sin evaluaciones registradas</p>
+                <p className="text-sm text-gray-400">Los estudiantes aún no han completado evaluaciones en este curso</p>
+            </div>
+        );
+    }
+
+    // Calcular estadísticas resumen
+    const totalEvaluations = evaluations.length;
+    const uniqueStudents = new Set(evaluations.map(e => e.student?.id)).size;
+    const uniqueOvas = new Set(evaluations.map(e => e.ova?.id)).size;
+    const avgPercentage = evaluations.length > 0
+        ? (evaluations.reduce((sum, e) => sum + (e.percentage || 0), 0) / evaluations.length).toFixed(1)
+        : 0;
+
+    // Agrupar por área de OVA
+    const areaGroups = {};
+    evaluations.forEach(ev => {
+        const area = ev.ova?.area || "Sin área";
+        if (!areaGroups[area]) {
+            areaGroups[area] = { evals: [], avg: 0 };
+        }
+        areaGroups[area].evals.push(ev);
+    });
+
+    // Calcular promedio por área
+    const colorPalette = ["#540D6E", "#EE4266", "#0EAD69", "#3BCEAC", "#FFD23F"];
+    const areaColors = {};
+    Object.keys(areaGroups).forEach((area, idx) => {
+        const evals = areaGroups[area].evals;
+        areaGroups[area].avg = evals.length > 0
+            ? (evals.reduce((sum, e) => sum + (e.percentage || 0), 0) / evals.length)
+            : 0;
+        areaColors[area] = colorPalette[idx % colorPalette.length];
+    });
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            {/* Resumen de estadísticas */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                    { label: "Total Evaluaciones", value: totalEvaluations, Icon: FileText, bg: "#F3E8FF", color: "#540D6E" },
+                    { label: "Promedio General", value: `${avgPercentage}%`, Icon: Award, bg: "#E8F5F0", color: "#0EAD69" },
+                    { label: "Estudiantes", value: uniqueStudents, Icon: Users, bg: "#FEE2E2", color: "#EE4266" },
+                    { label: "OVAs Evaluados", value: uniqueOvas, Icon: Layers, bg: "#FFF4E0", color: "#FFD23F" },
+                ].map(({ label, value, Icon, bg, color }) => (
+                    <div key={label} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-lg" style={{ backgroundColor: bg }}>
+                                <Icon className="w-5 h-5" style={{ color }} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
+                                <p className="text-2xl font-bold mt-1" style={{ color }}>{value}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Promedio por área */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 flex items-center gap-3">
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                        <BarChart3 className="w-5 h-5" style={{ color: "#540D6E" }} />
+                    </div>
+                    <h2 className="text-lg font-bold text-gray-900">Desempeño por Área</h2>
+                </div>
+                <div className="p-6 space-y-4">
+                    {Object.entries(areaGroups).map(([area, group]) => (
+                        <div key={area}>
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-sm font-semibold text-gray-700">{area}</p>
+                                <p className="text-sm font-bold" style={{ color: areaColors[area] }}>
+                                    {group.avg.toFixed(1)}%
+                                </p>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div
+                                    className="h-full rounded-full transition-all"
+                                    style={{
+                                        width: `${group.avg}%`,
+                                        backgroundColor: areaColors[area]
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Tabla de evaluaciones */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 flex items-center gap-3">
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#FFF4E0" }}>
+                        <FileText className="w-5 h-5" style={{ color: "#FFD23F" }} />
+                    </div>
+                    <h2 className="text-lg font-bold text-gray-900">Detalle de Evaluaciones</h2>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                {["Estudiante", "Área", "Temática", "Puntaje", "Total", "Porcentaje", "Intento", "Fecha"].map(h => (
+                                    <th key={h} className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        {h}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {evaluations.map(ev => (
+                                <tr key={ev.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                                style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
+                                                {ev.student?.name?.charAt(0).toUpperCase() || "?"}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900">{ev.student?.name || "Desconocido"}</p>
+                                                <p className="text-xs text-gray-500">@{ev.student?.username || "—"}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm font-medium text-gray-700">{ev.ova?.area || "—"}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-600">{ev.ova?.tematica || "—"}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm font-semibold text-gray-900">{ev.score || 0}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-600">{ev.total || 0}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold" style={{ color: ev.percentage >= 70 ? "#0EAD69" : ev.percentage >= 50 ? "#FFD23F" : "#EE4266" }}>
+                                                {ev.percentage ? ev.percentage.toFixed(1) : 0}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-600">{ev.attempt || 1}</span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-500">
+                                            {ev.created_at ? new Date(ev.created_at).toLocaleDateString('es-ES') : "—"}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="px-6 py-3 border-t border-gray-200 bg-gray-50">
+                    <p className="text-sm text-gray-600">
+                        Mostrando <strong>{evaluations.length}</strong> evaluación{evaluations.length !== 1 ? "es" : ""}
+                    </p>
                 </div>
             </div>
         </div>
@@ -753,8 +970,8 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
 
     const pageTabs = [
         { id: "students", label: "Estudiantes", icon: Users, count: students.length },
-        { id: "details", label: "Detalles del Curso", icon: BookOpen, count: null },
         { id: "ovas", label: "Recursos OVAs", icon: Layers, count: ovas.length },
+        { id: "rendimiento", label: "Rendimiento Académico", icon: BarChart3, count: null },
     ];
 
     const recentActivities = [
@@ -965,76 +1182,6 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             </div>
                         )}
 
-                        {/* ── Detalles ── */}
-                        {tab === "details" && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-                                <div className="lg:col-span-2">
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                        <div className="p-6 border-b border-gray-200 flex items-center gap-3">
-                                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
-                                                <BookOpen className="w-5 h-5" style={{ color: "#540D6E" }} />
-                                            </div>
-                                            <h2 className="text-lg font-bold text-gray-900">Información del Curso</h2>
-                                        </div>
-                                        <div className="p-6">
-                                            <dl className="grid grid-cols-2 gap-4">
-                                                {[
-                                                    { label: "Grado", value: GRADE_LABELS[course.grade] ?? course.grade },
-                                                    { label: "Sección", value: course.section },
-                                                    { label: "Año Escolar", value: course.school_year },
-                                                ].map(item => (
-                                                    <div key={item.label} className="p-4 rounded-lg" style={{ backgroundColor: "#F8FAFC" }}>
-                                                        <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{item.label}</dt>
-                                                        <dd className="text-lg font-bold text-gray-900">{item.value}</dd>
-                                                    </div>
-                                                ))}
-                                                <div className="p-4 rounded-lg" style={{ backgroundColor: "#F8FAFC" }}>
-                                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Estado</dt>
-                                                    <dd className="flex items-center gap-2">
-                                                        <span className={`w-2 h-2 rounded-full ${course.is_active ? "animate-pulse" : ""}`}
-                                                            style={{ backgroundColor: course.is_active ? "#0EAD69" : "#94A3B8" }} />
-                                                        <span className="text-lg font-bold" style={{ color: course.is_active ? "#0EAD69" : "#94A3B8" }}>
-                                                            {course.is_active ? "Activo" : "Inactivo"}
-                                                        </span>
-                                                    </dd>
-                                                </div>
-                                                {course.description && (
-                                                    <div className="col-span-2 p-4 rounded-lg" style={{ backgroundColor: "#F8FAFC" }}>
-                                                        <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Descripción</dt>
-                                                        <dd className="text-sm text-gray-700">{course.description}</dd>
-                                                    </div>
-                                                )}
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                        <div className="p-6 border-b border-gray-200 flex items-center gap-3">
-                                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#FFF4E0" }}>
-                                                <TrendingUp className="w-5 h-5" style={{ color: "#FFD23F" }} />
-                                            </div>
-                                            <h2 className="text-lg font-bold text-gray-900">Actividad Reciente</h2>
-                                        </div>
-                                        <div className="divide-y divide-gray-100">
-                                            {recentActivities.map(a => (
-                                                <div key={a.id} className="p-4 hover:bg-gray-50 transition-colors">
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="p-2 rounded-lg" style={{ backgroundColor: `${a.color}15` }}>
-                                                            <a.icon className="w-4 h-4" style={{ color: a.color }} />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-700">{a.description}</p>
-                                                            <p className="text-xs text-gray-400 mt-1">{a.time}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         {/* ── OVAs ── */}
                         {tab === "ovas" && (
@@ -1098,6 +1245,11 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                     </div>
                                 )}
                             </div>
+                        )}
+
+                        {/* ── Rendimiento Académico ── */}
+                        {tab === "rendimiento" && (
+                            <RendimientoTab course={course} students={students} ovas={ovas} />
                         )}
 
                     </div>

@@ -1,25 +1,137 @@
-// Resources/js/Pages/Admin/Students.jsx
 import { Head, Link, usePage, router } from "@inertiajs/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 import {
-    UserPlus, Edit2, Trash2, Mail, User, Shield, Users, Search, Filter, X,
+    UserPlus, Edit2, Trash2, User, Shield, Users, Search, Filter, X,
     RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
-    LayoutDashboard, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home,
-    Calendar, ClipboardList, BarChart3, HelpCircle, ChevronDown, Eye, Copy, Check,
-    UsersRound, ChevronsLeft, ChevronsRight
+    ChevronLeft, ChevronRight, Eye, Copy, Check,
+    UsersRound, ChevronsLeft, ChevronsRight, ChevronDown
 } from "lucide-react";
 
-export default function Students({ users = [], section = "students" }) {
+// ─── Componente Toast con barra de progreso ───────────────────────────────────
+function Toast({ message, type = 'success', onClose, duration = 4000 }) {
+    const [progress, setProgress] = useState(100);
+    const intervalRef = useRef(null);
+    const startTimeRef = useRef(Date.now());
 
+    useEffect(() => {
+        const updateProgress = () => {
+            const elapsed = Date.now() - startTimeRef.current;
+            const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
+            setProgress(remaining);
+            
+            if (remaining <= 0) {
+                onClose();
+            }
+        };
+
+        intervalRef.current = setInterval(updateProgress, 50);
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [duration, onClose]);
+
+    const bgColor = type === 'success' 
+        ? 'bg-green-50 border-green-300' 
+        : type === 'error' 
+            ? 'bg-red-50 border-red-300' 
+            : 'bg-blue-50 border-blue-300';
+    
+    const textColor = type === 'success' 
+        ? 'text-green-800' 
+        : type === 'error' 
+            ? 'text-red-800' 
+            : 'text-blue-800';
+    
+    const iconColor = type === 'success' 
+        ? 'text-green-600' 
+        : type === 'error' 
+            ? 'text-red-600' 
+            : 'text-blue-600';
+    
+    const progressColor = type === 'success' 
+        ? '#0EAD69' 
+        : type === 'error' 
+            ? '#EE4266' 
+            : '#3B9AE1';
+
+    return (
+        <div className="fixed top-4 right-4 z-50 animate-slide-down min-w-[320px] max-w-md">
+            <div className={`relative overflow-hidden rounded-lg shadow-xl border ${bgColor}`}>
+                <div className="flex items-start gap-3 px-4 py-3">
+                    {type === 'success' ? (
+                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
+                    ) : type === 'error' ? (
+                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
+                    ) : (
+                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
+                    )}
+                    <div className="flex-1">
+                        <p className={`text-sm font-medium ${textColor}`}>{message}</p>
+                    </div>
+                    <button 
+                        onClick={onClose} 
+                        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+                
+                {/* Barra de progreso */}
+                <div 
+                    className="h-1 transition-all duration-50 ease-linear"
+                    style={{ 
+                        width: `${progress}%`,
+                        backgroundColor: progressColor
+                    }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// ── Avatar del estudiante ─────────────────────────────────────────────────────
+function StudentAvatar({ student }) {
+    // Si tiene avatar personalizado
+    if (student.avatar) {
+        return (
+            <img 
+                src={`/avatars/${student.avatar}.png`} 
+                alt={student.name}
+                className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm"
+                onError={(e) => { 
+                    e.currentTarget.style.display = 'none';
+                    // Mostrar fallback
+                    const parent = e.currentTarget.parentElement;
+                    if (parent && !parent.querySelector('.avatar-fallback')) {
+                        const fallback = document.createElement('div');
+                        fallback.className = "avatar-fallback w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm";
+                        fallback.style.background = "linear-gradient(to bottom right, #540D6E, #EE4266)";
+                        fallback.textContent = student.name?.charAt(0).toUpperCase() ?? 'E';
+                        parent.appendChild(fallback);
+                    }
+                }}
+            />
+        );
+    }
+    // Fallback: avatar con inicial
+    return (
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
+            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
+            {student.name?.charAt(0).toUpperCase() ?? 'E'}
+        </div>
+    );
+}
+
+export default function Students({ users = [], stats = {} }) {
     const { props } = usePage();
     const flash = props.flash || {};
     const { auth } = usePage().props;
-    const user = auth?.user ?? { name: "Usuario" };
-
+    
     const [collapsed] = useSidebarState();
-
-    const stats = props.stats || {};
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -40,6 +152,19 @@ export default function Students({ users = [], section = "students" }) {
     const [showPinModal, setShowPinModal] = useState(false);
     const [pinUserId, setPinUserId] = useState(null);
     const [pinUserName, setPinUserName] = useState('');
+
+    // Toast state
+    const [toast, setToast] = useState(null);
+
+    // Mostrar toast cuando hay flash messages
+    useEffect(() => {
+        if (flash?.success) {
+            setToast({ message: flash.success, type: 'success' });
+        }
+        if (flash?.error) {
+            setToast({ message: flash.error, type: 'error' });
+        }
+    }, [flash]);
 
     useEffect(() => {
         if (flash?.credentials) {
@@ -76,29 +201,39 @@ export default function Students({ users = [], section = "students" }) {
     };
 
     const confirmActivateUser = () => {
-        router.patch(
-            route("admin.users.toggleStatus", userToActivate.id),
-            {},
-            { preserveScroll: true, preserveState: true }
-        );
-        setShowActivateModal(false);
-        setUserToActivate(null);
+        router.patch(route("admin.users.toggleStatus", userToActivate.id), {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setShowActivateModal(false);
+                setUserToActivate(null);
+                setToast({ message: 'Estudiante activado correctamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al activar el estudiante', type: 'error' });
+            }
+        });
     };
 
     const confirmDeactivateUser = () => {
-        router.patch(
-            route("admin.users.toggleStatus", userToDeactivate.id),
-            {},
-            { preserveScroll: true, preserveState: true }
-        );
-        setShowDeactivateModal(false);
-        setUserToDeactivate(null);
+        router.patch(route("admin.users.toggleStatus", userToDeactivate.id), {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setShowDeactivateModal(false);
+                setUserToDeactivate(null);
+                setToast({ message: 'Estudiante desactivado correctamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al desactivar el estudiante', type: 'error' });
+            }
+        });
     };
 
     const filteredUsers = usersData.filter((u) => {
         const matchesSearch =
-            normalize(u.name).includes(searchTerm.toLowerCase()) ||
-            normalize(u.username).includes(searchTerm.toLowerCase());
+            normalize(u.name).includes(normalize(searchTerm)) ||
+            normalize(u.username).includes(normalize(searchTerm));
 
         const matchesStatus =
             filterStatus === "all" ||
@@ -126,6 +261,10 @@ export default function Students({ users = [], section = "students" }) {
             onSuccess: () => {
                 setShowDeleteModal(false);
                 setUserToDelete(null);
+                setToast({ message: 'Estudiante eliminado correctamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al eliminar el estudiante', type: 'error' });
             }
         });
     };
@@ -140,6 +279,12 @@ export default function Students({ users = [], section = "students" }) {
         setShowPinModal(false);
         router.post(route("admin.users.regeneratePin", pinUserId), {}, {
             preserveScroll: true,
+            onSuccess: () => {
+                setToast({ message: 'PIN regenerado correctamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al regenerar el PIN', type: 'error' });
+            }
         });
     };
 
@@ -153,7 +298,7 @@ export default function Students({ users = [], section = "students" }) {
 
     const goToPage = (url) => {
         if (!url) return;
-        router.get(url, { section }, { preserveScroll: true, preserveState: false });
+        router.get(url, {}, { preserveScroll: true, preserveState: false });
     };
 
     const buildPageNumbers = () => {
@@ -183,30 +328,32 @@ export default function Students({ users = [], section = "students" }) {
 
             <AppSidebar currentRoute="admin.students" />
 
+            {/* Toast */}
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                    duration={4000}
+                />
+            )}
+
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
-                    {/* Breadcrumb */}
-                    <div className="mb-6">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Panel de Control</Link>
-                            <span>/</span>
-                            <Link href={route("admin.dashboard")} className="hover:text-purple-600 transition-colors">Administración</Link>
-                            <span>/</span>
-                            <span style={{ color: "#540D6E" }} className="font-medium">Estudiantes</span>
-                        </div>
-                    </div>
-
-                    {flash?.message && (
-                        <div className="max-w-7xl mx-auto mb-6">
-                            <div className="p-4 rounded-lg border border-red-300 bg-red-50 text-red-700 font-semibold shadow-sm">
-                                {flash.message}
+                    <div className="max-w-7xl mx-auto">
+                        {/* Breadcrumb */}
+                        <div className="mb-6">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Panel de Control</Link>
+                                <span>/</span>
+                                <Link href={route("admin.dashboard")} className="hover:text-purple-600 transition-colors">Administración</Link>
+                                <span>/</span>
+                                <span style={{ color: "#540D6E" }} className="font-medium">Estudiantes</span>
                             </div>
                         </div>
-                    )}
 
-                    <div className="max-w-7xl mx-auto">
                         {/* Header */}
-                        <div className="mb-8 animate-fade-in">
+                        <div className="mb-8">
                             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                                 <div className="flex items-start gap-4">
                                     <div className="p-4 rounded-xl shadow-sm border" style={{ backgroundColor: "white", borderColor: "#540D6E" }}>
@@ -236,7 +383,7 @@ export default function Students({ users = [], section = "students" }) {
                                     color: "#540D6E", 
                                     label: "Total Estudiantes", 
                                     desc: "Registrados en el sistema", 
-                                    value: stats.total || total || usersData.length 
+                                    value: stats?.total ?? usersData.length 
                                 },
                                 { 
                                     icon: CheckCircle, 
@@ -244,7 +391,7 @@ export default function Students({ users = [], section = "students" }) {
                                     color: "#0EAD69", 
                                     label: "Estudiantes Activos", 
                                     desc: "Con acceso habilitado", 
-                                    value: stats.active || usersData.filter(isUserActive).length 
+                                    value: stats?.active ?? usersData.filter(isUserActive).length 
                                 },
                                 { 
                                     icon: BookOpen, 
@@ -252,7 +399,7 @@ export default function Students({ users = [], section = "students" }) {
                                     color: "#540D6E", 
                                     label: "Promedio por Grupo", 
                                     desc: "Distribución académica", 
-                                    value: stats.avg_per_group || 0 
+                                    value: stats?.avg_per_group ?? 0 
                                 }
                             ].map((stat, i) => (
                                 <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
@@ -277,12 +424,16 @@ export default function Students({ users = [], section = "students" }) {
                             <div className="flex flex-col lg:flex-row gap-4">
                                 <div className="relative flex-1">
                                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input type="text" placeholder="Buscar por nombre o usuario..." value={searchTerm}
+                                    <input 
+                                        type="text" 
+                                        placeholder="Buscar por nombre o usuario..." 
+                                        value={searchTerm}
                                         onChange={e => setSearchTerm(e.target.value)}
                                         className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
                                         style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} />
+                                        onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} 
+                                    />
                                     {searchTerm && (
                                         <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
                                             <X className="w-4 h-4" />
@@ -311,7 +462,7 @@ export default function Students({ users = [], section = "students" }) {
 
                         {/* Indicador de filtros activos */}
                         {hasActiveFilters && (
-                            <div className="mb-6 animate-fade-in">
+                            <div className="mb-6">
                                 <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
@@ -355,18 +506,18 @@ export default function Students({ users = [], section = "students" }) {
                                     <table className="w-full">
                                         <thead className="bg-gray-50 border-b border-gray-200">
                                             <tr>
-                                                {[
-                                                    { icon: User, label: "Estudiante" },
-                                                    { icon: User, label: "Usuario" },
-                                                    { icon: Shield, label: "PIN" },
-                                                    { icon: CheckCircle, label: "Estado" }
-                                                ].map((col, i) => (
-                                                    <th key={i} className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                        <div className="flex items-center gap-2">
-                                                            <col.icon className="w-4 h-4" /> {col.label}
-                                                        </div>
-                                                    </th>
-                                                ))}
+                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                                    <div className="flex items-center gap-2"><User className="w-4 h-4" /> Estudiante</div>
+                                                </th>
+                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                                    <div className="flex items-center gap-2"><User className="w-4 h-4" /> Usuario</div>
+                                                </th>
+                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                                    <div className="flex items-center gap-2"><Shield className="w-4 h-4" /> PIN</div>
+                                                </th>
+                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                                    <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Estado</div>
+                                                </th>
                                                 <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acciones</th>
                                             </tr>
                                         </thead>
@@ -377,10 +528,7 @@ export default function Students({ users = [], section = "students" }) {
                                                     <tr key={u.id} className="hover:bg-gray-50 transition-colors">
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                                                    style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                                                    {u.name.charAt(0).toUpperCase()}
-                                                                </div>
+                                                                <StudentAvatar student={u} />
                                                                 <p className="text-sm font-semibold text-gray-900">{u.name}</p>
                                                             </div>
                                                         </td>
@@ -412,7 +560,8 @@ export default function Students({ users = [], section = "students" }) {
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right">
                                                             <div className="flex items-center justify-end gap-2">
-                                                                <button onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
+                                                                <button 
+                                                                    onClick={() => active ? handleDeactivateClick(u) : handleActivateClick(u)}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
                                                                     style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
@@ -549,12 +698,11 @@ export default function Students({ users = [], section = "students" }) {
                 </div>
             </main>
 
-            {/* Modales (igual que en Dashboard) */}
             {/* Modal de Eliminación */}
             {showDeleteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up">
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full">
                         <div className="p-6 border-b border-gray-200">
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FECACA" }}>
@@ -570,10 +718,7 @@ export default function Students({ users = [], section = "students" }) {
                                 <div className="space-y-2">
                                     <p className="text-sm font-semibold text-gray-900">Estudiante a eliminar:</p>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm"
-                                            style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                            {userToDelete?.name?.charAt(0).toUpperCase() || "U"}
-                                        </div>
+                                        <StudentAvatar student={userToDelete || {}} />
                                         <div>
                                             <p className="font-bold text-gray-900">{userToDelete?.name || "Estudiante"}</p>
                                             <p className="text-sm text-gray-600">{userToDelete?.username || ""}</p>
@@ -606,9 +751,9 @@ export default function Students({ users = [], section = "students" }) {
 
             {/* Modal de Credenciales */}
             {showCredentialsModal && credentials && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCredentialsModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full overflow-hidden">
                         <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
                         <div className="p-6">
                             <div className="flex items-center gap-4 mb-4">
@@ -633,7 +778,7 @@ export default function Students({ users = [], section = "students" }) {
                                         {copied.username ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
                                     </button>
                                 </div>
-                                {copied.username && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ Usuario copiado</p>}
+                                {copied.username && <p className="text-xs text-green-600 mt-1">✓ Usuario copiado</p>}
                             </div>
                             <div className="mb-6">
                                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">PIN de Acceso</label>
@@ -648,7 +793,7 @@ export default function Students({ users = [], section = "students" }) {
                                         {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
                                     </button>
                                 </div>
-                                {copied.pin && <p className="text-xs text-green-600 mt-1 animate-fade-in">✓ PIN copiado</p>}
+                                {copied.pin && <p className="text-xs text-green-600 mt-1">✓ PIN copiado</p>}
                             </div>
                             <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
                                 <p className="text-xs text-gray-700 flex items-start gap-2">
@@ -670,9 +815,9 @@ export default function Students({ users = [], section = "students" }) {
 
             {/* Modal de Activación */}
             {showActivateModal && userToActivate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowActivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full overflow-hidden">
                         <div className="h-1" style={{ background: "linear-gradient(to right, #0EAD69, #3BCEAC)" }} />
                         <div className="p-6">
                             <button onClick={() => setShowActivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
@@ -709,9 +854,9 @@ export default function Students({ users = [], section = "students" }) {
 
             {/* Modal de Desactivación */}
             {showDeactivateModal && userToDeactivate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeactivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full overflow-hidden">
                         <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #DC2F55)" }} />
                         <div className="p-6">
                             <button onClick={() => setShowDeactivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
@@ -748,9 +893,9 @@ export default function Students({ users = [], section = "students" }) {
 
             {/* Modal Confirmar Regenerar PIN */}
             {showPinModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowPinModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full overflow-hidden">
                         <div className="h-1" style={{ background: 'linear-gradient(to right, #540D6E, #EE4266)' }} />
                         <div className="p-6">
                             <button onClick={() => setShowPinModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
@@ -786,6 +931,22 @@ export default function Students({ users = [], section = "students" }) {
                     </div>
                 </div>
             )}
+
+            <style>{`
+                @keyframes slideDown {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-slide-down {
+                    animation: slideDown 0.3s ease-out;
+                }
+            `}</style>
         </>
     );
 }

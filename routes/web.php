@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\OvaController;
+use App\Http\Controllers\Admin\CourseController  as AdminCourseController;
 use App\Http\Controllers\Teacher\CourseController;
 use App\Http\Controllers\Teacher\CourseStudentController;
 use App\Http\Controllers\Teacher\CourseOvaController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Student\EvaluationController;
 | Welcome
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin'       => Route::has('login'),
@@ -43,12 +45,15 @@ Route::middleware(['web', 'auth'])
 
 /*
 |--------------------------------------------------------------------------
-| OVA Routes — Contenido Educativo (Matemáticas: Adición y Sustracción)
+| OVA Routes — Estructura semántica: /ovas/{area}/{tematica}/{subtema}
 |--------------------------------------------------------------------------
 */
-Route::prefix('ova')->name('ova.')->group(function () {
+Route::prefix('ovas/matematicas/adicion-sustraccion')->name('ova.')->group(function () {
 
-    Route::get('/index', function () {
+    // Redirect /index → /inicio for compatibility
+    Route::redirect('/index', '/ovas/matematicas/adicion-sustraccion/inicio', 301);
+
+    Route::get('/inicio', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Index')
             ->rootView('ova');
     })->name('index');
@@ -58,52 +63,65 @@ Route::prefix('ova')->name('ova.')->group(function () {
             ->rootView('ova');
     })->name('menu');
 
-    Route::get('/layout', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Layouts/Ova')
-            ->rootView('ova');
-    })->name('layout');
-
     Route::get('/slider', function () {
         return Inertia::render('OVAs/Components/Slider')
             ->rootView('slider');
     })->name('slider');
 
     // ── Adición ──
-    Route::get('/adicionpropiedades', function () {
+    Route::get('/adicion-sus-propiedades', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Propiedades')
             ->rootView('ova');
     })->name('adicionpropiedades');
 
-    Route::get('/adiciondoscifras', function () {
+    Route::get('/adicion-dos-cifras', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Dos_Cifras')
             ->rootView('ova');
     })->name('adiciondoscifras');
 
-    Route::get('/adiciontrescifras', function () {
+    Route::get('/adicion-tres-cifras', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Tres_Cifras')
             ->rootView('ova');
     })->name('adiciontrescifras');
 
-    Route::get('/adicionhasta19', function () {
+    Route::get('/adicion-hasta-19', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Hasta_19')
             ->rootView('ova');
     })->name('adicionhasta19');
 
     // ── Sustracción ──
-    Route::get('/sustracciondoscifras', function () {
+    Route::get('/sustraccion-dos-cifras', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Dos_Cifras')
             ->rootView('ova');
     })->name('sustracciondoscifras');
 
-    Route::get('/sustracciontrescifras', function () {
+    Route::get('/sustraccion-tres-cifras', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Tres_Cifras')
             ->rootView('ova');
     })->name('sustracciontrescifras');
 
-    Route::get('/sustraccionhasta19', function () {
+    Route::get('/sustraccion-hasta-19', function () {
         return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Hasta_19')
             ->rootView('ova');
     })->name('sustraccionhasta19');
+});
+
+/*
+|--------------------------------------------------------------------------
+| OVA Routes — Redirecciones legado /ova/* → /ovas/matematicas/adicion-sustraccion/*
+|--------------------------------------------------------------------------
+*/
+Route::prefix('ova')->group(function () {
+    Route::redirect('/index',               '/ovas/matematicas/adicion-sustraccion/inicio',               301);
+    Route::redirect('/menu',                '/ovas/matematicas/adicion-sustraccion/menu',                301);
+    Route::redirect('/slider',              '/ovas/matematicas/adicion-sustraccion/slider',                 301);
+    Route::redirect('/adicionpropiedades',  '/ovas/matematicas/adicion-sustraccion/adicion-sus-propiedades',  301);
+    Route::redirect('/adiciondoscifras',    '/ovas/matematicas/adicion-sustraccion/adicion-dos-cifras',    301);
+    Route::redirect('/adiciontrescifras',   '/ovas/matematicas/adicion-sustraccion/adicion-tres-cifras',   301);
+    Route::redirect('/adicionhasta19',      '/ovas/matematicas/adicion-sustraccion/adicion-hasta-19',      301);
+    Route::redirect('/sustracciondoscifras', '/ovas/matematicas/adicion-sustraccion/sustraccion-dos-cifras', 301);
+    Route::redirect('/sustracciontrescifras', '/ovas/matematicas/adicion-sustraccion/sustraccion-tres-cifras', 301);
+    Route::redirect('/sustraccionhasta19',  '/ovas/matematicas/adicion-sustraccion/sustraccion-hasta-19',  301);
 });
 
 /*
@@ -161,8 +179,17 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('ovas/{ova}',                 [OvaController::class, 'show'])->name('ovas.show');
         Route::patch('ovas/{ova}/toggle-status', [OvaController::class, 'toggleStatus'])->name('ovas.toggle-status');
 
+        // Cursos
+        Route::get('courses', [AdminCourseController::class, 'index'])->name('courses.index');
+        Route::get('courses/create', [AdminCourseController::class, 'create'])->name('courses.create');
+        Route::post('courses', [AdminCourseController::class, 'store'])->name('courses.store');
+        Route::get('courses/{course}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');
+        Route::put('courses/{course}', [AdminCourseController::class, 'update'])->name('courses.update');
+        Route::delete('courses/{course}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
+        Route::patch('courses/{course}/toggle-status', [AdminCourseController::class, 'toggleStatus'])->name('courses.toggleStatus');
+
         Route::get('evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'index'])
-    ->name('evaluations.index');
+            ->name('evaluations.index');
     });
 
 /*
@@ -176,6 +203,7 @@ Route::middleware(['auth', 'role:teacher'])
     ->group(function () {
 
         Route::get('/', [CourseController::class, 'dashboard'])->name('dashboard');
+        Route::get('analytics', [CourseController::class, 'analytics'])->name('analytics');
 
         Route::resource('courses', CourseController::class)->except(['index']);
         Route::patch('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])
@@ -196,9 +224,23 @@ Route::middleware(['auth', 'role:teacher'])
         Route::get('courses/{course}/students',            [CourseStudentController::class, 'index'])->name('courses.students.index');
         Route::post('courses/{course}/students',           [CourseStudentController::class, 'store'])->name('courses.students.store');
         Route::post('courses/{course}/students/bulk',      [CourseStudentController::class, 'storeBulk'])->name('courses.students.bulk');
-        Route::delete('courses/{course}/students/{student}',[CourseStudentController::class, 'destroy'])->name('courses.students.destroy');
+        Route::delete('courses/{course}/students/{student}', [CourseStudentController::class, 'destroy'])->name('courses.students.destroy');
+
+        // Estudiantes — vista global del docente
+        // Rutas fijas
+        Route::get('students/create',                   [CourseStudentController::class, 'create'])->name('students.create');
+        Route::get('students/export-pdf',               [CourseStudentController::class, 'exportPdf'])->name('students.export-pdf');
+
+        // Despues las rutas dinámicas
+        Route::get('students',                          [CourseStudentController::class, 'indexAll'])->name('students.index');
+        Route::get('students/{user}',                   [CourseStudentController::class, 'show'])->name('students.show');
+        Route::get('students/{user}/edit',              [CourseStudentController::class, 'edit'])->name('students.edit');
+        Route::post('students/{user}/regenerate-pin',   [CourseStudentController::class, 'regeneratePinForStudent'])->name('students.regeneratePin');
+        Route::patch('students/{user}/toggle-status',   [CourseStudentController::class, 'toggleStatus'])->name('students.toggleStatus');
+        Route::put('students/{user}',                   [CourseStudentController::class, 'updateStudent'])->name('students.update');
+
         Route::get('evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'index'])
-    ->name('evaluations.index');
+            ->name('evaluations.index');
     });
 
 /*
@@ -215,9 +257,8 @@ Route::middleware(['auth', 'role:teacher'])
         Route::post('/assign',     [CourseOvaController::class, 'assign'])->name('assign');
         Route::delete('/{ova}',    [CourseOvaController::class, 'remove'])->name('remove');
         Route::put('/order',       [CourseOvaController::class, 'updateOrder'])->name('update-order');
-        Route::put('/{ova}/config',[CourseOvaController::class, 'updateConfig'])->name('update-config');
+        Route::put('/{ova}/config', [CourseOvaController::class, 'updateConfig'])->name('update-config');
         Route::get('/stats',       [CourseOvaController::class, 'stats'])->name('stats');
-        
     });
 
 /*
@@ -247,6 +288,10 @@ Route::middleware(['auth', 'role:student'])
         // Evaluaciones (desde Inertia, si se necesita)
         Route::get('evaluations',  [EvaluationController::class, 'index'])->name('evaluations.index');
         Route::post('evaluations', [EvaluationController::class, 'store'])->name('evaluations.store');
+
+        // Avatar
+        Route::get('avatar', [AvatarController::class, 'index'])->name('avatar.index');
+        Route::post('avatar', [AvatarController::class, 'store'])->name('avatar.store');
     });
 
 /*

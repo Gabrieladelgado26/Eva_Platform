@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { router } from '@inertiajs/react';
 
 const OVAIndex = () => {
     const [introHover, setIntroHover] = useState(false);
@@ -113,7 +112,7 @@ const OVAIndex = () => {
                 setIsRedirecting(true);
                 console.log('Video terminado, redirigiendo...');
                 setTimeout(() => {
-                    router.visit('menu');
+                    window.location.href = '/ovas/matematicas/adicion-sustraccion/menu';
                 }, 500);
             }
         };
@@ -179,7 +178,7 @@ const OVAIndex = () => {
     const handleRedirect = () => {
         if (!isRedirecting) {
             setIsRedirecting(true);
-            router.visit('menu');
+            window.location.href = '/ovas/matematicas/adicion-sustraccion/menu';
         }
     };
 

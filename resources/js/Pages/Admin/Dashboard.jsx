@@ -1,14 +1,12 @@
-// Resources/js/Pages/Admin/Dashboard.jsx
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 import {
     Users, UserCheck, UserX, GraduationCap, BookOpen, TrendingUp, TrendingDown,
     Calendar, ChevronLeft, ChevronRight, Download, RefreshCw, Eye, EyeOff,
     Menu, X, ChevronDown, Filter, Search, Bell, Settings, LogOut, Home,
-    BarChart3, PieChart, LineChart, Activity, Zap, Target, Award, Clock,
-    UserPlus, CheckCircle, PlayCircle, Upload, Key,
-    Pencil, Trash2, Lock, XCircle
+    BarChart3, PieChart, LineChart, Activity, Zap, Target, Award, Clock, UserPlus,
+    CheckCircle, PlayCircle, Upload, Key
 } from "lucide-react";
 
 // Componentes de gráficas (instala: npm install recharts)
@@ -18,62 +16,18 @@ import {
     RadialBarChart, RadialBar, ComposedChart, Scatter
 } from 'recharts';
 
-// ─── Helpers para Actividades Recientes ───────────────────────────────────────
-
-const ACTION_META = {
-    created_user:    { label: "Usuario creado",      Icon: UserPlus,    bg: "bg-[#E1F5EE]", border: "border-[#5DCAA5]", stroke: "text-[#085041]" },
-    updated_user:    { label: "Usuario editado",     Icon: Pencil,      bg: "bg-[#EEEDFE]", border: "border-[#AFA9EC]", stroke: "text-[#3C3489]" },
-    deleted_user:    { label: "Usuario eliminado",   Icon: Trash2,      bg: "bg-[#FAECE7]", border: "border-[#F0997B]", stroke: "text-[#712B13]" },
-    pin_regenerated: { label: "PIN regenerado",      Icon: Lock,        bg: "bg-[#FAEEDA]", border: "border-[#EF9F27]", stroke: "text-[#633806]" },
-    user_activated:  { label: "Usuario activado",    Icon: CheckCircle, bg: "bg-[#EAF3DE]", border: "border-[#97C459]", stroke: "text-[#3B6D11]" },
-    user_deactivated:{ label: "Usuario desactivado", Icon: XCircle,     bg: "bg-[#F1EFE8]", border: "border-[#B4B2A9]", stroke: "text-[#5F5E5A]" },
-    default:         { label: "Acción del sistema",  Icon: Activity,    bg: "bg-gray-50",   border: "border-gray-200",  stroke: "text-gray-500"  },
-};
-
-function getTargetName(activity) {
-    try {
-        const src = activity.new_values || activity.old_values;
-        const obj = typeof src === "string" ? JSON.parse(src) : src;
-        if (obj?.name) return obj.name;
-    } catch {}
-    return `#${activity.auditable_id}`;
-}
-
-function getChangeSummary(activity) {
-    try {
-        const nv = activity.new_values ? JSON.parse(activity.new_values) : null;
-        const ov = activity.old_values ? JSON.parse(activity.old_values) : null;
-        if (!nv || Array.isArray(nv)) return null;
-        const keys = Object.keys(nv).filter(k => !["updated_at", "id"].includes(k));
-        if (keys.length === 1 && keys[0] === "name" && ov?.name) return `${ov.name} → ${nv.name}`;
-        if (keys.some(k => ["password", "pin"].includes(k))) return "Credenciales actualizadas";
-        if (keys.length) return keys.map(k => k.replace(/_/g, " ")).join(", ");
-    } catch {}
-    return null;
-}
-
-function relativeTime(dateStr) {
-    const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-    if (diff < 60)    return `Hace ${diff}s`;
-    if (diff < 3600)  return `Hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} h`;
-    const days = Math.floor(diff / 86400);
-    if (days < 30)    return `Hace ${days}d`;
-    return new Date(dateStr).toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
-}
-
 export default function Dashboard() {
-
     const { props } = usePage();
-    const { auth, stats, recentUsers, activityLogs, userGrowth, roleDistribution, monthlyActivity } = props;
+    const { auth, stats, recentUsers, activityLogs, userGrowth, roleDistribution, monthlyActivity,
+            peakHours, ovaPerformanceByArea, availableAreas, selectedArea } = props;
     const user = auth?.user ?? { name: "Usuario", role: { name: "Administrador" } };
-    
+
     const [collapsed] = useSidebarState();
     const [dateRange, setDateRange] = useState("month");
     const [showNotifications, setShowNotifications] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [areaFilter, setAreaFilter] = useState(selectedArea || '');
 
-    // Datos de ejemplo (deberías reemplazar con datos reales del backend)
     const dashboardStats = stats || {
         totalUsers: 1248,
         activeUsers: 1024,
@@ -132,13 +86,36 @@ export default function Dashboard() {
         }, 1000);
     };
 
-    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color, bgColor, subtitle }) => (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 group">
+    const handleAreaChange = (area) => {
+        setAreaFilter(area);
+        router.get(route('admin.dashboard'), area ? { area } : {}, { preserveState: false });
+    };
+
+    // Palette colors cycle for OVA performance bars
+    const paletteColors = ['#540D6E', '#EE4266', '#0EAD69', '#3BCEAC', '#FFD23F'];
+
+    // Peak hours block colors
+    const peakBlockColors = {
+        'Madrugada': '#3BCEAC',
+        'Mañana':    '#FFD23F',
+        'Tarde':     '#0EAD69',
+        'Noche':     '#540D6E',
+    };
+
+    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color, bgColor, subtitle, accentColor }) => (
+        <div
+            className="rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 group"
+            style={{
+                backgroundColor: accentColor ? `${accentColor}08` : '#ffffff',
+                border: '1px solid #E5E7EB',
+                borderLeft: accentColor ? `4px solid ${accentColor}` : '4px solid #E5E7EB',
+            }}
+        >
             <div className="flex items-start justify-between">
                 <div className="flex-1">
                     <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
                     <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
-                    {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+                    {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
                     {trend && (
                         <div className="flex items-center gap-1 mt-2">
                             {trend === 'up' ? (
@@ -149,12 +126,15 @@ export default function Dashboard() {
                             <span className={`text-xs font-semibold ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
                                 {trendValue}
                             </span>
-                            <span className="text-xs text-gray-500">vs mes anterior</span>
+                            <span className="text-xs text-gray-400">vs mes anterior</span>
                         </div>
                     )}
                 </div>
-                <div className={`p-3 rounded-xl ${bgColor} group-hover:scale-110 transition-transform duration-200`}>
-                    <Icon className={`w-6 h-6 ${color}`} />
+                <div
+                    className="p-3 rounded-xl group-hover:scale-110 transition-transform duration-200"
+                    style={{ backgroundColor: accentColor ? `${accentColor}20` : '#F3F4F6' }}
+                >
+                    <Icon className="w-6 h-6" style={{ color: accentColor || '#6B7280' }} />
                 </div>
             </div>
         </div>
@@ -222,25 +202,40 @@ export default function Dashboard() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    {/* Filtro de rango de fechas */}
-                                    <div className="mb-6 flex justify-end">
-                                        <div className="flex gap-2 bg-white rounded-lg border border-gray-200 p-1">
-                                            {['semana', 'mes', 'año'].map((range) => (
-                                                <button
-                                                    key={range}
-                                                    onClick={() => setDateRange(range)}
-                                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                                                        dateRange === range 
-                                                            ? 'text-white' 
-                                                            : 'text-gray-600 hover:bg-gray-100'
-                                                    }`}
-                                                    style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
-                                                >
-                                                    {range.charAt(0).toUpperCase() + range.slice(1)}
-                                                </button>
-                                            ))}
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    {/* Filtro por Área */}
+                                    {availableAreas && availableAreas.length > 0 && (
+                                        <div className="relative">
+                                            <select
+                                                value={areaFilter}
+                                                onChange={e => handleAreaChange(e.target.value)}
+                                                className="pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none appearance-none min-w-[170px] shadow-sm"
+                                                style={{ borderColor: areaFilter ? '#540D6E' : '' }}
+                                            >
+                                                <option value="">Todas las áreas</option>
+                                                {availableAreas.map(area => (
+                                                    <option key={area} value={area}>{area}</option>
+                                                ))}
+                                            </select>
+                                            <Filter className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                         </div>
+                                    )}
+                                    {/* Filtro de rango de fechas */}
+                                    <div className="flex gap-1 bg-white rounded-lg border border-gray-200 p-1">
+                                        {['semana', 'mes', 'año'].map((range) => (
+                                            <button
+                                                key={range}
+                                                onClick={() => setDateRange(range)}
+                                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                                    dateRange === range
+                                                        ? 'text-white'
+                                                        : 'text-gray-600 hover:bg-gray-100'
+                                                }`}
+                                                style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
+                                            >
+                                                {range.charAt(0).toUpperCase() + range.slice(1)}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -249,35 +244,38 @@ export default function Dashboard() {
 
                     {/* Stats Cards Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <StatCard 
-                            title="Total Usuarios" 
-                            value={dashboardStats.totalUsers.toLocaleString()} 
+                        <StatCard
+                            title="Total Usuarios"
+                            value={dashboardStats.totalUsers.toLocaleString()}
                             icon={Users}
                             trend="up"
                             trendValue="+12.5%"
                             color="text-purple-600"
-                            bgColor="bg-purple-50"
+                            bgColor="bg-white"
                             subtitle="Registrados en el sistema"
+                            accentColor="#540D6E"
                         />
-                        <StatCard 
-                            title="Usuarios Activos" 
-                            value={dashboardStats.activeUsers.toLocaleString()} 
+                        <StatCard
+                            title="Usuarios Activos"
+                            value={dashboardStats.activeUsers.toLocaleString()}
                             icon={UserCheck}
                             trend="up"
                             trendValue="+8.2%"
                             color="text-green-600"
-                            bgColor="bg-green-50"
+                            bgColor="bg-white"
                             subtitle="Con acceso habilitado"
+                            accentColor="#0EAD69"
                         />
-                        <StatCard 
-                            title="Usuarios Inactivos" 
-                            value={dashboardStats.inactiveUsers.toLocaleString()} 
+                        <StatCard
+                            title="Usuarios Inactivos"
+                            value={dashboardStats.inactiveUsers.toLocaleString()}
                             icon={UserX}
                             trend="down"
                             trendValue="-3.1%"
                             color="text-red-600"
-                            bgColor="bg-red-50"
+                            bgColor="bg-white"
                             subtitle="Sin acceso"
+                            accentColor="#EE4266"
                         />
                         <StatCard
                             title="Total Docentes"
@@ -286,52 +284,57 @@ export default function Dashboard() {
                             trend="up"
                             trendValue="+1 nuevo"
                             color="text-purple-900"
-                            bgColor="bg-purple-90"
+                            bgColor="bg-white"
                             subtitle="Personal docente registrado"
+                            accentColor="#540D6E"
                         />
                     </div>
 
                     {/* Segunda fila de stats */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <StatCard 
-                            title="Total OVAs" 
-                            value={dashboardStats.totalOVAs} 
+                        <StatCard
+                            title="Total OVAs"
+                            value={dashboardStats.totalOVAs}
                             icon={BookOpen}
                             trend="up"
                             trendValue="+4.2%"
                             color="text-blue-600"
-                            bgColor="bg-blue-50"
+                            bgColor="bg-white"
                             subtitle="Recursos educativos"
+                            accentColor="#3BCEAC"
                         />
-                        <StatCard 
-                            title="Actividades Completadas" 
-                            value={dashboardStats.completedActivities.toLocaleString()} 
+                        <StatCard
+                            title="OVAs Completadas"
+                            value={dashboardStats.completedActivities.toLocaleString()}
                             icon={Activity}
                             trend="up"
                             trendValue="+15.3%"
                             color="text-indigo-600"
-                            bgColor="bg-indigo-50"
-                            subtitle="Este mes"
+                            bgColor="bg-white"
+                            subtitle="Evaluaciones únicas por estudiante"
+                            accentColor="#FFD23F"
                         />
-                        <StatCard 
-                            title="Progreso Promedio" 
-                            value={`${dashboardStats.avgProgress}%`} 
+                        <StatCard
+                            title="Progreso Promedio"
+                            value={`${dashboardStats.avgProgress}%`}
                             icon={Target}
                             trend="up"
                             trendValue="+6.7%"
                             color="text-teal-600"
-                            bgColor="bg-teal-50"
+                            bgColor="bg-white"
                             subtitle="Nivel de avance"
+                            accentColor="#3BCEAC"
                         />
-                        <StatCard 
-                            title="Cursos Activos" 
-                            value={dashboardStats.activeCourses} 
+                        <StatCard
+                            title="Cursos Activos"
+                            value={dashboardStats.activeCourses}
                             icon={Zap}
                             trend="up"
                             trendValue="+2 cursos"
                             color="text-yellow-400"
-                            bgColor="bg-yellow-50"
+                            bgColor="bg-white"
                             subtitle="En este período"
+                            accentColor="#0EAD69"
                         />
                     </div>
 
@@ -417,45 +420,101 @@ export default function Dashboard() {
                         </div>
 
                         {/* Actividades Recientes */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="flex items-start justify-between px-5 py-4 border-b border-gray-100">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-5">
                                 <div>
-                                    <h3 className="text-base font-semibold text-gray-900">Actividades recientes</h3>
-                                    <p className="text-xs text-gray-400 mt-0.5">Últimas acciones registradas en el sistema</p>
+                                    <h3 className="text-lg font-bold text-gray-900">Actividades Recientes</h3>
+                                    <p className="text-sm text-gray-500">Últimas acciones registradas en el sistema</p>
                                 </div>
-                                <div className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-500">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#3C3489] animate-pulse" />
-                                    En vivo
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    <span className="text-xs font-medium text-green-700">En vivo</span>
                                 </div>
                             </div>
 
-                            <div className="max-h-[300px] overflow-y-auto divide-y divide-gray-100">
-                                {recentActivities.map((activity) => {
-                                    const meta = ACTION_META[activity.action] ?? ACTION_META.default;
-                                    const target = getTargetName(activity);
-                                    const change = getChangeSummary(activity);
+                            {/* Helper: mapea la acción (en español) al ícono y colores de la paleta */}
+                            {(() => {
+                                const getActivityStyle = (action) => {
+                                    const a = (action || '').toLowerCase();
+                                    if (a.includes('desactivó'))
+                                        return { Icon: UserX,       bg: '#FFF3E0', color: '#F57C00' };
+                                    if (a.includes('activó'))
+                                        return { Icon: UserCheck,   bg: '#E8FBF3', color: '#0EAD69' };
+                                    if (a.includes('eliminó'))
+                                        return { Icon: UserX,       bg: '#FFEBEE', color: '#EE4266' };
+                                    if (a.includes('actualizó'))
+                                        return { Icon: RefreshCw,   bg: '#FFFBEA', color: '#B8860B' };
+                                    if (a.includes('creó') || a.includes('registró'))
+                                        return { Icon: UserPlus,    bg: '#E8FBF3', color: '#0EAD69' };
+                                    if (a.includes('pin') || a.includes('regeneró'))
+                                        return { Icon: Key,         bg: '#EEF0FF', color: '#3F51B5' };
+                                    if (a.includes('sesión'))
+                                        return { Icon: Activity,    bg: '#F3E8FF', color: '#540D6E' };
+                                    return { Icon: Activity,        bg: '#F3E8FF', color: '#540D6E' };
+                                };
 
-                                    return (
-                                        <div key={activity.id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-gray-50 transition-colors">
-                                            <div className={`w-[30px] h-[30px] rounded-lg border flex items-center justify-center flex-shrink-0 ${meta.bg} ${meta.border}`}>
-                                                <meta.Icon className={`w-3.5 h-3.5 ${meta.stroke}`} />
+                                return (
+                                    <div className="space-y-1 max-h-[310px] overflow-y-auto pr-1 custom-scrollbar">
+                                        {recentActivities.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                                                <Activity className="w-8 h-8 mb-2 opacity-30" />
+                                                <p className="text-sm">Sin actividad reciente</p>
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-baseline gap-1.5 flex-wrap">
-                                                    <span className="text-xs font-medium text-gray-900 whitespace-nowrap">{meta.label}</span>
-                                                    <span className="text-xs text-gray-500 truncate max-w-[140px]" title={target}>{target}</span>
+                                        ) : recentActivities.map((activity, index) => {
+                                            const { Icon, bg, color } = getActivityStyle(activity.action);
+                                            return (
+                                                <div
+                                                    key={activity.id}
+                                                    className="group flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-all duration-150 border border-transparent hover:border-gray-100"
+                                                >
+                                                    {/* Avatar de acción */}
+                                                    <div className="relative flex-shrink-0 mt-0.5">
+                                                        <div
+                                                            className="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200"
+                                                            style={{ backgroundColor: bg }}
+                                                        >
+                                                            <Icon className="w-4 h-4" style={{ color }} />
+                                                        </div>
+                                                        {index < 3 && (
+                                                            <span
+                                                                className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 animate-pulse"
+                                                                style={{ backgroundColor: color, borderColor: color }}
+                                                            />
+                                                        )}
+                                                    </div>
+
+                                                    {/* Texto */}
+                                                    <div className="flex-1 min-w-0">
+                                                        {/* Fila superior: quién + qué */}
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <span className="text-sm font-semibold text-gray-900 truncate max-w-[120px]">
+                                                                {activity.user}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Fila inferior: sobre quién */}
+                                                        {activity.target && activity.target !== '—' && (
+                                                            <p className="text-xs text-gray-500 mt-0.5 truncate">
+                                                                <span className="font-medium text-gray-900">
+                                                                    {activity.action}: 
+                                                                </span>
+                                                                <span className="font-medium text-gray-900">
+                                                                    &nbsp;{activity.target}
+                                                                </span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Tiempo */}
+                                                    <span className="text-[11px] font-medium text-gray-400 whitespace-nowrap mt-0.5 flex-shrink-0">
+                                                        {activity.time}
+                                                    </span>
                                                 </div>
-                                                {change && (
-                                                    <p className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[240px]">{change}</p>
-                                                )}
-                                            </div>
-                                            <span className="text-[10px] text-gray-400 whitespace-nowrap pl-2 flex-shrink-0">
-                                                {relativeTime(activity.created_at)}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
 

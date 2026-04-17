@@ -23,5 +23,8 @@
     </head>
     <body>
         @inertia
+        {{-- Captura ova_id y course_id de la URL y los guarda en sessionStorage
+             para que los iframes de evaluación (misma origen) puedan leerlos --}}
+        <script src="/js/eva-session.js"></script>
     </body>
 </html>

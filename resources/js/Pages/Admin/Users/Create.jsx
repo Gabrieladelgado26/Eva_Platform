@@ -2,7 +2,7 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import {
     ArrowLeft, User, Mail, Lock, Shield, Check, Loader2, GraduationCap, AlertCircle, AlertTriangle, KeyRound, Info, BookOpen,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Create({ roles }) {
     const { data, setData, post, errors, processing } = useForm({
@@ -19,6 +19,22 @@ export default function Create({ roles }) {
     );
 
     const isStudent = selectedRole?.slug === "student";
+
+    // Detect URL parameters for role locking and context
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+    const forcedRoleSlug = urlParams.get('role');      // 'student' = locked to student
+    const contextParam = urlParams.get('context');     // 'staff' = exclude student roles
+
+    // Filter available roles based on context
+    const availableRoles = forcedRoleSlug === 'student'
+        ? roles.filter(r => r.slug === 'student')
+        : contextParam === 'staff'
+            ? roles.filter(r => r.slug !== 'student')
+            : roles; // default: all roles
+
+    // Find the forced role if specified
+    const forcedRole = forcedRoleSlug ? roles.find(r => r.slug === forcedRoleSlug) : null;
+    const isRoleLocked = forcedRoleSlug === 'student';
     const cancelRoute = isStudent ? route("admin.students") : route("admin.staff");
 
     function submit(e) {
@@ -49,6 +65,16 @@ export default function Create({ roles }) {
         if (field === "password") return data.password.length >= 8;
         return true;
     };
+
+    // Auto-select role if forced via URL parameter
+    useEffect(() => {
+        if (forcedRole && !data.role_id) {
+            setData('role_id', forcedRole.id.toString());
+        } else if (availableRoles.length > 0 && !data.role_id) {
+            const firstNonAdmin = availableRoles.find(r => r.slug !== "admin");
+            setData('role_id', firstNonAdmin?.id.toString() || "");
+        }
+    }, []);
 
     const totalFields = isStudent ? 2 : 4;
 
@@ -215,6 +241,7 @@ export default function Create({ roles }) {
                                         <div className="relative">
                                             <select
                                                 id="role"
+                                                disabled={isRoleLocked}
                                                 value={data.role_id}
                                                 onChange={(e) => {
                                                     const roleId =
@@ -241,6 +268,8 @@ export default function Create({ roles }) {
                                                     setFocusedField(null)
                                                 }
                                                 className={`w-full px-4 py-3 border rounded-lg font-medium transition-all duration-200 appearance-none cursor-pointer ${
+                                                    isRoleLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                                                } ${
                                                     errors.role_id
                                                         ? "border-red-300 bg-red-50/50 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                                                         : focusedField ===
@@ -263,7 +292,7 @@ export default function Create({ roles }) {
                                                 <option value="">
                                                     Seleccione un rol
                                                 </option>
-                                                {roles.map((role) => (
+                                                {availableRoles.map((role) => (
                                                     <option
                                                         key={role.id}
                                                         value={role.id}
@@ -302,6 +331,18 @@ export default function Create({ roles }) {
                                                 <p className="text-sm font-medium text-red-800">
                                                     {errors.role_id}
                                                 </p>
+                                            </div>
+                                        )}
+
+                                        {/* Student role note */}
+                                        {isStudent && (
+                                            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg animate-slide-down">
+                                                <div className="flex items-start gap-2">
+                                                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#3BCEAC" }} />
+                                                    <p className="text-sm text-blue-800">
+                                                        Este usuario será creado como Estudiante.
+                                                    </p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

@@ -1,121 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, router } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import AppSidebar, { useSidebarState } from "@/Components/AppSidebar";
 import {
-    Plus, Search, Edit2, Trash2, Eye, Power, EyeOff, AlertCircle,
-    Layers, Filter, X, RotateCcw, ChevronDown, ChevronUp, CheckCircle,
-    ChevronLeft, ChevronRight, BookOpen, FileText, AlertCircle as AlertIcon, RotateCcw as RotateIcon
-} from 'lucide-react';
-import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
+    BookOpen, Plus, Edit2, Trash2, Search, X, RotateCcw,
+    AlertCircle, Power, Users, Calendar, GraduationCap,
+    ChevronDown, Filter, ChevronLeft, ChevronRight, EyeOff,
+    CheckCircle, AlertTriangle
+} from "lucide-react";
 
-// ─── Componente Toast con barra de progreso ───────────────────────────────────
-function Toast({ message, type = 'success', onClose, duration = 4000 }) {
-    const [progress, setProgress] = useState(100);
-    const intervalRef = React.useRef(null);
-    const startTimeRef = React.useRef(Date.now());
+const GRADES = [
+    { value: 'primero', label: 'Primero' },
+    { value: 'segundo', label: 'Segundo' },
+    { value: 'tercero', label: 'Tercero' },
+    { value: 'cuarto', label: 'Cuarto' },
+    { value: 'quinto', label: 'Quinto' },
+];
 
+// Componente Toast
+function Toast({ message, type = 'success', onClose }) {
     useEffect(() => {
-        const updateProgress = () => {
-            const elapsed = Date.now() - startTimeRef.current;
-            const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
-            setProgress(remaining);
-            
-            if (remaining <= 0) {
-                onClose();
-            }
-        };
-
-        intervalRef.current = setInterval(updateProgress, 50);
-
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
-    }, [duration, onClose]);
-
-    const bgColor = type === 'success' 
-        ? 'bg-green-50 border-green-300' 
-        : type === 'error' 
-            ? 'bg-red-50 border-red-300' 
-            : 'bg-blue-50 border-blue-300';
-    
-    const textColor = type === 'success' 
-        ? 'text-green-800' 
-        : type === 'error' 
-            ? 'text-red-800' 
-            : 'text-blue-800';
-    
-    const iconColor = type === 'success' 
-        ? 'text-green-600' 
-        : type === 'error' 
-            ? 'text-red-600' 
-            : 'text-blue-600';
-    
-    const progressColor = type === 'success' 
-        ? '#0EAD69' 
-        : type === 'error' 
-            ? '#EE4266' 
-            : '#3B9AE1';
+        const timer = setTimeout(() => {
+            onClose();
+        }, 4000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
 
     return (
-        <div className="fixed top-4 right-4 z-50 animate-slide-down min-w-[320px] max-w-md">
-            <div className={`relative overflow-hidden rounded-lg shadow-xl border ${bgColor}`}>
-                <div className="flex items-start gap-3 px-4 py-3">
-                    {type === 'success' ? (
-                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    ) : type === 'error' ? (
-                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    ) : (
-                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    )}
-                    <div className="flex-1">
-                        <p className={`text-sm font-medium ${textColor}`}>{message}</p>
-                    </div>
-                    <button 
-                        onClick={onClose} 
-                        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-                
-                <div 
-                    className="h-1 transition-all duration-50 ease-linear"
-                    style={{ 
-                        width: `${progress}%`,
-                        backgroundColor: progressColor
-                    }}
-                />
+        <div className="fixed top-4 right-4 z-50 animate-slide-down">
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border ${
+                type === 'success' 
+                    ? 'bg-green-50 border-green-300 text-green-800' 
+                    : 'bg-red-50 border-red-300 text-red-800'
+            }`}>
+                {type === 'success' ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                ) : (
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                )}
+                <span className="text-sm font-medium">{message}</span>
+                <button onClick={onClose} className="ml-4 text-gray-400 hover:text-gray-600">
+                    <X className="w-4 h-4" />
+                </button>
             </div>
         </div>
     );
 }
 
-export default function Index({ ovas, filters, areas }) {
+export default function Index({ courses, teachers, filters }) {
     const { props } = usePage();
     const flash = props.flash || {};
     const [collapsed] = useSidebarState();
-    
-    const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [selectedArea, setSelectedArea] = useState(filters.area || '');
-    const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
 
+    const coursesData = courses?.data ?? [];
+    const currentPage = courses?.current_page ?? 1;
+    const lastPage = courses?.last_page ?? 1;
+    const from = courses?.from ?? 0;
+    const to = courses?.to ?? 0;
+    const total = courses?.total ?? 0;
+    const links = courses?.links ?? [];
+
+    const [searchTerm, setSearchTerm] = useState(filters?.search || "");
+    const [filterTeacherId, setFilterTeacherId] = useState(filters?.teacher_id || "");
+    const [filterStatus, setFilterStatus] = useState(filters?.status || "");
+
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [ovaToDelete, setOvaToDelete] = useState(null);
-    const [showActivateModal, setShowActivateModal] = useState(false);
-    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
-    const [ovaToToggle, setOvaToToggle] = useState(null);
+    const [showToggleModal, setShowToggleModal] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     // Toast state
     const [toast, setToast] = useState(null);
 
-    const ovasData = ovas?.data ?? [];
-    const currentPage = ovas?.current_page ?? 1;
-    const lastPage = ovas?.last_page ?? 1;
-    const from = ovas?.from ?? 0;
-    const to = ovas?.to ?? 0;
-    const total = ovas?.total ?? 0;
-    const links = ovas?.links ?? [];
+    const [formData, setFormData] = useState({
+        grade: '',
+        section: '',
+        school_year: '',
+        teacher_id: '',
+        description: '',
+    });
 
     // Mostrar toast cuando hay flash messages
     useEffect(() => {
@@ -127,72 +90,30 @@ export default function Index({ ovas, filters, areas }) {
         }
     }, [flash]);
 
-    const hasActiveFilters = searchTerm || selectedArea || selectedStatus;
+    const hasActiveFilters = searchTerm || filterTeacherId || filterStatus;
 
     const clearFilters = () => {
-        setSearchTerm('');
-        setSelectedArea('');
-        setSelectedStatus('');
-        router.get(route('admin.ovas.index'), {}, { preserveState: true });
+        setSearchTerm("");
+        setFilterTeacherId("");
+        setFilterStatus("");
+        router.get(route('admin.courses.index'), {}, { preserveScroll: true });
     };
 
     const applyFilters = () => {
-        router.get(route('admin.ovas.index'), {
-            search: searchTerm,
-            area: selectedArea,
-            status: selectedStatus,
-        }, { preserveState: true });
+        const params = {};
+        if (searchTerm) params.search = searchTerm;
+        if (filterTeacherId) params.teacher_id = filterTeacherId;
+        if (filterStatus) params.status = filterStatus;
+        router.get(route('admin.courses.index'), params, { preserveScroll: true });
     };
 
     const goToPage = (url) => {
         if (!url) return;
-        router.get(url, {
-            search: searchTerm,
-            area: selectedArea,
-            status: selectedStatus,
-        }, { preserveState: true });
-    };
-
-    const handleDeleteClick = (ova) => { 
-        setOvaToDelete(ova); 
-        setShowDeleteModal(true); 
-    };
-
-    const confirmDelete = () => {
-        router.delete(route('admin.ovas.destroy', ovaToDelete.id), {
-            preserveScroll: true,
-            onSuccess: () => { 
-                setShowDeleteModal(false); 
-                setOvaToDelete(null);
-                setToast({ message: 'OVA eliminado correctamente', type: 'success' });
-            },
-            onError: () => {
-                setToast({ message: 'Error al eliminar el OVA', type: 'error' });
-            }
-        });
-    };
-
-    const handleToggleClick = (ova) => {
-        setOvaToToggle(ova);
-        ova.is_active ? setShowDeactivateModal(true) : setShowActivateModal(true);
-    };
-
-    const confirmToggle = () => {
-        router.patch(route('admin.ovas.toggle-status', ovaToToggle.id), {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setShowActivateModal(false);
-                setShowDeactivateModal(false);
-                setOvaToToggle(null);
-                setToast({ 
-                    message: ovaToToggle.is_active ? 'OVA desactivado correctamente' : 'OVA activado correctamente', 
-                    type: 'success' 
-                });
-            },
-            onError: () => {
-                setToast({ message: 'Error al cambiar el estado', type: 'error' });
-            }
-        });
+        const params = {};
+        if (searchTerm) params.search = searchTerm;
+        if (filterTeacherId) params.teacher_id = filterTeacherId;
+        if (filterStatus) params.status = filterStatus;
+        router.get(url, params, { preserveScroll: true });
     };
 
     const buildPageNumbers = () => {
@@ -216,16 +137,99 @@ export default function Index({ ovas, filters, areas }) {
 
     const pageNumbers = buildPageNumbers();
 
-    const selectStyle = {
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        appearance: 'none',
+    const handleCreateClick = () => {
+        setFormData({
+            grade: '',
+            section: '',
+            school_year: new Date().getFullYear().toString(),
+            teacher_id: '',
+            description: '',
+        });
+        setShowCreateModal(true);
     };
+
+    const handleEditClick = (course) => {
+        setSelectedCourse(course);
+        setFormData({
+            grade: course.grade,
+            section: course.section,
+            school_year: course.school_year,
+            teacher_id: course.teacher?.id || '',
+            description: course.description || '',
+        });
+        setShowEditModal(true);
+    };
+
+    const handleDeleteClick = (course) => {
+        setSelectedCourse(course);
+        setShowDeleteModal(true);
+    };
+
+    const handleToggleClick = (course) => {
+        setSelectedCourse(course);
+        setShowToggleModal(true);
+    };
+
+    const handleSubmitCreate = (e) => {
+        e.preventDefault();
+        router.post(route('admin.courses.store'), formData, {
+            onSuccess: () => {
+                setShowCreateModal(false);
+                setToast({ message: 'Curso creado exitosamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al crear el curso', type: 'error' });
+            }
+        });
+    };
+
+    const handleSubmitEdit = (e) => {
+        e.preventDefault();
+        router.put(route('admin.courses.update', selectedCourse.id), formData, {
+            onSuccess: () => {
+                setShowEditModal(false);
+                setToast({ message: 'Curso actualizado exitosamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al actualizar el curso', type: 'error' });
+            }
+        });
+    };
+
+    const handleConfirmDelete = () => {
+        router.delete(route('admin.courses.destroy', selectedCourse.id), {
+            onSuccess: () => {
+                setShowDeleteModal(false);
+                setToast({ message: 'Curso eliminado exitosamente', type: 'success' });
+            },
+            onError: () => {
+                setToast({ message: 'Error al eliminar el curso', type: 'error' });
+            }
+        });
+    };
+
+    const handleConfirmToggle = () => {
+        router.patch(route('admin.courses.toggleStatus', selectedCourse.id), {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowToggleModal(false);
+                setToast({ 
+                    message: selectedCourse.is_active ? 'Curso desactivado' : 'Curso activado', 
+                    type: 'success' 
+                });
+            },
+            onError: () => {
+                setToast({ message: 'Error al cambiar el estado', type: 'error' });
+            }
+        });
+    };
+
+    const gradeLabelMap = Object.fromEntries(GRADES.map(g => [g.value, g.label]));
 
     return (
         <>
-            <Head title="Gestión de OVAs" />
-            <AppSidebar currentRoute="admin.ovas.index" />
+            <Head title="Gestión de Cursos" />
+            <AppSidebar currentRoute="admin.courses.index" />
 
             {/* Toast */}
             {toast && (
@@ -233,11 +237,10 @@ export default function Index({ ovas, filters, areas }) {
                     message={toast.message} 
                     type={toast.type} 
                     onClose={() => setToast(null)} 
-                    duration={4000}
                 />
             )}
 
-            <main className={`transition-all duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-72'} min-h-screen bg-gray-50`}>
+            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-7xl mx-auto">
 
@@ -253,7 +256,7 @@ export default function Index({ ovas, filters, areas }) {
                                 </Link>
                                 <span>/</span>
                                 <span style={{ color: "#540D6E" }} className="font-medium">
-                                    OVAs
+                                    Cursos
                                 </span>
                             </div>
                         </div>
@@ -262,22 +265,22 @@ export default function Index({ ovas, filters, areas }) {
                         <div className="mb-8">
                             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-4 rounded-xl shadow-sm border bg-white" style={{ borderColor: '#540D6E' }}>
-                                        <Layers className="w-10 h-10" style={{ color: '#540D6E' }} />
+                                    <div className="p-4 rounded-xl shadow-sm border bg-white" style={{ borderColor: "#540D6E" }}>
+                                        <BookOpen className="w-10 h-10" style={{ color: "#540D6E" }} />
                                     </div>
                                     <div>
-                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de OVAs</h1>
-                                        <p className="text-gray-600 text-base">Administración de Objetos Virtuales de Aprendizaje</p>
+                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Cursos</h1>
+                                        <p className="text-gray-600 text-base">Administra todos los cursos del sistema</p>
                                     </div>
                                 </div>
                                 <Link
-                                    href={route('admin.ovas.create')}
-                                    className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                    style={{ backgroundColor: '#540D6E' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#6B1689'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#540D6E'}
+                                    href={route("admin.courses.create")}
+                                    className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+                                    style={{ backgroundColor: "#540D6E" }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
                                 >
-                                    <Plus className="w-5 h-5" /> Nuevo OVA
+                                    <Plus className="w-5 h-5" /> Crear Curso
                                 </Link>
                             </div>
                         </div>
@@ -289,7 +292,7 @@ export default function Index({ ovas, filters, areas }) {
                                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
                                         type="text"
-                                        placeholder="Buscar por área o temática..."
+                                        placeholder="Buscar por grado, sección o docente..."
                                         value={searchTerm}
                                         onChange={e => setSearchTerm(e.target.value)}
                                         onKeyDown={e => e.key === 'Enter' && applyFilters()}
@@ -299,23 +302,23 @@ export default function Index({ ovas, filters, areas }) {
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     />
                                     {searchTerm && (
-                                        <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                                        <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
                                             <X className="w-4 h-4" />
                                         </button>
                                     )}
                                 </div>
                                 <div className="relative">
                                     <select
-                                        value={selectedArea}
-                                        onChange={e => setSelectedArea(e.target.value)}
-                                        style={selectStyle}
+                                        value={filterTeacherId}
+                                        onChange={e => setFilterTeacherId(e.target.value)}
                                         className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     >
-                                        <option value="">Todas las áreas</option>
-                                        {areas.map(area => (
-                                            <option key={area} value={area}>{area}</option>
+                                        <option value="">Todos los docentes</option>
+                                        {teachers.map(teacher => (
+                                            <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
                                         ))}
                                     </select>
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -324,10 +327,10 @@ export default function Index({ ovas, filters, areas }) {
                                 </div>
                                 <div className="relative">
                                     <select
-                                        value={selectedStatus}
-                                        onChange={e => setSelectedStatus(e.target.value)}
-                                        style={selectStyle}
+                                        value={filterStatus}
+                                        onChange={e => setFilterStatus(e.target.value)}
                                         className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     >
@@ -366,25 +369,25 @@ export default function Index({ ovas, filters, areas }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Búsqueda: "{searchTerm}"
-                                                        <button onClick={() => setSearchTerm('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => setSearchTerm("")} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
                                                 )}
-                                                {selectedArea && (
+                                                {filterTeacherId && (
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                        Área: {selectedArea}
-                                                        <button onClick={() => setSelectedArea('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        Docente: {teachers.find(t => t.id == filterTeacherId)?.name}
+                                                        <button onClick={() => setFilterTeacherId("")} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
                                                 )}
-                                                {selectedStatus && (
+                                                {filterStatus && (
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
-                                                        Estado: {selectedStatus === 'active' ? 'Activo' : 'Inactivo'}
-                                                        <button onClick={() => setSelectedStatus('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
+                                                        <button onClick={() => setFilterStatus("")} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -401,91 +404,102 @@ export default function Index({ ovas, filters, areas }) {
 
                         {/* Tabla */}
                         <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-                            {ovasData.length > 0 ? (
+                            {coursesData.length > 0 ? (
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
                                         <thead className="bg-gray-50 border-b border-gray-200">
                                             <tr>
                                                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                    <div className="flex items-center gap-2"><Layers className="w-4 h-4" /> Área</div>
+                                                    <div className="flex items-center gap-2"><BookOpen className="w-4 h-4" /> Curso</div>
                                                 </th>
                                                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                    <div className="flex items-center gap-2"><BookOpen className="w-4 h-4" /> Temática</div>
+                                                    <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Docente</div>
                                                 </th>
                                                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                    <div className="flex items-center gap-2"><FileText className="w-4 h-4" /> Descripción</div>
+                                                    <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Año Escolar</div>
                                                 </th>
                                                 <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                                    <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Estudiantes</div>
+                                                </th>
+                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
                                                     <div className="flex items-center gap-2"><AlertCircle className="w-4 h-4" /> Estado</div>
                                                 </th>
                                                 <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
-                                            {ovasData.map(ova => (
-                                                <tr key={ova.id} className="hover:bg-gray-50 transition-colors">
+                                            {coursesData.map(course => (
+                                                <tr key={course.id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold text-white shadow-sm"
-                                                            style={{ backgroundColor: '#540D6E' }}>
-                                                            {ova.area}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                                                                <GraduationCap className="w-4 h-4" style={{ color: "#540D6E" }} />
+                                                            </div>
+                                                            <p className="text-sm font-semibold text-gray-900">
+                                                                {gradeLabelMap[course.grade]} {course.section}
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <p className="text-sm text-gray-700">{course.teacher?.name || 'Sin asignar'}</p>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
+                                                            style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}>
+                                                            <Calendar className="w-3.5 h-3.5" />
+                                                            {course.school_year}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <p className="text-sm font-semibold text-gray-900">{ova.tematica}</p>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <p className="text-sm text-gray-600 line-clamp-2 max-w-md">{ova.description || 'Sin descripción'}</p>
-                                                    </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
+                                                            style={{ backgroundColor: "#DBEAFE", color: "#1D4ED8" }}>
+                                                            <Users className="w-3.5 h-3.5" />
+                                                            {course.students_count || 0}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border"
-                                                            style={ova.is_active
-                                                                ? { backgroundColor: '#E8F5F0', borderColor: '#3BCEAC' }
-                                                                : { backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' }}>
-                                                            <div className={`w-2 h-2 rounded-full ${ova.is_active ? 'animate-pulse' : ''}`}
-                                                                style={{ backgroundColor: ova.is_active ? '#0EAD69' : '#9CA3AF' }} />
-                                                            <span className="text-sm font-medium"
-                                                                style={{ color: ova.is_active ? '#0EAD69' : '#6B7280' }}>
-                                                                {ova.is_active ? 'Activo' : 'Inactivo'}
+                                                            style={course.is_active ? 
+                                                                { backgroundColor: "#E8F5F0", borderColor: "#3BCEAC" } : 
+                                                                { backgroundColor: "#F9FAFB", borderColor: "#E5E7EB" }
+                                                            }>
+                                                            <div className={`w-2 h-2 rounded-full ${course.is_active ? "animate-pulse" : ""}`}
+                                                                style={{ backgroundColor: course.is_active ? "#0EAD69" : "#9CA3AF" }} />
+                                                            <span className="text-xs font-medium" 
+                                                                style={{ color: course.is_active ? "#0EAD69" : "#6B7280" }}>
+                                                                {course.is_active ? "Activo" : "Inactivo"}
                                                             </span>
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                                         <div className="flex items-center justify-end gap-2">
                                                             <button
-                                                                onClick={() => handleToggleClick(ova)}
+                                                                onClick={() => handleToggleClick(course)}
                                                                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                                                style={{ backgroundColor: ova.is_active ? '#6B7280' : '#0EAD69' }}
-                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = ova.is_active ? '#4B5563' : '#059669'}
-                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = ova.is_active ? '#6B7280' : '#0EAD69'}
+                                                                style={{ backgroundColor: course.is_active ? "#6B7280" : "#0EAD69" }}
+                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = course.is_active ? "#4B5563" : "#059669"}
+                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = course.is_active ? "#6B7280" : "#0EAD69"}
                                                             >
-                                                                {ova.is_active ? <EyeOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+                                                                <Power className="w-4 h-4" />
+                                                                {course.is_active ? "Desactivar" : "Activar"}
                                                             </button>
                                                             <Link
-                                                                href={route('admin.ovas.show', ova.id)}
-                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                                                style={{ backgroundColor: '#3BCEAC' }}
-                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#2BA88E'}
-                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#3BCEAC'}
-                                                            >
-                                                                <Eye className="w-4 h-4" /> 
-                                                            </Link>
-                                                            <Link
-                                                                href={route('admin.ovas.edit', ova.id)}
+                                                                href={route("admin.courses.edit", course.id)}
                                                                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
-                                                                style={{ backgroundColor: '#FFD23F' }}
-                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#F5C000'}
-                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#FFD23F'}
+                                                                style={{ backgroundColor: "#FFD23F" }}
+                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
+                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
                                                             >
-                                                                <Edit2 className="w-4 h-4" /> 
+                                                                <Edit2 className="w-4 h-4" /> Editar
                                                             </Link>
                                                             <button
-                                                                onClick={() => handleDeleteClick(ova)}
+                                                                onClick={() => handleDeleteClick(course)}
                                                                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
-                                                                style={{ backgroundColor: '#EE4266' }}
-                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#DC2F55'}
-                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}
+                                                                style={{ backgroundColor: "#EE4266" }}
+                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
+                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
                                                             >
-                                                                <Trash2 className="w-4 h-4" /> 
+                                                                <Trash2 className="w-4 h-4" /> Eliminar
                                                             </button>
                                                         </div>
                                                     </td>
@@ -498,23 +512,23 @@ export default function Index({ ovas, filters, areas }) {
                                 <div className="text-center py-16 px-6">
                                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
                                         style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                        <Layers className="w-10 h-10 text-white" />
+                                        <BookOpen className="w-10 h-10 text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                        {hasActiveFilters ? "No se encontraron OVAs" : "No hay OVAs registrados"}
+                                        {hasActiveFilters ? "No se encontraron cursos" : "No hay cursos registrados"}
                                     </h3>
                                     <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                        {hasActiveFilters ? "Intente modificar los criterios de búsqueda" : "Cree el primer OVA para comenzar"}
+                                        {hasActiveFilters ? "Intente modificar los criterios de búsqueda" : "Cree el primer curso para comenzar"}
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                                         <Link
-                                            href={route('admin.ovas.create')}
+                                            href={route("admin.courses.create")}
                                             className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                                             style={{ backgroundColor: "#540D6E" }}
                                             onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
                                             onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
                                         >
-                                            <Plus className="w-5 h-5" /> Crear OVA
+                                            <Plus className="w-5 h-5" /> Crear Curso
                                         </Link>
                                         {hasActiveFilters && (
                                             <button onClick={clearFilters}
@@ -538,7 +552,7 @@ export default function Index({ ovas, filters, areas }) {
                                         <span className="font-bold text-gray-900">{to}</span>
                                         {" "}de{" "}
                                         <span className="font-bold" style={{ color: "#540D6E" }}>{total}</span>
-                                        {" "}OVAs
+                                        {" "}cursos
                                     </p>
 
                                     <div className="flex items-center gap-1 order-1 sm:order-2">
@@ -588,8 +602,74 @@ export default function Index({ ovas, filters, areas }) {
                 </div>
             </main>
 
-            {/* ── Modal Eliminación ──────────────────────────────────────── */}
-            {showDeleteModal && ovaToDelete && (
+            {/* Modal de Confirmación para Activar/Desactivar */}
+            {showToggleModal && selectedCourse && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowToggleModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: selectedCourse.is_active ? 'linear-gradient(to right, #EE4266, #DC2F55)' : 'linear-gradient(to right, #0EAD69, #3BCEAC)' }} />
+                        
+                        <div className="p-6">
+                            <button onClick={() => setShowToggleModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: selectedCourse.is_active ? '#FEE2E2' : '#E8F5F0' }}>
+                                    {selectedCourse.is_active ? (
+                                        <EyeOff className="w-6 h-6" style={{ color: '#EE4266' }} />
+                                    ) : (
+                                        <Power className="w-6 h-6" style={{ color: '#0EAD69' }} />
+                                    )}
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">
+                                    {selectedCourse.is_active ? 'Desactivar' : 'Activar'} Curso
+                                </h3>
+                            </div>
+
+                            <p className="text-gray-600 mb-4">
+                                ¿Estás seguro de {selectedCourse.is_active ? 'desactivar' : 'activar'} el curso{" "}
+                                <span className="font-semibold text-gray-900 capitalize">
+                                    {gradeLabelMap[selectedCourse.grade]} {selectedCourse.section}
+                                </span>?
+                            </p>
+
+                            <div className="p-3 rounded-lg mb-6 flex gap-2" style={{ 
+                                backgroundColor: selectedCourse.is_active ? '#FEF2F2' : '#F0FDF4', 
+                                borderLeft: selectedCourse.is_active ? '4px solid #EE4266' : '4px solid #0EAD69' 
+                            }}>
+                                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: selectedCourse.is_active ? '#EE4266' : '#0EAD69' }} />
+                                <p className="text-xs text-gray-700">
+                                    {selectedCourse.is_active 
+                                        ? 'Los estudiantes no podrán acceder al curso hasta que sea reactivado.'
+                                        : 'Los estudiantes podrán acceder al curso inmediatamente.'}
+                                </p>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => setShowToggleModal(false)} 
+                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    onClick={handleConfirmToggle} 
+                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md" 
+                                    style={{ backgroundColor: selectedCourse.is_active ? '#EE4266' : '#0EAD69' }} 
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = selectedCourse.is_active ? '#DC2F55' : '#059669'} 
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = selectedCourse.is_active ? '#EE4266' : '#0EAD69'}
+                                >
+                                    {selectedCourse.is_active ? 'Desactivar' : 'Activar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Modal */}
+            {showDeleteModal && selectedCourse && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
                     <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
@@ -598,23 +678,26 @@ export default function Index({ ovas, filters, areas }) {
                             <button onClick={() => setShowDeleteModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
                                 <X className="w-5 h-5" />
                             </button>
+
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#FEE2E2' }}>
-                                    <Trash2 className="w-6 h-6" style={{ color: '#EE4266' }} />
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
+                                    <Trash2 className="w-6 h-6" style={{ color: "#EE4266" }} />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900">Confirmar Eliminación</h3>
                             </div>
                             
                             <p className="text-gray-600 mb-4">
-                                ¿Estás seguro de eliminar permanentemente el OVA{" "}
-                                <span className="font-semibold text-gray-900">{ovaToDelete.tematica}</span>?
+                                ¿Estás seguro de eliminar permanentemente el curso{" "}
+                                <span className="font-semibold text-gray-900">
+                                    {gradeLabelMap[selectedCourse.grade]} {selectedCourse.section}
+                                </span>?
                             </p>
-
-                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: '#FEE2E2', borderLeft: '4px solid #EE4266' }}>
-                                <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#EE4266' }} />
+                            
+                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: "#FEE2E2", borderLeft: "4px solid #EE4266" }}>
+                                <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#EE4266" }} />
                                 <div>
                                     <p className="text-sm font-medium text-gray-900 mb-1">Esta acción no se puede deshacer</p>
-                                    <p className="text-xs text-gray-600">El OVA será eliminado de todos los cursos donde esté asignado.</p>
+                                    <p className="text-xs text-gray-600">Se eliminarán todas las relaciones con estudiantes y OVAs asociados.</p>
                                 </div>
                             </div>
 
@@ -627,101 +710,13 @@ export default function Index({ ovas, filters, areas }) {
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={confirmDelete}
+                                    onClick={handleConfirmDelete}
                                     className="flex-1 py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
-                                    style={{ backgroundColor: '#EE4266' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#DC2F55'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}
+                                    style={{ backgroundColor: "#EE4266" }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#DC2F55"}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#EE4266"}
                                 >
-                                    Eliminar OVA
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Modal Activar ─────────────────────────────────────────── */}
-            {showActivateModal && ovaToToggle && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowActivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: 'linear-gradient(to right, #0EAD69, #3BCEAC)' }} />
-                        <div className="p-6">
-                            <button onClick={() => setShowActivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#E8F5F0' }}>
-                                    <Power className="w-6 h-6" style={{ color: '#0EAD69' }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Activar OVA</h3>
-                            </div>
-                            <p className="text-gray-600 mb-4">
-                                ¿Estás seguro de activar <span className="font-semibold text-gray-900">{ovaToToggle.tematica}</span>?
-                            </p>
-                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: '#E8F5F0', borderLeft: '4px solid #0EAD69' }}>
-                                <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#0EAD69' }} />
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
-                                    <p className="text-xs text-gray-600">El OVA quedará visible y disponible para los cursos asignados.</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <button onClick={() => setShowActivateModal(false)}
-                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
-                                    Cancelar
-                                </button>
-                                <button onClick={confirmToggle}
-                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md"
-                                    style={{ backgroundColor: '#0EAD69' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#059669'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0EAD69'}>
-                                    Activar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Modal Desactivar ──────────────────────────────────────── */}
-            {showDeactivateModal && ovaToToggle && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeactivateModal(false)} />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                        <div className="h-1" style={{ background: 'linear-gradient(to right, #EE4266, #DC2F55)' }} />
-                        <div className="p-6">
-                            <button onClick={() => setShowDeactivateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#FEE2E2' }}>
-                                    <EyeOff className="w-6 h-6" style={{ color: '#EE4266' }} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">Desactivar OVA</h3>
-                            </div>
-                            <p className="text-gray-600 mb-4">
-                                ¿Estás seguro de desactivar <span className="font-semibold text-gray-900">{ovaToToggle.tematica}</span>?
-                            </p>
-                            <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: '#FEE2E2', borderLeft: '4px solid #EE4266' }}>
-                                <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#EE4266' }} />
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900 mb-1">¿Qué sucederá?</p>
-                                    <p className="text-xs text-gray-600">El OVA quedará oculto y los estudiantes no podrán acceder a él.</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <button onClick={() => setShowDeactivateModal(false)}
-                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
-                                    Cancelar
-                                </button>
-                                <button onClick={confirmToggle}
-                                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-md"
-                                    style={{ backgroundColor: '#EE4266' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#DC2F55'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}>
-                                    Desactivar
+                                    Eliminar Curso
                                 </button>
                             </div>
                         </div>
@@ -730,12 +725,6 @@ export default function Index({ ovas, filters, areas }) {
             )}
 
             <style>{`
-                .line-clamp-2 {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
@@ -745,7 +734,7 @@ export default function Index({ ovas, filters, areas }) {
                     to { opacity: 1; transform: translateY(0); }
                 }
                 @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-20px); }
+                    from { opacity: 0; transform: translateY(-10px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
                 .animate-fade-in { animation: fadeIn 0.3s ease-out; }

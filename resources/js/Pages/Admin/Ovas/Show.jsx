@@ -302,43 +302,6 @@ export default function Show({ ova }) {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Cursos que usan este OVA */}
-                            {ova.courses && ova.courses.length > 0 && (
-                                <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden animate-slide-up">
-                                    <div className="border-b border-gray-200 px-6 py-4">
-                                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                            <BookOpen className="w-5 h-5" style={{ color: "#540D6E" }} />
-                                            Cursos que utilizan este OVA
-                                        </h2>
-                                    </div>
-                                    <div className="divide-y divide-gray-100">
-                                        {ova.courses.map((course) => (
-                                            <div key={course.id} className="p-4 hover:bg-gray-50 transition-colors">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="font-semibold text-gray-900">{course.name}</p>
-                                                        <p className="text-sm text-gray-500 mt-1">
-                                                            Asignado: {formatDate(course.pivot?.assigned_at)}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
-                                                            style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
-                                                            Orden: {course.pivot?.order || 0}
-                                                        </span>
-                                                        {course.pivot?.is_required && (
-                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-700">
-                                                                Obligatorio
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* ── Sidebar ── */}

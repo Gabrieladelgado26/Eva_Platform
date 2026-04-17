@@ -1,4 +1,3 @@
-// Resources/js/Pages/Admin/Staff.jsx
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
@@ -212,7 +211,7 @@ export default function Staff({ users = [], section = "staff" }) {
                                         <p className="text-gray-600 text-base">Administración de administradores y docentes</p>
                                     </div>
                                 </div>
-                                <Link href={route("admin.users.create")}
+                                <Link href={route("admin.users.create") + "?context=staff"}
                                     className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
                                     style={{ backgroundColor: "#540D6E" }}
                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
@@ -471,7 +470,7 @@ export default function Staff({ users = [], section = "staff" }) {
                                         {searchTerm || filterRole !== "all" ? "Intente modificar los criterios de búsqueda" : "Registre el primer usuario para comenzar"}
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                        <Link href={route("admin.users.create")}
+                                        <Link href={route("admin.users.create") + "?context=staff"}
                                             className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                                             style={{ backgroundColor: "#540D6E" }}
                                             onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}

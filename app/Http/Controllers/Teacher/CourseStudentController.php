@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Evaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
 
 class CourseStudentController extends Controller
 {
@@ -39,14 +41,15 @@ class CourseStudentController extends Controller
 
         // Vincular existente
         if ($request->filled('student_id')) {
-
             $student = User::whereHas('role', fn($r) => $r->where('slug', 'student'))
                 ->where('is_active', true)
                 ->findOrFail($request->student_id);
 
             $course->students()->syncWithoutDetaching([$student->id]);
 
-            return back()->with('success', 'Estudiante agregado al curso.');
+            return redirect()
+                ->route('teacher.students.index')
+                ->with('success', 'Estudiante agregado al curso.');
         }
 
         // Crear nuevo
@@ -63,7 +66,6 @@ class CourseStudentController extends Controller
         }
 
         $generatedPin = random_int(1000, 9999);
-
         $role = Role::where('slug', 'student')->firstOrFail();
 
         $student = User::create([
@@ -76,9 +78,67 @@ class CourseStudentController extends Controller
 
         $course->students()->attach($student->id);
 
-        return back()->with('credentials', [
-            'username' => $username,
-            'pin'      => $generatedPin,
+        return redirect()
+            ->route('teacher.students.index')
+            ->with('credentials', [
+                'username' => $username,
+                'pin'      => $generatedPin,
+            ])
+            ->with('success', 'Estudiante registrado correctamente.');
+    }
+
+    /**
+     * Mostrar formulario para crear un nuevo estudiante
+     */
+    public function create()
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        $courses = $teacher->courses()
+            ->where('is_active', true)
+            ->select('id', 'grade', 'section', 'school_year')
+            ->orderBy('grade')
+            ->orderBy('section')
+            ->get();
+
+        return Inertia::render('Teacher/Students/Create', [
+            'courses' => $courses,
+        ]);
+    }
+
+    /**
+     * Mostrar formulario para editar un estudiante
+     */
+    public function edit(User $user)
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        // Verificar que el estudiante está en al menos un curso del teacher
+        $courseIds = $teacher->courses()->pluck('id');
+        $enrolled = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->exists();
+        abort_unless($enrolled, 403);
+
+        // Obtener los cursos en los que está inscrito este estudiante
+        $studentCourses = $user->enrolledCourses()
+            ->whereIn('courses.id', $courseIds)
+            ->select('courses.id', 'courses.grade', 'courses.section', 'courses.school_year')
+            ->get();
+
+        return Inertia::render('Teacher/Students/Edit', [
+            'student' => [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'username'      => $user->username,
+                'is_active'     => $user->is_active,
+                'avatar'        => $user->avatar,
+                'created_at'    => $user->created_at,
+                'courses_count' => $studentCourses->count(),
+            ],
+            'courses' => $studentCourses,
         ]);
     }
 
@@ -160,5 +220,145 @@ class CourseStudentController extends Controller
                 json_encode($createdStudents, JSON_UNESCAPED_UNICODE),
                 true
             ));
+    }
+
+    public function indexAll(Request $request)
+    {
+        $user = Auth::user();
+        abort_if(!$user, 403);
+        abort_unless($user->role->slug === 'teacher', 403);
+
+        // Get all student IDs enrolled in this teacher's courses
+        $courseIds = $user->courses()->pluck('id');
+
+        $query = User::whereHas('enrolledCourses', fn($q) => $q->whereIn('courses.id', $courseIds))
+            ->with([
+                'role',
+                'enrolledCourses' => fn($q) => $q->whereIn('courses.id', $courseIds)->select('courses.id', 'courses.grade', 'courses.section')
+            ])
+            ->withCount(['enrolledCourses as courses_count' => fn($q) => $q->whereIn('courses.id', $courseIds)]);
+
+        // Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(fn($q) => $q->where('name', 'like', "%$s%")->orWhere('username', 'like', "%$s%")->orWhere('email', 'like', "%$s%"));
+        }
+
+        $students = $query->orderBy('name')->paginate(20)->withQueryString()->through(function ($student) {
+            return [
+                'id'            => $student->id,
+                'name'          => $student->name,
+                'username'      => $student->username,
+                'email'         => $student->email,
+                'avatar'        => $student->avatar,
+                'is_active'     => $student->is_active,
+                'courses_count' => $student->courses_count,
+                'courses_names' => $student->enrolledCourses->map(fn($c) => ucfirst($c->grade) . ' ' . $c->section)->join(', '),
+                'created_at'    => $student->created_at,
+            ];
+        });
+
+        return Inertia::render('Teacher/Students/Index', [
+            'students' => $students,
+            'filters'  => ['search' => $request->search],
+            'courses'  => $user->courses()->select('id', 'grade', 'section')->get(),
+        ]);
+    }
+
+    public function show(User $user, Request $request)
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        // Verify this student is in one of the teacher's courses
+        $courseIds = $teacher->courses()->pluck('id');
+        $enrolled = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->exists();
+        abort_unless($enrolled, 403);
+
+        $courses = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->get();
+
+        // Evaluations for this student in teacher's courses
+        $evaluations = Evaluation::where('user_id', $user->id)
+            ->whereIn('course_id', $courseIds)
+            ->with(['ova', 'course'])
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get()
+            ->map(fn($e) => [
+                'id'         => $e->id,
+                'score'      => $e->score,
+                'total'      => $e->total,
+                'percentage' => $e->percentage,
+                'attempt'    => $e->attempt,
+                'created_at' => $e->created_at->format('d/m/Y H:i'),
+                'ova'        => ['area' => $e->ova?->area, 'tematica' => $e->ova?->tematica],
+                'course'     => ['grade' => $e->course?->grade, 'section' => $e->course?->section],
+            ]);
+
+        return Inertia::render('Teacher/Students/Show', [
+            'student'     => $user->only(['id', 'name', 'username', 'email', 'is_active', 'pin', 'avatar', 'created_at']),
+            'courses'     => $courses,
+            'evaluations' => $evaluations,
+        ]);
+    }
+
+    public function regeneratePinForStudent(User $user, Request $request)
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        $courseIds = $teacher->courses()->pluck('id');
+        $enrolled = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->exists();
+        abort_unless($enrolled, 403);
+
+        // Generate new 4-digit PIN
+        $generatedPin = random_int(1000, 9999);
+        $user->update(['pin' => Hash::make($generatedPin)]);
+
+        return redirect()
+            ->route('teacher.students.edit', $user->id)
+            ->with('credentials', [
+                'username' => $user->username,
+                'pin'      => $generatedPin,
+            ])
+            ->with('success', 'PIN regenerado correctamente.');
+    }
+
+    public function toggleStatus(User $user, Request $request)
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        $courseIds = $teacher->courses()->pluck('id');
+        $enrolled = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->exists();
+        abort_unless($enrolled, 403);
+
+        $user->update(['is_active' => !$user->is_active]);
+        $status = $user->is_active ? 'activado' : 'desactivado';
+
+        return redirect()
+            ->route('teacher.students.index')
+            ->with('success', "Estudiante {$status} correctamente.");
+    }
+
+    public function updateStudent(User $user, Request $request)
+    {
+        $teacher = Auth::user();
+        abort_if(!$teacher, 403);
+        abort_unless($teacher->role->slug === 'teacher', 403);
+
+        $courseIds = $teacher->courses()->pluck('id');
+        $enrolled = $user->enrolledCourses()->whereIn('courses.id', $courseIds)->exists();
+        abort_unless($enrolled, 403);
+
+        $request->validate(['name' => 'required|string|max:255']);
+        $user->update(['name' => $request->name]);
+
+        return redirect()
+            ->route('teacher.students.index')
+            ->with('success', 'Estudiante actualizado correctamente.');
     }
 }

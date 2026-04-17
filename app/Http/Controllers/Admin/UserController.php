@@ -13,11 +13,13 @@ use App\Models\Role;
 use App\Models\Ova;
 use App\Models\Course;
 use App\Models\OvaProgress;
+use App\Models\Evaluation;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 
@@ -32,22 +34,36 @@ class UserController extends Controller
         $totalUsers = User::count();
         $activeUsers = User::where('is_active', true)->count();
         $inactiveUsers = $totalUsers - $activeUsers;
-        
+
         $totalStudents = User::whereHas('role', fn($q) => $q->where('slug', 'student'))->count();
         $totalTeachers = User::whereHas('role', fn($q) => $q->where('slug', 'teacher'))->count();
         $totalAdmins = User::whereHas('role', fn($q) => $q->where('slug', 'admin'))->count();
-        
+
         // Datos reales para gráficas y estadísticas
         $totalOVAs     = Ova::count();
         $activeCourses = Course::where('is_active', true)->count();
 
+        // Area filter from query params
+        $areaFilter = $request->query('area');
+
         // OvaProgress solo existe si la tabla ya fue migrada
-        $hasProgressTable = Schema::hasTable('ova_progress');
-        $completedActs    = $hasProgressTable ? OvaProgress::where('completed', true)->count() : 0;
-        $avgProgress      = $hasProgressTable ? (int) round(OvaProgress::avg('progress_percentage') ?? 0) : 0;
+        $hasProgressTable  = Schema::hasTable('ova_progress');
+        $hasEvalTable      = Schema::hasTable('evaluations');
+
+        // OVAs completadas = combinaciones únicas (estudiante, OVA) con al menos una evaluación
+        $completedActs     = $this->getCompletedActivitiesCount($hasEvalTable, $areaFilter);
+
+        // Progreso promedio: (distinct student-OVA pairs with at least one evaluation) / (totalStudents × totalOVAs) × 100
+        $avgProgress       = $this->getAverageProgress($hasEvalTable, $totalStudents, $totalOVAs, $areaFilter);
+
+        // Completadas OVAs count
+        $completedOvasCount = $completedActs;
 
         $userGrowth    = $this->getUserGrowthData();
-        $monthlyActivity = $this->getMonthlyActivityData();
+        $monthlyActivity = $this->getMonthlyActivityData($areaFilter);
+        $peakHours     = $this->getPeakHoursData($hasEvalTable, $areaFilter);
+        $ovaPerformanceByArea = $this->getOvaPerformanceByArea($hasEvalTable);
+        $availableAreas = $this->getAvailableAreas();
         $activityLogs  = $this->getRecentActivities();
 
         return Inertia::render('Admin/Dashboard', [
@@ -60,6 +76,7 @@ class UserController extends Controller
                 'totalAdmins'         => $totalAdmins,
                 'totalOVAs'           => $totalOVAs,
                 'completedActivities' => $completedActs,
+                'completedOvasCount'  => $completedOvasCount,
                 'avgProgress'         => $avgProgress,
                 'activeCourses'       => $activeCourses,
             ],
@@ -71,6 +88,10 @@ class UserController extends Controller
                 ['name' => 'Administradores', 'value' => $totalAdmins,   'color' => '#FFD23F'],
             ],
             'monthlyActivity' => $monthlyActivity,
+            'peakHours' => $peakHours,
+            'ovaPerformanceByArea' => $ovaPerformanceByArea,
+            'availableAreas' => $availableAreas,
+            'selectedArea' => $areaFilter,
         ]);
     }
 
@@ -128,50 +149,53 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Vista de estudiantes
-     */
-    public function students(Request $request)
-    {
-        $users = User::with('role')
-            ->whereHas('role', function($query) {
-                $query->where('slug', 'student');
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(10)
-            ->through(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'username' => $user->username,
-                    'role' => $user->role ? [
-                        'name' => $user->role->name,
-                        'slug' => $user->role->slug,
-                    ] : null,
-                    'role_id' => $user->role_id,
-                    'is_active' => $user->is_active,
-                    'created_at' => $user->created_at->format('Y-m-d'),
-                ];
-            });
+// app/Http/Controllers/Admin/UserController.php
 
-        // Estadísticas para estudiantes
-        $totalStudents = User::whereHas('role', function($q) {
-            $q->where('slug', 'student');
-        })->count();
-        
-        $activeStudents = User::whereHas('role', function($q) {
-            $q->where('slug', 'student');
-        })->where('is_active', true)->count();
+/**
+ * Vista de estudiantes con avatar incluido
+ */
+public function students(Request $request)
+{
+    $users = User::with('role')
+        ->whereHas('role', function($query) {
+            $query->where('slug', 'student');
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(10)
+        ->through(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'avatar' => $user->avatar,  // ← AÑADIR ESTA LÍNEA
+                'role' => $user->role ? [
+                    'name' => $user->role->name,
+                    'slug' => $user->role->slug,
+                ] : null,
+                'role_id' => $user->role_id,
+                'is_active' => $user->is_active,
+                'created_at' => $user->created_at->format('Y-m-d'),
+            ];
+        });
 
-        return Inertia::render('Admin/Users/Students', [
-            'users' => $users,
-            'stats' => [
-                'total' => $totalStudents,
-                'active' => $activeStudents,
-                'avg_per_group' => 0,
-            ]
-        ]);
-    }
+    // Estadísticas para estudiantes
+    $totalStudents = User::whereHas('role', function($q) {
+        $q->where('slug', 'student');
+    })->count();
+    
+    $activeStudents = User::whereHas('role', function($q) {
+        $q->where('slug', 'student');
+    })->where('is_active', true)->count();
+
+    return Inertia::render('Admin/Users/Students', [
+        'users' => $users,
+        'stats' => [
+            'total' => $totalStudents,
+            'active' => $activeStudents,
+            'avg_per_group' => 0,
+        ]
+    ]);
+}
 
     public function create(Request $request)
     {
@@ -494,25 +518,67 @@ class UserController extends Controller
 
     /**
      * Actividad mensual: OVAs completadas e iniciadas por mes (últimos 6 meses).
-     * Si la tabla ova_progress no existe aún, devuelve ceros.
+     *
+     * "OVAs completadas" = combinaciones únicas (user_id, ova_id) cuya PRIMERA
+     *  evaluación ocurrió en ese mes. Un segundo intento NO cuenta como un OVA nuevo.
+     *
+     * "OVAs iniciadas"   = registros de ova_progress creados ese mes (si existe la tabla).
      */
-    private function getMonthlyActivityData(): array
+    private function getMonthlyActivityData($areaFilter = null): array
     {
-        $monthLabels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        $months = collect(range(5, 0))->map(fn($i) => Carbon::now()->subMonths($i));
-        $hasTable = Schema::hasTable('ova_progress');
+        $monthLabels      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        $months           = collect(range(5, 0))->map(fn($i) => Carbon::now()->subMonths($i));
+        $hasProgressTable = Schema::hasTable('ova_progress');
+        $hasEvalTable     = Schema::hasTable('evaluations');
 
-        return $months->map(function (Carbon $date) use ($monthLabels, $hasTable) {
+        // Primera evaluación por par (user_id, ova_id) → determina en qué mes "completó" el OVA
+        $completionsByYearMonth = [];
+        if ($hasEvalTable) {
+            $query = DB::table('evaluations')
+                ->selectRaw('user_id, ova_id, MIN(created_at) AS first_eval')
+                ->groupBy('user_id', 'ova_id');
+
+            // Apply area filter if provided
+            if ($areaFilter) {
+                $query->whereIn('ova_id', function ($subquery) use ($areaFilter) {
+                    $subquery->select('id')
+                        ->from('ovas')
+                        ->where('area', $areaFilter);
+                });
+            }
+
+            $rows = $query->get();
+
+            foreach ($rows as $row) {
+                $date = Carbon::parse($row->first_eval);
+                $completionsByYearMonth[$date->year][$date->month]
+                    = ($completionsByYearMonth[$date->year][$date->month] ?? 0) + 1;
+            }
+        }
+
+        return $months->map(function (Carbon $date) use (
+            $monthLabels, $hasProgressTable, $hasEvalTable, $completionsByYearMonth, $areaFilter
+        ) {
             $y = $date->year;
             $m = $date->month;
 
-            $completed = $hasTable
-                ? OvaProgress::whereYear('updated_at', $y)->whereMonth('updated_at', $m)->where('completed', true)->count()
-                : 0;
+            $completed = $completionsByYearMonth[$y][$m] ?? 0;
 
-            $started = $hasTable
-                ? OvaProgress::whereYear('created_at', $y)->whereMonth('created_at', $m)->count()
-                : 0;
+            $started = 0;
+            if ($hasProgressTable) {
+                $progressQuery = OvaProgress::whereYear('created_at', $y)
+                    ->whereMonth('created_at', $m);
+
+                if ($areaFilter) {
+                    $progressQuery->whereIn('ova_id', function ($subquery) use ($areaFilter) {
+                        $subquery->select('id')
+                            ->from('ovas')
+                            ->where('area', $areaFilter);
+                    });
+                }
+
+                $started = $progressQuery->count();
+            }
 
             return [
                 'month'     => $monthLabels[$m - 1],
@@ -523,56 +589,234 @@ class UserController extends Controller
     }
 
     /**
-     * Últimas 5 entradas del audit log con usuario real.
+     * Últimas 10 entradas del audit log con usuario real y nombre del afectado.
      */
     private function getRecentActivities(): array
     {
-        $actionIcons = [
-            'created'         => '➕',
-            'updated'         => '✏️',
-            'deleted'         => '🗑️',
-            'login'           => '🔑',
-            'toggle_status'   => '🔄',
-            'regenerate_pin'  => '🔐',
+        // Etiquetas en español para cada tipo de acción registrada
+        $actionLabels = [
+            'created_user'     => 'Creó usuario',
+            'updated_user'     => 'Actualizó usuario',
+            'deleted_user'     => 'Eliminó usuario',
+            'user_activated'   => 'Activó usuario',
+            'user_deactivated' => 'Desactivó usuario',
+            'pin_regenerated'  => 'Regeneró PIN',
+            'created'          => 'Creó',
+            'updated'          => 'Actualizó',
+            'deleted'          => 'Eliminó',
+            'login'            => 'Inició sesión',
+            'toggle_status'    => 'Cambió estado',
+            'regenerate_pin'   => 'Regeneró PIN',
         ];
 
-        $logs = AuditLog::with('performedBy')
+        $logs = AuditLog::with(['performedBy', 'auditable'])
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
 
         if ($logs->isEmpty()) {
             return [];
         }
 
-        return $logs->map(function ($log) use ($actionIcons) {
-            $userName = $log->performedBy?->name ?? 'Sistema';
-            $icon     = $actionIcons[$log->action] ?? '📋';
-            $diff     = Carbon::parse($log->created_at)->diffForHumans();
+        return $logs->map(function ($log) use ($actionLabels) {
+            $performer   = $log->performedBy?->name ?? 'Sistema';
+            $actionLabel = $actionLabels[$log->action]
+                ?? ucfirst(str_replace('_', ' ', $log->action));
+            $diff        = Carbon::parse($log->created_at)->diffForHumans();
 
-            // Construir etiqueta legible de la acción
-            $actionLabels = [
-                'created'        => 'Registró',
-                'updated'        => 'Actualizó',
-                'deleted'        => 'Eliminó',
-                'login'          => 'Inició sesión',
-                'toggle_status'  => 'Cambió estado',
-                'regenerate_pin' => 'Regeneró PIN',
-            ];
-            $actionLabel = $actionLabels[$log->action] ?? ucfirst($log->action);
-
-            $target = $log->auditable_type
-                ? class_basename($log->auditable_type) . ' #' . ($log->auditable_id ?? '')
-                : '—';
+            // Nombre del usuario afectado por la acción
+            $affectedName = null;
+            if ($log->auditable instanceof User) {
+                // Modelo todavía existe en BD
+                $affectedName = $log->auditable->name;
+            } elseif (!empty($log->new_values['name'])) {
+                // Guardado en new_values (p.ej. al crear)
+                $affectedName = $log->new_values['name'];
+            } elseif (!empty($log->old_values['name'])) {
+                // Guardado en old_values (p.ej. al eliminar)
+                $affectedName = $log->old_values['name'];
+            }
 
             return [
-                'id'     => $log->id,
-                'user'   => $userName,
-                'action' => $actionLabel,
-                'target' => $target,
-                'time'   => $diff,
-                'icon'   => $icon,
+                'id'            => $log->id,
+                'user'          => $performer,              // quien realizó la acción
+                'action'        => $actionLabel,            // qué hizo
+                'target'        => $affectedName ?? '—',   // nombre del usuario afectado
+                'time'          => $diff,
+                'created_at'    => $log->created_at,
             ];
         })->toArray();
+    }
+
+    /**
+     * Completed activities count: distinct (user_id, ova_id) pairs with at least one evaluation
+     */
+    private function getCompletedActivitiesCount($hasEvalTable, $areaFilter = null): int
+    {
+        if (!$hasEvalTable) {
+            return 0;
+        }
+
+        $query = DB::table('evaluations')
+            ->selectRaw('COUNT(DISTINCT CONCAT(user_id, "-", ova_id)) as count');
+
+        if ($areaFilter) {
+            $query->whereIn('ova_id', function ($subquery) use ($areaFilter) {
+                $subquery->select('id')
+                    ->from('ovas')
+                    ->where('area', $areaFilter);
+            });
+        }
+
+        return (int) ($query->first()?->count ?? 0);
+    }
+
+    /**
+     * Average progress: (distinct student-OVA pairs with at least one evaluation) / (totalStudents × totalOVAs) × 100
+     * If totalStudents or totalOVAs is 0, return 0
+     */
+    private function getAverageProgress($hasEvalTable, $totalStudents, $totalOVAs, $areaFilter = null): int
+    {
+        if (!$hasEvalTable || $totalStudents === 0 || $totalOVAs === 0) {
+            return 0;
+        }
+
+        // Count of distinct (student, OVA) pairs with at least one evaluation
+        $completedCount = $this->getCompletedActivitiesCount($hasEvalTable, $areaFilter);
+
+        // If filtering by area, adjust totalOVAs to only count OVAs in that area
+        $ovasForCalculation = $totalOVAs;
+        if ($areaFilter) {
+            $ovasForCalculation = Ova::where('area', $areaFilter)->count();
+        }
+
+        if ($ovasForCalculation === 0) {
+            return 0;
+        }
+
+        $denominator = $totalStudents * $ovasForCalculation;
+
+        if ($denominator === 0) {
+            return 0;
+        }
+
+        return (int) round(($completedCount / $denominator) * 100);
+    }
+
+    /**
+     * Peak hours: group evaluations by hour (0-23), return 4 time blocks with top hours
+     * Hours grouped into: Madrugada (0-5), Mañana (6-11), Tarde (12-17), Noche (18-23)
+     */
+    private function getPeakHoursData($hasEvalTable, $areaFilter = null): array
+    {
+        if (!$hasEvalTable) {
+            return [];
+        }
+
+        // Define time blocks
+        $timeBlocks = [
+            'Madrugada' => [0, 1, 2, 3, 4, 5],
+            'Mañana'    => [6, 7, 8, 9, 10, 11],
+            'Tarde'     => [12, 13, 14, 15, 16, 17],
+            'Noche'     => [18, 19, 20, 21, 22, 23],
+        ];
+
+        $hoursData = [];
+
+        // Get evaluations grouped by hour
+        $query = DB::table('evaluations')
+            ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+            ->groupBy('hour');
+
+        if ($areaFilter) {
+            $query->whereIn('ova_id', function ($subquery) use ($areaFilter) {
+                $subquery->select('id')
+                    ->from('ovas')
+                    ->where('area', $areaFilter);
+            });
+        }
+
+        $hourCounts = $query->pluck('count', 'hour')->toArray();
+
+        // Aggregate by time block
+        foreach ($timeBlocks as $blockName => $hours) {
+            $blockCount = 0;
+            foreach ($hours as $hour) {
+                $blockCount += $hourCounts[$hour] ?? 0;
+            }
+
+            if ($blockCount > 0) {
+                $hoursData[] = [
+                    'hour' => $blockName,
+                    'label' => $blockName,
+                    'count' => $blockCount,
+                ];
+            }
+        }
+
+        if (empty($hoursData)) {
+            return [];
+        }
+
+        // Find max count for percentage calculation
+        $maxCount = max(array_column($hoursData, 'count'));
+
+        // Calculate percentages
+        foreach ($hoursData as &$item) {
+            $item['pct'] = (int) round(($item['count'] / $maxCount) * 100);
+        }
+
+        // Return all 4 blocks (ordered)
+        $orderedBlockNames = ['Madrugada', 'Mañana', 'Tarde', 'Noche'];
+        $result = [];
+        foreach ($orderedBlockNames as $blockName) {
+            foreach ($hoursData as $item) {
+                if ($item['hour'] === $blockName) {
+                    $result[] = $item;
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * OVA performance by area: average percentage for first attempts only
+     */
+    private function getOvaPerformanceByArea($hasEvalTable): array
+    {
+        if (!$hasEvalTable) {
+            return [];
+        }
+
+        // Get average score/total ratio for first attempts grouped by area
+        $results = DB::table('evaluations')
+            ->selectRaw('ovas.area, COUNT(*) as count, AVG(CAST(evaluations.score AS FLOAT) / CAST(evaluations.total AS FLOAT) * 100) as avg')
+            ->join('ovas', 'evaluations.ova_id', '=', 'ovas.id')
+            ->where('evaluations.attempt', 1)
+            ->groupBy('ovas.area')
+            ->orderByDesc('avg')
+            ->get();
+
+        return $results->map(function ($row) {
+            return [
+                'area' => $row->area,
+                'avg' => (int) round($row->avg),
+                'count' => (int) $row->count,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Available areas: distinct list of OVA areas
+     */
+    private function getAvailableAreas(): array
+    {
+        return Ova::distinct()
+            ->pluck('area')
+            ->filter(fn($area) => !empty($area))
+            ->values()
+            ->toArray();
     }
 }

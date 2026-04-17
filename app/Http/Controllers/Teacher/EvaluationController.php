@@ -24,21 +24,21 @@ class EvaluationController extends Controller
         abort_unless($isAdmin || $isTeacher, 403);
 
         // Base query con relaciones necesarias
-        // NOTA: En Course la relación con el profesor es 'teacher', no 'user'
         $query = Evaluation::with(['user', 'ova', 'course.teacher']);
 
         // Filtro por cursos según el rol
         if ($isTeacher) {
-            // Teacher: solo sus cursos (teacher_id es la clave foránea)
+            // Teacher: solo sus cursos
             $courseIds = $user->courses()->pluck('id');
             $query->whereIn('course_id', $courseIds);
         }
-        // Admin: ve todos, sin filtro adicional
 
-        // Filtros comunes
-        $query->when($request->filled('course_id'), fn($q) =>
-            $q->where('course_id', $request->course_id)
-        );
+        // Filtro por área temática
+        if ($request->filled('area')) {
+            $query->whereHas('ova', fn($q) =>
+                $q->where('area', $request->area)
+            );
+        }
 
         // Filtro por profesor (solo para admin)
         if ($isAdmin && $request->filled('teacher_id')) {
@@ -87,13 +87,11 @@ class EvaluationController extends Controller
 
         // Datos para filtros según el rol
         if ($isTeacher) {
-            // Teacher: solo sus cursos
             $courses = $user->courses()
                 ->select('id', 'grade', 'section', 'school_year')
                 ->get();
             $teachers = null;
         } else {
-            // Admin: todos los cursos con sus profesores
             $courses = Course::with('teacher')
                 ->select('id', 'grade', 'section', 'school_year', 'teacher_id')
                 ->get()
@@ -108,6 +106,9 @@ class EvaluationController extends Controller
                 $q->where('slug', 'teacher')
             )->select('id', 'name')->get();
         }
+
+        // Áreas disponibles
+        $areas = ['Matemáticas', 'Español', 'Ciencias Naturales', 'Ciencias Sociales', 'Inglés'];
 
         // Stats según el rol
         if ($isTeacher) {
@@ -138,15 +139,15 @@ class EvaluationController extends Controller
             ];
         }
 
-        // Usar la vista compartida (está en Teacher/Evaluations/Index.jsx)
         return Inertia::render('Teacher/Evaluations/Index', [
             'evaluations' => $evaluations,
             'courses'     => $courses,
             'teachers'    => $teachers,
+            'areas'       => $areas,
             'stats'       => $stats,
             'filters'     => [
                 'search'     => $request->search,
-                'course_id'  => $request->course_id,
+                'area'       => $request->area,      
                 'teacher_id' => $request->teacher_id,
             ],
             'userRole'    => $user->role->slug,

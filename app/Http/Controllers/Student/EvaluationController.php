@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 class EvaluationController extends Controller
 {
     /**
+     * Máximo de intentos permitidos por evaluación / estudiante
+     */
+    const MAX_ATTEMPTS = 3;
+
+    /**
      * Guardar resultado de una evaluación HTML
      * Llamado por fetch() desde el HTML del OVA
      */
@@ -53,12 +58,25 @@ class EvaluationController extends Controller
             ], 422);
         }
 
-        // Contar intentos anteriores
-        $attempt = Evaluation::where('user_id', $user->id)
+        // ── Contar intentos anteriores ────────────────────────────────────────
+        $attemptCount = Evaluation::where('user_id', $user->id)
             ->where('ova_id', $ovaId)
             ->where('course_id', $courseId)
             ->where('evaluation_key', $request->evaluation_key)
-            ->count() + 1;
+            ->count();
+
+        // ── Bloquear si ya alcanzó el límite ──────────────────────────────────
+        if ($attemptCount >= self::MAX_ATTEMPTS) {
+            return response()->json([
+                'success'      => false,
+                'limit_reached' => true,
+                'message'      => 'Has alcanzado el límite de ' . self::MAX_ATTEMPTS . ' intentos para esta evaluación.',
+                'attempts'     => $attemptCount,
+                'max_attempts' => self::MAX_ATTEMPTS,
+            ], 403);
+        }
+
+        $attempt = $attemptCount + 1;
 
         $evaluation = Evaluation::create([
             'user_id'        => $user->id,
@@ -70,10 +88,16 @@ class EvaluationController extends Controller
             'attempt'        => $attempt,
         ]);
 
+        // ── Indicar si este fue el último intento permitido ───────────────────
+        $isLastAttempt = $attempt >= self::MAX_ATTEMPTS;
+
         return response()->json([
-            'success'    => true,
-            'message'    => 'Evaluación guardada correctamente.',
-            'evaluation' => [
+            'success'        => true,
+            'message'        => 'Evaluación guardada correctamente.',
+            'is_last_attempt' => $isLastAttempt,
+            'attempts_left'  => self::MAX_ATTEMPTS - $attempt,
+            'max_attempts'   => self::MAX_ATTEMPTS,
+            'evaluation'     => [
                 'id'             => $evaluation->id,
                 'score'          => $evaluation->score,
                 'total'          => $evaluation->total,
@@ -85,7 +109,7 @@ class EvaluationController extends Controller
     }
 
     /**
-     * Obtener historial de evaluaciones del estudiante
+     * Historial de evaluaciones del estudiante — renderiza vista Inertia
      */
     public function index(Request $request)
     {
@@ -107,6 +131,8 @@ class EvaluationController extends Controller
                 'created_at'     => $e->created_at->format('d/m/Y H:i'),
             ]);
 
-        return response()->json(['success' => true, 'data' => $evaluations]);
+        return \Inertia\Inertia::render('Student/Evaluations/Index', [
+            'evaluations' => $evaluations,
+        ]);
     }
 }

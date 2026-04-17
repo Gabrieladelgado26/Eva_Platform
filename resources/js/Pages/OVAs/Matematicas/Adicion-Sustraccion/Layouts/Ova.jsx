@@ -181,7 +181,7 @@ export function OvaModal({ open, onClose, frameImg, children, closeId, modalClas
 // ─── Modal Slider ─────────────────────────────────────────────────────────────
 function ModalSlider({ open, onClose }) {
   const [src, setSrc] = useState("");
-  useEffect(() => { if (open) setSrc("/ova/slider"); else setSrc(""); }, [open]);
+  useEffect(() => { if (open) setSrc("/ovas/matematicas/adicion-sustraccion/slider"); else setSrc(""); }, [open]);
 
   return (
     <OvaModal open={open} onClose={onClose}
