@@ -43,7 +43,7 @@ function buildNavGroups(role, currentRoute) {
             label: 'Gestión de Usuarios',
             items: [
                 {
-                    title: 'Personal Administrativo',
+                    title: 'Personal Institucional',
                     href: safeRoute('admin.staff'),  
                     icon: Users,
                     current: is('admin.staff', 'admin.users.create', 'admin.users.edit'),

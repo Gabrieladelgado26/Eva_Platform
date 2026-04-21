@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, router } from "@inertiajs/react";
 import {
     ArrowLeft, Layers, Check, Loader2, AlertCircle, Info, BookOpen,
     Upload, X, Globe, FileText, Tag, Image as ImageIcon, Eye, EyeOff, Trash2
@@ -58,10 +58,18 @@ export default function Edit({ ova }) {
             formData.append("thumbnail", data.thumbnail);
         }
         
-        post(route("admin.ovas.update", ova.id), {
-            data: formData,
-            headers: {
-                "Content-Type": "multipart/form-data",
+        // Usar router.post con onSuccess
+        router.post(route("admin.ovas.update", ova.id), formData, {
+            forceFormData: true,
+            preserveScroll: false,
+            preserveState: false,
+            onSuccess: () => {
+                // El controlador redirige a index con flash message
+                // El toast se mostrará en el index automáticamente
+                console.log("OVA actualizada correctamente");
+            },
+            onError: (errors) => {
+                console.error("Error al actualizar:", errors);
             },
         });
     }
@@ -69,7 +77,15 @@ export default function Edit({ ova }) {
     const isFieldValid = (field) => {
         if (!data[field]) return false;
         if (field === "url") {
-            return data.url.includes("http") && data.url.includes(".");
+            if (data.url === '') return true;
+            
+            const rutasValidas = [
+                '/ovas/matematicas/adicion-sustraccion/inicio',
+            ];
+            
+            return rutasValidas.includes(data.url) || 
+                data.url.startsWith('http://') || 
+                data.url.startsWith('https://');
         }
         if (field === "area") return data.area.length >= 2;
         if (field === "tematica") return data.tematica.length >= 3;
@@ -338,7 +354,7 @@ export default function Edit({ ova }) {
                                         </label>
                                         <div className="relative">
                                             <input
-                                                type="url"
+                                                type="text"
                                                 value={data.url}
                                                 onChange={(e) => setData("url", e.target.value)}
                                                 onFocus={() => setFocusedField("url")}
@@ -355,7 +371,7 @@ export default function Edit({ ova }) {
                                                         ? { borderColor: "#540D6E", "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }
                                                         : {}
                                                 }
-                                                placeholder="https://ejemplo.com/recurso-ova"
+                                                placeholder="Ruta interna o enlace externo"
                                             />
                                             {data.url && isFieldValid("url") && !errors.url && (
                                                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -381,7 +397,7 @@ export default function Edit({ ova }) {
                                             </div>
                                         )}
                                         <p className="text-xs text-gray-500 mt-1">
-                                            Enlace externo al contenido interactivo (opcional)
+                                            Ruta interna del sistema o enlace externo al contenido interactivo (opcional)
                                         </p>
                                         {errors.url && (
                                             <div className="mt-2 flex items-start gap-2 p-3 bg-red-50 border-l-4 rounded-r-lg animate-slide-down" style={{ borderLeftColor: "#EE4266" }}>
@@ -391,7 +407,6 @@ export default function Edit({ ova }) {
                                         )}
                                     </div>
 
-                                  
                                     {/* ── Estado del OVA ── */}
                                     <div
                                         className="flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer select-none"
@@ -416,7 +431,6 @@ export default function Edit({ ova }) {
                                                 </p>
                                             </div>
                                         </div>
-                                        {/* Toggle visual */}
                                         <div className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0"
                                             style={{ backgroundColor: data.is_active ? '#0EAD69' : '#D1D5DB' }}>
                                             <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"

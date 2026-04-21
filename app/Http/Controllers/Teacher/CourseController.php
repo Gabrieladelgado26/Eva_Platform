@@ -91,39 +91,39 @@ class CourseController extends Controller
             ->with('success', 'Curso creado correctamente.');
     }
 
- public function show(Course $course)
-{
-    /** @var User|null $user */
-    $user = Auth::user();
+    public function show(Course $course)
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
 
-    abort_if(!$user, 403);
-    abort_unless($user->role->slug === 'teacher', 403);
-    abort_unless($user->id === $course->teacher_id, 403);
+        abort_if(!$user, 403);
+        abort_unless($user->role->slug === 'teacher', 403);
+        abort_unless($user->id === $course->teacher_id, 403);
 
-    // Cargar estudiantes del curso
-    $students = $course->students()
-        ->select('users.id', 'users.name', 'users.username', 'users.email')
-        ->get();
+        // Cargar estudiantes del curso
+        $students = $course->students()
+            ->select('users.id', 'users.name', 'users.username', 'users.email')
+            ->get();
 
-    // Cargar OVAs del curso con la relación correcta (SIN studentProgress)
-    $courseOvas = $course->ovas()
-        ->orderByPivot('order')
-        ->get();
+        // Cargar OVAs del curso con la relación correcta (SIN studentProgress)
+        $courseOvas = $course->ovas()
+            ->orderByPivot('order')
+            ->get();
 
-    // Obtener todas las OVAs disponibles para asignar
-    $assignedOvaIds = $course->ovas()->pluck('ovas.id')->toArray();
-    $availableOvas = Ova::active()
-        ->whereNotIn('id', $assignedOvaIds)
-        ->orderBy('area')
-        ->get();
+        // Obtener todas las OVAs disponibles para asignar
+        $assignedOvaIds = $course->ovas()->pluck('ovas.id')->toArray();
+        $availableOvas = Ova::active()
+            ->whereNotIn('id', $assignedOvaIds)
+            ->orderBy('area')
+            ->get();
 
-    return Inertia::render('Teacher/Courses/Index', [
-        'course' => $course,
-        'students' => $students,
-        'courseOvas' => $courseOvas,
-        'availableOvas' => $availableOvas
-    ]);
-}
+        return Inertia::render('Teacher/Courses/Index', [
+            'course' => $course,
+            'students' => $students,
+            'courseOvas' => $courseOvas,
+            'availableOvas' => $availableOvas
+        ]);
+    }
 
     public function edit(Course $course)
     {
@@ -174,7 +174,7 @@ class CourseController extends Controller
             $course->ovas()->detach();
             $course->students()->detach();
             $course->delete();
-            
+
             DB::commit();
             return redirect()
                 ->route('teacher.dashboard')
@@ -378,7 +378,7 @@ class CourseController extends Controller
         ];
 
         // Progreso por estudiante
-        $students = $course->students()->with(['ovaProgress' => function($query) use ($course) {
+        $students = $course->students()->with(['ovaProgress' => function ($query) use ($course) {
             $query->whereIn('ova_id', $course->ovas()->pluck('ovas.id'));
         }])->get();
 
@@ -386,7 +386,7 @@ class CourseController extends Controller
             $stats['ovas_by_student'][$student->name] = [
                 'completed' => $student->ovaProgress->where('completed', true)->count(),
                 'total' => $stats['total_ovas'],
-                'percentage' => $stats['total_ovas'] > 0 
+                'percentage' => $stats['total_ovas'] > 0
                     ? round(($student->ovaProgress->where('completed', true)->count() / $stats['total_ovas']) * 100)
                     : 0
             ];
@@ -435,19 +435,51 @@ class CourseController extends Controller
         abort_if(!$user, 403);
         abort_unless($user->role->slug === 'teacher', 403);
 
+        // LOG 1: Usuario actual
+        \Log::info('=== TEACHER ANALYTICS DEBUG ===');
+        \Log::info('User ID: ' . $user->id);
+        \Log::info('User Name: ' . $user->name);
+
         try {
             // Get teacher's course IDs
             $courseIds = $user->courses()->pluck('id')->toArray();
+
+            // LOG 2: Cursos del docente
+            \Log::info('Teacher Course IDs: ', $courseIds);
+            \Log::info('Number of courses: ' . count($courseIds));
+
+            // Si no hay cursos, mostrar todo en cero
+            if (empty($courseIds)) {
+                \Log::info('No courses found for teacher');
+                return Inertia::render('Teacher/Analytics', [
+                    'auth' => ['user' => $user],
+                    'stats' => [
+                        'totalCourses' => 0,
+                        'activeCourses' => 0,
+                        'totalStudents' => 0,
+                        'totalOVAs' => 0,
+                        'completedActivities' => 0,
+                        'avgScore' => 0,
+                        'avgProgress' => 0,
+                    ],
+                    'monthlyActivity' => [],
+                    'peakHours' => [],
+                    'ovaPerformanceByArea' => []
+                ]);
+            }
 
             // Stats
             $totalCourses = count($courseIds);
             $activeCourses = $user->courses()->where('is_active', true)->count();
 
             // Total distinct students across all teacher's courses
-            $totalStudents = DB::table('course_user')
+            $totalStudents = DB::table('course_student')
                 ->whereIn('course_id', $courseIds)
                 ->distinct('user_id')
                 ->count('user_id');
+
+            // LOG 3: Total estudiantes
+            \Log::info('Total Students: ' . $totalStudents);
 
             // Total unique OVAs assigned to teacher's courses
             $totalOVAs = DB::table('course_ova')
@@ -455,11 +487,24 @@ class CourseController extends Controller
                 ->distinct('ova_id')
                 ->count('ova_id');
 
-            // Completed activities: DISTINCT (user_id, ova_id) pairs from evaluations
+            // LOG 4: Total OVAs
+            \Log::info('Total OVAs: ' . $totalOVAs);
+
+            // Completed activities: Count of evaluations in teacher's courses
             $completedActivities = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
-                ->distinct('user_id', 'ova_id')
-                ->count(DB::raw('DISTINCT CONCAT(user_id, "_", ova_id)'));
+                ->count();
+
+            // LOG 5: Evaluaciones completadas
+            \Log::info('Completed Activities (raw count): ' . $completedActivities);
+
+            // También mostrar las evaluaciones para depuración
+            $sampleEvaluations = DB::table('evaluations')
+                ->whereIn('course_id', $courseIds)
+                ->select('id', 'user_id', 'course_id', 'ova_id', 'score', 'total')
+                ->limit(5)
+                ->get();
+            \Log::info('Sample Evaluations: ', $sampleEvaluations->toArray());
 
             // Average score: AVG((score/total)*100)
             $avgScoreResult = DB::table('evaluations')
@@ -468,11 +513,18 @@ class CourseController extends Controller
                 ->first();
             $avgScore = $avgScoreResult ? (int)round($avgScoreResult->avg_score ?? 0) : 0;
 
+            // LOG 6: Promedio de notas
+            \Log::info('Average Score: ' . $avgScore);
+
             // Average progress: (completedActivities) / (totalStudents × totalOVAs) × 100
             $denominator = $totalStudents * $totalOVAs;
             $avgProgress = $denominator > 0
                 ? min(100, max(0, (int)round(($completedActivities / $denominator) * 100)))
                 : 0;
+
+            // LOG 7: Progreso general
+            \Log::info('Denominator (students * OVAs): ' . $denominator);
+            \Log::info('Average Progress: ' . $avgProgress . '%');
 
             // Monthly activity (last 6 months)
             $monthlyActivity = DB::table('evaluations')
@@ -482,9 +534,22 @@ class CourseController extends Controller
                 ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
                 ->limit(6)
                 ->get()
-                ->map(function($row) {
-                    $monthNames = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-                                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                ->map(function ($row) {
+                    $monthNames = [
+                        '',
+                        'Ene',
+                        'Feb',
+                        'Mar',
+                        'Abr',
+                        'May',
+                        'Jun',
+                        'Jul',
+                        'Ago',
+                        'Sep',
+                        'Oct',
+                        'Nov',
+                        'Dic'
+                    ];
                     return [
                         'month' => $monthNames[$row->month] ?? 'Mes',
                         'count' => $row->count
@@ -494,7 +559,10 @@ class CourseController extends Controller
                 ->values()
                 ->toArray();
 
-            // OVA performance by area
+            // LOG 8: Actividad mensual
+            \Log::info('Monthly Activity: ', $monthlyActivity);
+
+            // OVA performance by area (solo evaluaciones con attempt = 1 para evitar duplicados)
             $ovaPerformanceByArea = DB::table('evaluations')
                 ->join('ovas', 'evaluations.ova_id', '=', 'ovas.id')
                 ->whereIn('evaluations.course_id', $courseIds)
@@ -503,7 +571,7 @@ class CourseController extends Controller
                 ->groupBy('ovas.area')
                 ->orderByRaw('avg DESC')
                 ->get()
-                ->map(function($row) {
+                ->map(function ($row) {
                     return [
                         'area' => $row->area,
                         'avg' => (int)round($row->avg ?? 0),
@@ -512,40 +580,46 @@ class CourseController extends Controller
                 })
                 ->toArray();
 
+            // LOG 9: Rendimiento por área
+            \Log::info('OVA Performance by Area: ', $ovaPerformanceByArea);
+
             // Peak hours: group by hour block
-            $peakHours = DB::table('evaluations')
+            $peakHoursRaw = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
                 ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
                 ->groupByRaw('HOUR(created_at)')
-                ->get()
-                ->map(function($row) {
-                    $hourInt = $row->hour ?? 0;
+                ->get();
 
-                    if ($hourInt >= 0 && $hourInt < 6) {
-                        $block = 'Madrugada';
-                    } elseif ($hourInt >= 6 && $hourInt < 12) {
-                        $block = 'Mañana';
-                    } elseif ($hourInt >= 12 && $hourInt < 18) {
-                        $block = 'Tarde';
-                    } else {
-                        $block = 'Noche';
-                    }
+            // LOG 10: Horas pico raw
+            \Log::info('Peak Hours Raw: ', $peakHoursRaw->toArray());
 
-                    return ['hour' => $block, 'count' => $row->count];
-                })
-                ->groupBy('hour')
-                ->map(function($group) {
-                    return [
-                        'label' => $group[0]['hour'],
-                        'count' => $group->sum('count')
-                    ];
-                })
-                ->values()
-                ->toArray();
+            $peakHoursMap = [];
+            foreach ($peakHoursRaw as $row) {
+                $hourInt = $row->hour ?? 0;
+                if ($hourInt >= 0 && $hourInt < 6) {
+                    $block = 'Madrugada';
+                } elseif ($hourInt >= 6 && $hourInt < 12) {
+                    $block = 'Mañana';
+                } elseif ($hourInt >= 12 && $hourInt < 18) {
+                    $block = 'Tarde';
+                } else {
+                    $block = 'Noche';
+                }
+
+                if (!isset($peakHoursMap[$block])) {
+                    $peakHoursMap[$block] = 0;
+                }
+                $peakHoursMap[$block] += $row->count;
+            }
+
+            $peakHours = [];
+            foreach ($peakHoursMap as $label => $count) {
+                $peakHours[] = ['label' => $label, 'count' => $count];
+            }
 
             // Calculate percentages for peak hours
             $totalEvals = array_sum(array_column($peakHours, 'count'));
-            $peakHours = array_map(function($item) use ($totalEvals) {
+            $peakHours = array_map(function ($item) use ($totalEvals) {
                 return [
                     'label' => $item['label'],
                     'count' => $item['count'],
@@ -555,9 +629,12 @@ class CourseController extends Controller
 
             // Sort by defined order
             $peakOrder = ['Madrugada', 'Mañana', 'Tarde', 'Noche'];
-            usort($peakHours, function($a, $b) use ($peakOrder) {
+            usort($peakHours, function ($a, $b) use ($peakOrder) {
                 return array_search($a['label'], $peakOrder) - array_search($b['label'], $peakOrder);
             });
+
+            // LOG 11: Horas pico final
+            \Log::info('Peak Hours Final: ', $peakHours);
 
             $stats = [
                 'totalCourses' => $totalCourses,
@@ -569,6 +646,9 @@ class CourseController extends Controller
                 'avgProgress' => $avgProgress,
             ];
 
+            // LOG 12: Estadísticas finales
+            \Log::info('Final Stats: ', $stats);
+
             return Inertia::render('Teacher/Analytics', [
                 'auth' => ['user' => $user],
                 'stats' => $stats,
@@ -576,8 +656,10 @@ class CourseController extends Controller
                 'peakHours' => $peakHours,
                 'ovaPerformanceByArea' => $ovaPerformanceByArea
             ]);
-
         } catch (\Exception $e) {
+            \Log::error('Error in teacher analytics: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
+
             // If evaluations table doesn't exist or error occurs, return empty defaults
             return Inertia::render('Teacher/Analytics', [
                 'auth' => ['user' => $user],

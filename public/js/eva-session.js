@@ -5,7 +5,7 @@
  *
  * Límite: máximo 3 intentos por evaluación / estudiante.
  * Al guardar exitosamente → recarga la página (preserva sesión).
- * Al alcanzar el límite → muestra toast de bloqueo, sin recargar.
+ * Al alcanzar el límite → muestra card de bloqueo, sin recargar.
  */
 (function () {
 
@@ -17,122 +17,304 @@
     if (ovaId)    sessionStorage.setItem('eva_ova_id',    ovaId);
     if (courseId) sessionStorage.setItem('eva_course_id', courseId);
 
-    // ── Estilos del toast ─────────────────────────────────────────────────────
-    const TOAST_STYLES = {
-        base: `
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 99999;
-            min-width: 300px;
-            max-width: 420px;
-            padding: 16px 20px;
-            border-radius: 14px;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 14px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            animation: evaSlideIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-            cursor: pointer;
-        `,
-        success: `
-            background: linear-gradient(135deg, #0EAD69, #3BCEAC);
-            color: white;
-            border: 1.5px solid rgba(255,255,255,0.25);
-        `,
-        warning: `
-            background: linear-gradient(135deg, #F7971E, #FFD200);
-            color: #1a1a1a;
-            border: 1.5px solid rgba(255,255,255,0.30);
-        `,
-        error: `
-            background: linear-gradient(135deg, #EE4266, #c0304f);
-            color: white;
-            border: 1.5px solid rgba(255,255,255,0.25);
-        `,
-        blocked: `
-            background: linear-gradient(135deg, #4B4B8F, #23235B);
-            color: white;
-            border: 1.5px solid rgba(255,255,255,0.20);
-        `,
-    };
-
+    // ── Animaciones y estilos globales ────────────────────────────────────────
     const KEYFRAMES = `
-        @keyframes evaSlideIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.92); }
-            to   { opacity: 1; transform: translateY(0)   scale(1);    }
+        @keyframes evaBackdropIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
-        @keyframes evaSlideOut {
-            from { opacity: 1; transform: translateY(0)   scale(1);    }
-            to   { opacity: 0; transform: translateY(20px) scale(0.92); }
+        @keyframes evaBackdropOut {
+            from { opacity: 1; }
+            to   { opacity: 0; }
+        }
+        @keyframes evaCardIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes evaCardOut {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to   { opacity: 0; transform: scale(0.95) translateY(10px); }
+        }
+        @keyframes evaProgressBar {
+            from { width: 100%; }
+            to   { width: 0%; }
         }
     `;
 
-    // Inyectar keyframes una sola vez
     if (!document.getElementById('eva-toast-styles')) {
-        const style       = document.createElement('style');
-        style.id          = 'eva-toast-styles';
+        const style = document.createElement('style');
+        style.id = 'eva-toast-styles';
         style.textContent = KEYFRAMES;
         document.head.appendChild(style);
     }
 
-    // ── Mostrar toast ─────────────────────────────────────────────────────────
-    /**
-     * @param {'success'|'warning'|'error'|'blocked'} type
-     * @param {string}   title
-     * @param {string[]} lines
-     * @param {number}   [duration=6000]  ms antes de auto-cerrar (0 = no auto-cierra)
-     */
-    function showToast(type, title, lines, duration) {
-        // Eliminar toast previo si existe
+    // ── Helpers de diseño ─────────────────────────────────────────────────────
+    const FONT_TITLE = "'Chewy', cursive";
+    const FONT_TEXT = "'Nunito', sans-serif";
+    
+    // Estilo único morado/rosado para todos los modales
+    const GRADIENT = 'linear-gradient(135deg, #540D6E, #EE4266)';
+
+    // ── Mensaje según el porcentaje ───────────────────────────────────────────
+    function getMotivationalMessage(pct) {
+        if (pct >= 90) return '¡Excelente trabajo! Sigue así';
+        if (pct >= 80) return 'Muy bien, vas por buen camino';
+        if (pct >= 70) return 'Bien, puedes mejorar aún más';
+        if (pct >= 60) return 'Has aprobado, pero sigue practicando';
+        return 'No te desanimes, ¡inténtalo de nuevo!';
+    }
+
+    // ── Tarjeta de resultado exitoso ──────────────────────────────────────────
+    function buildSuccessCard(extra, ms) {
+        const pct = extra.percentage;
+        const score = extra.score;
+        const total = extra.total;
+        const att = extra.attempt;
+        const left = extra.attemptsLeft;
+        const max = extra.maxAttempts;
+        const last = extra.isLastAttempt;
+        const mensaje = getMotivationalMessage(pct);
+
+        const attemptsBlock = last
+            ? `<div style="background: rgba(84, 13, 110, 0.1); border-radius: 16px; padding: 14px 18px; text-align: center;">
+                <span style="font-family: ${FONT_TEXT}; font-size: 15px; color: #540D6E; font-weight: 600;">No quedan más intentos disponibles</span>
+               </div>`
+            : `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(84, 13, 110, 0.08); border-radius: 16px; padding: 14px 18px;">
+                <span style="font-family: ${FONT_TEXT}; font-size: 15px; color: #540D6E; font-weight: 600;">Intentos restantes</span>
+                <span style="font-family: ${FONT_TITLE}; font-size: 24px; color: #540D6E;">${left}<span style="font-size: 16px;">/${max}</span></span>
+               </div>`;
+
+        return `
+        <div style="
+            background: white;
+            border-radius: 51px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: evaCardIn 0.4s ease;
+        ">
+            <div style="height: 8px; background: ${GRADIENT};"></div>
+            <div style="padding: 32px 28px;">
+                <div style="text-align: center;">
+                    <div style="font-family: ${FONT_TITLE}; font-size: 28px; color: #540D6E; margin-bottom: 26px;">Resultado obtenido</div>
+                    
+                    <div style="font-family: ${FONT_TITLE}; font-size: 80px; color: #540D6E; margin-bottom: 16px;">
+                        ${score}<span style="font-size: 36px; color: #9CA3AF;">/${total}</span>
+                    </div>
+                    
+                    <div style="font-family: ${FONT_TEXT}; font-size: 18px; color: #EE4266; font-weight: 600; margin-bottom: 8px;">
+                        Intento ${att}: ${pct}%
+                    </div>
+                    
+                    <div style="font-family: ${FONT_TEXT}; font-size: 15px; color: #6B7280; margin-bottom: 24px;">
+                        ${mensaje}
+                    </div>
+                </div>
+                <div style="margin-bottom: 24px;">${attemptsBlock}</div>
+                ${ms > 0 ? `
+                <div style="margin-bottom: 20px;">
+                    <div style="height: 4px; background: #F0EEF4; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 100%; background: ${GRADIENT}; animation: evaProgressBar ${ms/1000}s linear forwards;"></div>
+                    </div>
+                </div>` : ''}
+                <button class="eva-continue-btn" style="
+                    width: 100%;
+                    padding: 16px;
+                    background: ${GRADIENT};
+                    border: none;
+                    border-radius: 51px;
+                    font-family: ${FONT_TITLE};
+                    font-size: 20px;
+                    color: white;
+                    cursor: pointer;
+                    transition: transform 0.2s ease;
+                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    Continuar
+                </button>
+            </div>
+        </div>`;
+    }
+
+    // ── Tarjeta de límite de intentos ─────────────────────────────────────────
+    function buildBlockedCard(extra, ms) {
+        const max = extra.maxAttempts || 3;
+        const score = extra.score;
+        const total = extra.total;
+
+        return `
+        <div style="
+            background: white;
+            border-radius: 51px;
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: evaCardIn 0.4s ease;
+        ">
+            <div style="height: 8px; background: ${GRADIENT};"></div>
+            <div style="padding: 32px 28px; text-align: center;">
+                <div style="width: 80px; height: 80px; background: ${GRADIENT}; border-radius: 40px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <span style="font-family: ${FONT_TITLE}; font-size: 36px; color: white;">!</span>
+                </div>
+                <div style="font-family: ${FONT_TITLE}; font-size: 26px; color: #540D6E; margin-bottom: 16px;">Límite alcanzado</div>
+                <div style="font-family: ${FONT_TEXT}; font-size: 15px; color: #6B7280; line-height: 1.6; margin-bottom: 20px;">
+                    Has completado los <strong>${max} intentos</strong> disponibles.
+                </div>
+                <div style="background: rgba(84, 13, 110, 0.08); border-radius: 16px; padding: 14px; margin-bottom: 20px;">
+                    <span style="font-family: ${FONT_TEXT}; font-size: 14px; color: #540D6E;">La calificación obtenida (${score}/${total}) no será guardada</span>
+                </div>
+                <div style="background: rgba(84, 13, 110, 0.06); border-radius: 16px; padding: 12px; margin-bottom: 24px;">
+                    <span style="font-family: ${FONT_TEXT}; font-size: 13px; color: #6B7280;">Consulta con tu docente para más información</span>
+                </div>
+                ${ms > 0 ? `
+                <div style="margin-bottom: 20px;">
+                    <div style="height: 4px; background: #F0EEF4; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 100%; background: ${GRADIENT}; animation: evaProgressBar ${ms/1000}s linear forwards;"></div>
+                    </div>
+                </div>` : ''}
+                <button class="eva-continue-btn" style="
+                    width: 100%;
+                    padding: 16px;
+                    background: ${GRADIENT};
+                    border: none;
+                    border-radius: 51px;
+                    font-family: ${FONT_TITLE};
+                    font-size: 20px;
+                    color: white;
+                    cursor: pointer;
+                    transition: transform 0.2s ease;
+                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    Entendido
+                </button>
+            </div>
+        </div>`;
+    }
+
+    // ── Tarjeta genérica para errores ─────────────────────────────────────────
+    function buildSimpleCard(type, title, lines, ms) {
+        const palettes = {
+            error: { gradient: GRADIENT, icon: '!' },
+            warning: { gradient: GRADIENT, icon: '!' },
+            info: { gradient: GRADIENT, icon: 'i' }
+        };
+        const p = palettes[type] || palettes.info;
+
+        return `
+        <div style="
+            background: white;
+            border-radius: 51px;
+            width: 100%;
+            max-width: 380px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: evaCardIn 0.4s ease;
+        ">
+            <div style="height: 8px; background: ${p.gradient};"></div>
+            <div style="padding: 28px 24px;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <div style="width: 52px; height: 52px; background: ${p.gradient}; border-radius: 26px; display: inline-flex; align-items: center; justify-content: center;">
+                        <span style="font-family: ${FONT_TITLE}; font-size: 28px; color: white;">${p.icon}</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-family: ${FONT_TITLE}; font-size: 20px; color: #1F1A2E;">${title}</div>
+                    </div>
+                    <button class="eva-close-btn" style="background: none; border: none; font-family: ${FONT_TITLE}; font-size: 28px; color: #9CA3AF; cursor: pointer;">×</button>
+                </div>
+                <div style="font-family: ${FONT_TEXT}; font-size: 15px; color: #6B7280; line-height: 1.6; margin-bottom: 20px;">
+                    ${lines.map(l => `<div style="margin-bottom: 8px;">${l}</div>`).join('')}
+                </div>
+                ${ms > 0 ? `
+                <div style="margin-bottom: 16px;">
+                    <div style="height: 4px; background: #F0EEF4; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 100%; background: ${p.gradient}; animation: evaProgressBar ${ms/1000}s linear forwards;"></div>
+                    </div>
+                </div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    // ── Mostrar modal (sin fondo) ─────────────────────────────────────────────
+    function showToast(type, title, lines, duration, extra) {
         const prev = document.getElementById('eva-toast');
         if (prev) prev.remove();
 
-        const icons = { success: '✅', warning: '⚠️', error: '❌', blocked: '🔒' };
-        const icon  = icons[type] || '❕';
+        const ms = (duration === undefined) ? 5000 : duration;
 
-        const typeStyle = TOAST_STYLES[type] || TOAST_STYLES.error;
+        // Bloquear scroll del body
+        document.body.style.overflow = 'hidden';
 
-        const toast   = document.createElement('div');
-        toast.id      = 'eva-toast';
-        toast.style.cssText = TOAST_STYLES.base + typeStyle;
-
-        toast.innerHTML = `
-            <div style="font-size:22px;line-height:1;flex-shrink:0">${icon}</div>
-            <div style="flex:1">
-                <div style="font-weight:700;font-size:15px;margin-bottom:4px">${title}</div>
-                ${lines.map(l => `<div style="opacity:0.92;font-size:13px;line-height:1.5">${l}</div>`).join('')}
-                <div style="margin-top:8px;font-size:11px;opacity:0.7">Click para cerrar</div>
-            </div>
+        // Overlay transparente
+        const overlay = document.createElement('div');
+        overlay.id = 'eva-toast';
+        overlay.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 20px !important;
+            background: transparent !important;
+            animation: evaBackdropIn 0.3s ease !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
         `;
 
-        // Cerrar al hacer click
-        toast.addEventListener('click', () => dismissToast(toast));
+        // Seleccionar card según tipo
+        if (type === 'success' && extra && extra.percentage !== undefined) {
+            overlay.innerHTML = buildSuccessCard(extra, ms);
+        } else if (type === 'blocked' && extra) {
+            overlay.innerHTML = buildBlockedCard(extra, ms);
+        } else {
+            overlay.innerHTML = buildSimpleCard(type, title, lines, ms);
+        }
 
-        document.body.appendChild(toast);
+        // Cerrar al hacer click en el fondo
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) dismissToast(overlay);
+        });
 
-        // Auto-cerrar (si duration > 0)
-        const ms = (duration === undefined) ? 6000 : duration;
+        // Botón cerrar
+        const closeBtn = overlay.querySelector('.eva-close-btn');
+        if (closeBtn) closeBtn.addEventListener('click', function () { dismissToast(overlay); });
+
+        // Botón continuar
+        const contBtn = overlay.querySelector('.eva-continue-btn');
+        if (contBtn) {
+            contBtn.addEventListener('click', function () {
+                dismissToast(overlay);
+            });
+        }
+
+        document.body.appendChild(overlay);
+
+        // Auto-cerrar
         if (ms > 0) {
-            setTimeout(() => dismissToast(toast), ms);
+            setTimeout(function () { dismissToast(overlay); }, ms);
         }
     }
 
-    function dismissToast(toast) {
-        if (!toast || !toast.parentNode) return;
-        toast.style.animation = 'evaSlideOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
-    }
+    function dismissToast(el) {
+        if (!el || !el.parentNode) return;
 
-    // ── Control de bloqueo para mostrar mensaje múltiples veces ────────────────
-    // Esta variable permite que el toast de bloqueo se muestre CADA VEZ que se intente enviar
-    let blockToastActive = false;
+        // Restaurar scroll del body
+        document.body.style.overflow = '';
+
+        el.style.animation = 'evaBackdropOut 0.25s ease forwards';
+        const card = el.firstElementChild;
+        if (card) card.style.animation = 'evaCardOut 0.25s ease forwards';
+        setTimeout(function () { if (el.parentNode) el.remove(); }, 250);
+    }
 
     // ── Objeto global EVA ─────────────────────────────────────────────────────
     window.EVA = {
-        ovaId:    sessionStorage.getItem('eva_ova_id')    || null,
+        ovaId: sessionStorage.getItem('eva_ova_id') || null,
         courseId: sessionStorage.getItem('eva_course_id') || null,
 
         getCsrfToken: function () {
@@ -146,127 +328,85 @@
 
         getEvaluationKey: function () {
             const parts = window.location.pathname.split('/').filter(Boolean);
-            const idx   = parts.findIndex(p => p === 'evaluemos');
+            const idx = parts.findIndex(p => p === 'evaluemos');
             if (idx !== -1 && parts[idx + 1]) return parts[idx + 1];
             return parts[parts.length - 2] || 'evaluacion';
         },
 
-        // Flag para evitar envíos duplicados mientras uno está en curso
         _isSending: false,
 
         sendResult: function (score, total) {
-            const self    = this;
-            
-            // Evitar envíos múltiples simultáneos
+            const self = this;
+
             if (self._isSending) {
-                console.log('[EVA] ⏳ Envío en curso, ignorando solicitud duplicada');
+                console.log('[EVA] Envio en curso, ignorando solicitud duplicada');
                 return;
             }
-            
+
             const payload = {
                 evaluation_key: this.getEvaluationKey(),
-                score:          parseInt(score,  10),
-                total:          parseInt(total,  10),
-                ova_id:         this.ovaId    ? parseInt(this.ovaId,    10) : null,
-                course_id:      this.courseId ? parseInt(this.courseId, 10) : null,
+                score: parseInt(score, 10),
+                total: parseInt(total, 10),
+                ova_id: this.ovaId ? parseInt(this.ovaId, 10) : null,
+                course_id: this.courseId ? parseInt(this.courseId, 10) : null,
             };
 
-            console.log('[EVA] 📤 Enviando resultado:', payload);
-            
+            console.log('[EVA] Enviando resultado:', payload);
+
             self._isSending = true;
 
             fetch('/api/evaluations', {
-                method:      'POST',
+                method: 'POST',
                 credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-XSRF-TOKEN': this.getCsrfToken(),
-                    'Accept':       'application/json',
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify(payload),
             })
-            .then(function (response) {
-                return response.json().then(function (data) {
-                    return { ok: response.ok, status: response.status, data };
-                });
-            })
-            .then(function ({ ok, status, data }) {
-                // IMPORTANTE: Resetear flag ANTES de procesar la respuesta
-                // para permitir nuevos intentos después del toast de bloqueo
-                self._isSending = false;
-
-                // ── Límite de intentos alcanzado (403) ────────────────────────
-                if (status === 403 && data.limit_reached) {
-                    console.warn('[EVA] 🔒 Límite de intentos alcanzado:', data);
-                    
-                    // Mostrar el toast de bloqueo CADA VEZ que ocurra este error
-                    // No importa si ya se mostró antes, siempre se muestra
-                    showToast('blocked', '🔒 Límite de intentos alcanzado', [
-                        `Ya completaste el máximo de <b>${data.max_attempts} intentos</b> para esta evaluación.`,
-                        'No se puede registrar un nuevo resultado.',
-                        `<span style="opacity:0.7">Intento rechazado: ${payload.score}/${payload.total}</span>`
-                    ], 5000); // 5 segundos de duración
-
-                    return;
-                }
-
-                // ── Guardado exitoso ──────────────────────────────────────────
-                if (ok && data.success) {
-                    const ev    = data.evaluation;
-                    const pct   = ev.percentage;
-                    const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
-
-                    // ── Consola ──
-                    console.log('[EVA] ✅ Evaluación guardada:', ev);
-                    console.table({
-                        'Evaluación':  ev.evaluation_key,
-                        'Puntaje':     `${ev.score} / ${ev.total}`,
-                        'Porcentaje':  `${ev.percentage}%`,
-                        'Intento #':   ev.attempt,
-                        'Intentos restantes': data.attempts_left,
-                        'ID':          ev.id,
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        return { ok: response.ok, status: response.status, data };
                     });
+                })
+                .then(function ({ ok, status, data }) {
+                    self._isSending = false;
 
-                    // ── Toast: último intento vs. intentos restantes ──────────
-                    const extraLine = data.is_last_attempt
-                        ? `<b style="color:#ffe08a">⚠️ No te quedan más intentos para esta evaluación.</b>`
-                        : `<b>Intentos restantes:</b> ${data.attempts_left} de ${data.max_attempts}`;
+                    if (status === 403 && data.limit_reached) {
+                        console.warn('[EVA] Limite de intentos alcanzado:', data);
+                        showToast('blocked', '', [], 6000, {
+                            maxAttempts: data.max_attempts,
+                            score: payload.score,
+                            total: payload.total,
+                        });
+                        return;
+                    }
 
-                    showToast('success', `${emoji} ¡Evaluación guardada!`, [
-                        `<b>Puntaje:</b> ${ev.score} de ${ev.total} correctas`,
-                        `<b>Calificación:</b> ${ev.percentage}%`,
-                        `<b>Intento:</b> #${ev.attempt}`,
-                        extraLine,
-                        '<span style="opacity:0.75;font-size:12px">Recargando página…</span>',
-                    ], 3500);
+                    if (ok && data.success) {
+                        const ev = data.evaluation;
+                        console.log('[EVA] Evaluacion guardada:', ev);
+                        showToast('success', '', [], 6000, {
+                            score: ev.score,
+                            total: ev.total,
+                            percentage: ev.percentage,
+                            attempt: ev.attempt,
+                            attemptsLeft: data.attempts_left,
+                            maxAttempts: data.max_attempts,
+                            isLastAttempt: data.is_last_attempt,
+                        });
+                        return;
+                    }
 
-                    // ── Recargar página tras 3.5 s para que el servidor ──────
-                    // reconozca al mismo usuario y muestre el estado actualizado
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 3500);
-
-                    return;
-                }
-
-                // ── Otro error del servidor ───────────────────────────────────
-                const msg = data.message || `Error ${status}`;
-                console.warn('[EVA] ⚠️ No se pudo guardar:', msg, data);
-
-                showToast('error', '⚠️ No se pudo guardar', [
-                    msg,
-                    'Verifica tu conexión e inténtalo de nuevo.',
-                ]);
-            })
-            .catch(function (err) {
-                console.error('[EVA] ❌ Error de red:', err);
-                self._isSending = false; // Resetear flag en caso de error
-
-                showToast('error', '❌ Error de conexión', [
-                    'No se pudo contactar el servidor.',
-                    'Verifica tu conexión a internet.',
-                ]);
-            });
+                    const msg = data.message || `Error ${status}`;
+                    console.warn('[EVA] No se pudo guardar:', msg, data);
+                    showToast('error', 'Error al guardar', [msg, 'Verifique su conexion e intente nuevamente.'], 6000);
+                })
+                .catch(function (err) {
+                    console.error('[EVA] Error de red:', err);
+                    self._isSending = false;
+                    showToast('error', 'Error de conexion', ['No se pudo contactar el servidor.', 'Verifique su conexion a internet.'], 6000);
+                });
         },
 
         autoDetect: function () {
@@ -276,37 +416,20 @@
                 const buenas = document.getElementById('buenas');
                 if (!buenas) return;
 
-                // Permitir múltiples envíos si el usuario sigue intentando
-                // (el servidor responderá 403 cuando se alcance el límite)
-                let canSend = true;
-
-                // Observar cambios en value del input #buenas
                 const observer = new MutationObserver(function () {
                     const tabResultados = document.getElementById('tabresultados');
                     if (!tabResultados) return;
-                    const isVisible = tabResultados.style.display !== 'none'
-                        && tabResultados.offsetParent !== null;
+                    const isVisible = tabResultados.style.display !== 'none' && tabResultados.offsetParent !== null;
                     if (isVisible && buenas.value !== '') {
                         const score = parseInt(buenas.value, 10);
                         if (!isNaN(score)) {
-                            // Si ya se alcanzó el límite, canSend será false,
-                            // pero aún así intentamos enviar para que el servidor
-                            // responda con 403 y muestre el toast
-                            if (canSend || true) { // Siempre permitir intentar
-                                // No marcamos canSend = false aquí para permitir
-                                // múltiples intentos si el usuario sigue haciendo clic
-                                self.sendResult(score, 5);
-                            }
+                            self.sendResult(score, 5);
                         }
                     }
                 });
 
-                observer.observe(buenas, {
-                    attributes:      true,
-                    attributeFilter: ['value'],
-                });
+                observer.observe(buenas, { attributes: true, attributeFilter: ['value'] });
 
-                // Interceptar retroalimentacion() que muestra #tabresultados
                 if (typeof window.retroalimentacion === 'function') {
                     const originalRetro = window.retroalimentacion;
                     window.retroalimentacion = function () {
@@ -316,7 +439,6 @@
                             if (!tab) return;
                             const isVisible = tab.style.display !== 'none';
                             if (isVisible && buenas.value !== '') {
-                                // Siempre permitir intentar, incluso si ya se envió antes
                                 self.sendResult(parseInt(buenas.value, 10), 5);
                             }
                         }, 300);
@@ -326,7 +448,6 @@
         },
     };
 
-    // ── Iniciar auto-detección en páginas de evaluación ───────────────────────
     if (window.location.pathname.includes('evaluemos')) {
         window.EVA.autoDetect();
     }

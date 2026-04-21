@@ -19,19 +19,10 @@ const AREAS = [
 // ──────────────────────────────────────────────
 // OVAs disponibles en resources/js/Pages/OVA/
 // El valor (path) es la ruta que se abrirá con window.open.
-// Ajusta los paths según tus rutas reales de Laravel/Inertia.
 // ──────────────────────────────────────────────
 const OVA_RECURSOS = [
     // Matemáticas — Adición y Sustracción
-    { label: "Matemáticas · Inicio",                    path: "/ovas/matematicas/adicion-sustraccion/inicio" },
-    { label: "Matemáticas · Menú",                      path: "/ovas/matematicas/adicion-sustraccion/menu" },
-    { label: "Matemáticas · Propiedades Adición/Sust.", path: "/ovas/matematicas/adicion-sustraccion/adicion-sus-propiedades" },
-    { label: "Matemáticas · Adición dos cifras",        path: "/ovas/matematicas/adicion-sustraccion/adicion-dos-cifras" },
-    { label: "Matemáticas · Adición tres cifras",       path: "/ovas/matematicas/adicion-sustraccion/adicion-tres-cifras" },
-    { label: "Matemáticas · Adición hasta 19",          path: "/ovas/matematicas/adicion-sustraccion/adicion-hasta-19" },
-    { label: "Matemáticas · Sustracción dos cifras",    path: "/ovas/matematicas/adicion-sustraccion/sustraccion-dos-cifras" },
-    { label: "Matemáticas · Sustracción tres cifras",   path: "/ovas/matematicas/adicion-sustraccion/sustraccion-tres-cifras" },
-    { label: "Matemáticas · Sustracción hasta 19",      path: "/ovas/matematicas/adicion-sustraccion/sustraccion-hasta-19" },
+    { label: "Matemáticas · Adición y Sustracción",     path: "/ovas/matematicas/adicion-sustraccion/inicio" },
 ];
 
 export default function Create() {

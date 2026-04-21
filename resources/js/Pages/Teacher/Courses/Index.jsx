@@ -8,7 +8,7 @@ import {
     Bell, FileText, CheckSquare,
     Upload, Eye, Edit2,
     MessageSquare, PlusCircle, Video,
-    FileSpreadsheet, Printer, ListPlus, Award, Trash2
+    FileSpreadsheet, Printer, ListPlus, Award, Trash2, CheckCircle, Info, Trophy
 } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -42,6 +42,72 @@ const getCsrfToken = () => {
     }
     return '';
 };
+
+// ─── TOAST NOTIFICATION ───────────────────────────────────────────────────────
+function ToastNotification({ message, type, onClose }) {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    const bgColor = type === 'success' ? 'bg-green-50 border-green-300' : type === 'error' ? 'bg-red-50 border-red-300' : 'bg-blue-50 border-blue-300';
+    const textColor = type === 'success' ? 'text-green-800' : type === 'error' ? 'text-red-800' : 'text-blue-800';
+    
+    return (
+        <div className="fixed top-4 right-4 z-50 animate-slide-down">
+            <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg border ${bgColor}`}>
+                {type === 'success' && <CheckCircle className="w-4 h-4 text-green-600" />}
+                {type === 'error' && <AlertCircle className="w-4 h-4 text-red-600" />}
+                {type === 'info' && <Info className="w-4 h-4 text-blue-600" />}
+                <span className={`text-sm font-medium ${textColor}`}>{message}</span>
+            </div>
+        </div>
+    );
+}
+
+// ─── MODAL CONFIRMACIÓN RETIRAR OVA ───────────────────────────────────────────
+function RemoveOvaConfirmModal({ ova, onConfirm, onClose }) {
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" style={{ animation: "modalIn 0.2s ease-out" }}>
+                <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #FFD23F)" }} />
+                <div className="p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#FEE2E2" }}>
+                            <Trash2 className="w-5 h-5" style={{ color: "#EE4266" }} />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900">Retirar OVA del curso</h3>
+                            <p className="text-sm text-slate-500">El recurso dejará de estar disponible para los estudiantes</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-4 rounded-xl border" style={{ backgroundColor: "#FEE2E210", borderColor: "#EE426630" }}>
+                        <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: "#F3E8FF" }}>
+                            <Video className="w-5 h-5" style={{ color: "#540D6E" }} />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-slate-900">{ova.tematica}</p>
+                            <p className="text-xs text-slate-500">{ova.area}</p>
+                        </div>
+                    </div>
+                    <p className="text-sm text-slate-600">¿Confirmas retirar este OVA del curso? Los estudiantes ya no podrán acceder a este recurso.</p>
+                    <div className="flex gap-3">
+                        <button onClick={onClose} className="flex-1 py-2.5 text-sm font-semibold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                            Cancelar
+                        </button>
+                        <button onClick={onConfirm}
+                            className="flex-1 py-2.5 text-sm font-bold text-white rounded-lg transition-all"
+                            style={{ backgroundColor: "#EE4266" }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
+                            Retirar OVA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // ─── MODAL CREDENCIALES ───────────────────────────────────────────────────────
 function CredentialsListModal({ credentials, course, onClose }) {
@@ -473,20 +539,20 @@ function AddStudentModal({ course, onClose, onSuccess }) {
 function RemoveStudentModal({ student, onConfirm, onClose }) {
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" style={{ animation: "modalIn 0.2s ease-out" }}>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" style={{ animation: "modalIn 0.2s ease-out" }}>
                 <div className="h-1" style={{ background: "linear-gradient(to right, #EE4266, #FFD23F)" }} />
                 <div className="p-6 space-y-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#FEE2E2" }}>
-                            <UserX className="w-4 h-4" style={{ color: "#EE4266" }} />
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#FEE2E2" }}>
+                            <UserX className="w-5 h-5" style={{ color: "#EE4266" }} />
                         </div>
                         <div>
-                            <h3 className="text-base font-bold text-slate-900">Retirar estudiante</h3>
-                            <p className="text-xs text-slate-500">El estudiante seguirá registrado en el sistema</p>
+                            <h3 className="text-lg font-bold text-slate-900">Retirar estudiante</h3>
+                            <p className="text-sm text-slate-500">El estudiante seguirá registrado en el sistema</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl border" style={{ backgroundColor: "#FEE2E210", borderColor: "#EE426630" }}>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                    <div className="flex items-center gap-3 p-4 rounded-xl border" style={{ backgroundColor: "#FEE2E210", borderColor: "#EE426630" }}>
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
                             style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
                             {student.name.charAt(0).toUpperCase()}
                         </div>
@@ -496,10 +562,10 @@ function RemoveStudentModal({ student, onConfirm, onClose }) {
                         </div>
                     </div>
                     <p className="text-sm text-slate-600">¿Confirmas retirar a este estudiante del curso? Podrás volver a agregarlo después.</p>
-                    <div className="flex gap-2">
-                        <button onClick={onClose} className="flex-1 py-2.5 text-sm font-semibold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">Cancelar</button>
+                    <div className="flex gap-3">
+                        <button onClick={onClose} className="flex-1 py-2.5 text-sm font-semibold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">Cancelar</button>
                         <button onClick={onConfirm}
-                            className="flex-1 py-2.5 text-sm font-bold text-white rounded-xl transition-all"
+                            className="flex-1 py-2.5 text-sm font-bold text-white rounded-lg transition-all"
                             style={{ backgroundColor: "#EE4266" }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
@@ -512,15 +578,26 @@ function RemoveStudentModal({ student, onConfirm, onClose }) {
     );
 }
 
-// ─── MODAL ASIGNAR OVAS ───────────────────────────────────────────────────────
+// ─── MODAL ASIGNAR OVAS ─────────────────────────────────
 function AssignOvaModal({ course, onClose, onSuccess }) {
     const [availableOvas, setAvailableOvas] = useState([]);
     const [selectedOvas, setSelectedOvas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedArea, setSelectedArea] = useState(null);
+    const [toast, setToast] = useState(null);
+
+    const AREAS = ['Matemáticas', 'Español', 'Ciencias Sociales', 'Ciencias Naturales', 'Inglés'];
+    
+    const MORADO = { color: '#540D6E', bg: '#F3E8FF' };
 
     useEffect(() => { loadAvailableOvas(); }, [course.id]);
+
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const loadAvailableOvas = async () => {
         setLoading(true);
@@ -533,11 +610,26 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
             if (response.status === 419) { window.location.reload(); return; }
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+            
             let ovasArray = [];
             if (Array.isArray(data)) ovasArray = data;
             else if (data?.data && Array.isArray(data.data)) ovasArray = data.data;
-            setAvailableOvas(ovasArray);
+            
+            const validOvas = ovasArray.filter(ova => ova.url && ova.url.trim() !== '');
+            setAvailableOvas(validOvas);
+            
+            // Seleccionar la primera área disponible por defecto
+            const ovasByAreaTemp = {};
+            validOvas.forEach(ova => {
+                if (!ovasByAreaTemp[ova.area]) ovasByAreaTemp[ova.area] = [];
+                ovasByAreaTemp[ova.area].push(ova);
+            });
+            const firstArea = AREAS.find(area => ovasByAreaTemp[area] && ovasByAreaTemp[area].length > 0);
+            if (firstArea) {
+                setSelectedArea(firstArea);
+            }
         } catch (error) {
+            console.error('Error loading OVAs:', error);
             setError('No se pudieron cargar los OVAs disponibles.');
             setAvailableOvas([]);
         } finally {
@@ -545,37 +637,100 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
         }
     };
 
-    const handleAssign = () => {
-        if (selectedOvas.length === 0) return;
+    // Agrupar OVAs por área
+    const ovasByArea = {};
+    availableOvas.forEach(ova => {
+        if (!ovasByArea[ova.area]) ovasByArea[ova.area] = [];
+        ovasByArea[ova.area].push(ova);
+    });
+
+    // Obtener áreas que tienen OVAs
+    const areasWithOvas = AREAS.filter(area => ovasByArea[area] && ovasByArea[area].length > 0);
+
+    const handleAssign = async () => {
+        if (selectedOvas.length === 0) {
+            showToast('Selecciona al menos un OVA para asignar', 'error');
+            return;
+        }
         setSubmitting(true);
         setError(null);
-        router.post(
-            route('teacher.courses.ovas.assign', course.id),
-            { ova_ids: selectedOvas },
-            {
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    if (onSuccess) onSuccess(null);
-                    onClose();
-                },
-                onError: (errors) => {
-                    setError(Object.values(errors)[0] || 'Error al asignar los OVAs');
-                    setSubmitting(false);
-                },
-                onFinish: () => {
-                    setSubmitting(false);
+        try {
+            const response = await fetch(
+                route('teacher.courses.ovas.assign', course.id),
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ ova_ids: selectedOvas }),
                 }
+            );
+
+            if (response.status === 419) { window.location.reload(); return; }
+            if (response.status === 403) { showToast('No tienes permiso para realizar esta acción', 'error'); return; }
+
+            const result = await response.json();
+
+            if (response.ok && result?.success) {
+                if (onSuccess) onSuccess(result.data ?? null);
+                onClose();
+                setTimeout(() => {
+                    const toastEvent = new CustomEvent('showToast', { 
+                        detail: { message: `${selectedOvas.length} OVA(s) asignado(s) correctamente`, type: 'success' }
+                    });
+                    window.dispatchEvent(toastEvent);
+                }, 300);
+            } else {
+                const errorMsg = result?.message || 'Error al asignar los OVAs';
+                showToast(errorMsg, 'error');
             }
-        );
+        } catch (err) {
+            showToast('Error de red al asignar los OVAs.', 'error');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const toggleSelect = (ovaId) => {
-        setSelectedOvas(prev => prev.includes(ovaId) ? prev.filter(id => id !== ovaId) : [...prev, ovaId]);
+        setSelectedOvas(prev => prev.includes(ovaId) 
+            ? prev.filter(id => id !== ovaId) 
+            : [...prev, ovaId]
+        );
+    };
+
+    const selectAllInArea = (area, select) => {
+        const areaOvas = ovasByArea[area] || [];
+        const areaOvaIds = areaOvas.map(ova => ova.id);
+        if (select) {
+            const newSelected = [...selectedOvas];
+            areaOvaIds.forEach(id => {
+                if (!newSelected.includes(id)) newSelected.push(id);
+            });
+            setSelectedOvas(newSelected);
+        } else {
+            setSelectedOvas(prev => prev.filter(id => !areaOvaIds.includes(id)));
+        }
+    };
+
+    const isAllSelectedInArea = (area) => {
+        const areaOvas = ovasByArea[area] || [];
+        if (areaOvas.length === 0) return false;
+        return areaOvas.every(ova => selectedOvas.includes(ova.id));
+    };
+
+    const getSelectedCount = (area) => {
+        const areaOvas = ovasByArea[area] || [];
+        return areaOvas.filter(ova => selectedOvas.includes(ova.id)).length;
     };
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden" style={{ animation: "modalIn 0.2s ease-out" }}>
+            {toast && <ToastNotification message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden" style={{ animation: "modalIn 0.2s ease-out" }}>
                 <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
                 <div className="px-6 pt-5 pb-4 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -584,110 +739,249 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-slate-900">Asignar OVAs al curso</h2>
-                            <p className="text-sm text-slate-500">Selecciona los recursos que estarán disponibles</p>
+                            <p className="text-sm text-slate-500">Selecciona los recursos por área temática</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
-                <div className="px-6 py-4 overflow-y-auto" style={{ maxHeight: "calc(85vh - 180px)" }}>
-                    {loading ? (
-                        <div className="flex justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#540D6E" }} />
-                        </div>
-                    ) : error ? (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#FEE2E2" }}>
-                                <AlertCircle className="w-8 h-8" style={{ color: "#EE4266" }} />
-                            </div>
-                            <p className="text-base font-semibold text-slate-700 mb-2">Error</p>
-                            <p className="text-sm text-slate-500 mb-4">{error}</p>
-                            <button onClick={loadAvailableOvas} className="px-4 py-2 text-sm font-semibold text-white rounded-lg" style={{ backgroundColor: "#540D6E" }}>
-                                Reintentar
-                            </button>
-                        </div>
-                    ) : availableOvas.length === 0 ? (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#F3E8FF" }}>
-                                <Layers className="w-8 h-8" style={{ color: "#540D6E" }} />
-                            </div>
-                            <p className="text-base font-semibold text-slate-700 mb-1">No hay OVAs disponibles</p>
-                            <p className="text-sm text-slate-400">Todos los OVAs ya están asignados a este curso</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {availableOvas.map(ova => (
-                                <div key={ova.id} onClick={() => toggleSelect(ova.id)}
-                                    className={`cursor-pointer border-2 rounded-xl p-4 transition-all ${selectedOvas.includes(ova.id) ? 'border-purple-600 bg-purple-50' : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'}`}>
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: selectedOvas.includes(ova.id) ? "#540D6E20" : "#F1F5F9" }}>
-                                            <Video className="w-5 h-5" style={{ color: selectedOvas.includes(ova.id) ? "#540D6E" : "#64748B" }} />
+
+                <div className="flex h-full" style={{ maxHeight: "calc(90vh - 130px)" }}>
+                    {/* Sidebar de áreas - SIN el botón "Todas las áreas" */}
+                    <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto flex-shrink-0">
+                        <div className="p-3">
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 px-2">Áreas</div>
+                            {areasWithOvas.map(area => {
+                                const areaOvas = ovasByArea[area];
+                                const selectedCount = getSelectedCount(area);
+                                
+                                return (
+                                    <button
+                                        key={area}
+                                        onClick={() => setSelectedArea(area)}
+                                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all mb-1 ${
+                                            selectedArea === area 
+                                                ? 'bg-white shadow-sm border' 
+                                                : 'hover:bg-slate-50'
+                                        }`}
+                                        style={selectedArea === area ? { borderColor: `${MORADO.color}30`, color: MORADO.color } : {}}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: MORADO.color }} />
+                                            <span className="flex-1 truncate">{area}</span>
+                                            <span className="text-xs font-mono" style={{ color: MORADO.color }}>
+                                                {areaOvas.length}
+                                            </span>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-bold uppercase tracking-wide mb-0.5" style={{ color: "#540D6E" }}>
-                                                {ova.area}
-                                            </p>
-                                            <h4 className="font-bold text-slate-900">{ova.tematica}</h4>
-                                            <p className="text-sm text-slate-500 line-clamp-2 mt-1">{ova.description || "Sin descripción"}</p>
-                                        </div>
-                                        <input type="checkbox" checked={selectedOvas.includes(ova.id)} onChange={() => {}}
-                                            className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 flex-shrink-0 mt-0.5" />
-                                    </div>
+                                        {selectedCount > 0 && (
+                                            <div className="text-xs mt-1 text-green-600">
+                                                {selectedCount} seleccionado{selectedCount !== 1 ? 's' : ''}
+                                            </div>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Contenido de OVAs - SOLO muestra el área seleccionada */}
+                    <div className="flex-1 overflow-y-auto p-6">
+                        {loading ? (
+                            <div className="flex justify-center py-12">
+                                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#540D6E" }} />
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#FEE2E2" }}>
+                                    <AlertCircle className="w-8 h-8" style={{ color: "#EE4266" }} />
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <p className="text-base font-semibold text-slate-700 mb-2">Error</p>
+                                <p className="text-sm text-slate-500 mb-4">{error}</p>
+                                <button onClick={loadAvailableOvas} className="px-4 py-2 text-sm font-semibold text-white rounded-lg" style={{ backgroundColor: "#540D6E" }}>
+                                    Reintentar
+                                </button>
+                            </div>
+                        ) : availableOvas.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#F3E8FF" }}>
+                                    <Layers className="w-8 h-8" style={{ color: "#540D6E" }} />
+                                </div>
+                                <p className="text-base font-semibold text-slate-700 mb-1">No hay OVAs disponibles</p>
+                                <p className="text-sm text-slate-400">
+                                    No hay OVAs con URL configurada para asignar
+                                </p>
+                            </div>
+                        ) : selectedArea && ovasByArea[selectedArea] ? (
+                            // Mostrar solo el área seleccionada
+                            (() => {
+                                const area = selectedArea;
+                                const ovas = ovasByArea[area];
+                                const allSelected = isAllSelectedInArea(area);
+                                const selectedCount = getSelectedCount(area);
+                                
+                                return (
+                                    <div className="border rounded-xl overflow-hidden" style={{ borderColor: `${MORADO.color}20` }}>
+                                        <div className="px-4 py-3 flex items-center justify-between" style={{ backgroundColor: MORADO.bg }}>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: MORADO.color }} />
+                                                <h3 className="font-bold text-sm" style={{ color: MORADO.color }}>{area}</h3>
+                                                <span className="text-xs text-slate-500">({ovas.length} OVA{ovas.length !== 1 ? 's' : ''})</span>
+                                                {selectedCount > 0 && (
+                                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
+                                                        {selectedCount} seleccionado{selectedCount !== 1 ? 's' : ''}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {ovas.length > 0 && (
+                                                <button
+                                                    onClick={() => selectAllInArea(area, !allSelected)}
+                                                    className="text-xs px-2 py-1 rounded-md transition-all flex items-center gap-1"
+                                                    style={{ backgroundColor: 'white', color: MORADO.color }}
+                                                >
+                                                    {allSelected ? <X className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                                                    {allSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="p-4 space-y-3">
+                                            {ovas.map(ova => (
+                                                <div key={ova.id} 
+                                                    onClick={() => toggleSelect(ova.id)}
+                                                    className={`cursor-pointer border-2 rounded-xl p-4 transition-all ${
+                                                        selectedOvas.includes(ova.id) 
+                                                            ? 'border-purple-600 bg-purple-50' 
+                                                            : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 rounded-lg flex-shrink-0" style={{ 
+                                                            backgroundColor: selectedOvas.includes(ova.id) ? "#540D6E20" : "#F1F5F9" 
+                                                        }}>
+                                                            <Video className="w-5 h-5" style={{ 
+                                                                color: selectedOvas.includes(ova.id) ? "#540D6E" : "#64748B" 
+                                                            }} />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: MORADO.color }}>
+                                                                    {ova.area}
+                                                                </p>
+                                                                {ova.url && (
+                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
+                                                                        Disponible
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <h4 className="font-bold text-slate-900">{ova.tematica}</h4>
+                                                            <p className="text-sm text-slate-500 line-clamp-2 mt-1">
+                                                                {ova.description || "Sin descripción"}
+                                                            </p>
+                                                        </div>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={selectedOvas.includes(ova.id)} 
+                                                            onChange={() => {}}
+                                                            className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 flex-shrink-0 mt-0.5" 
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()
+                        ) : (
+                            <div className="text-center py-12">
+                                <p className="text-base text-slate-500">Selecciona un área del menú lateral</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="px-6 py-4 border-t border-slate-100 flex gap-3 justify-end">
-                    <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                        Cancelar
-                    </button>
-                    <button onClick={handleAssign} disabled={selectedOvas.length === 0 || submitting || loading}
-                        className="px-4 py-2 text-sm font-bold text-white rounded-lg transition-all disabled:opacity-40 flex items-center gap-2"
-                        style={{ backgroundColor: "#540D6E" }}
-                        onMouseEnter={e => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = "#6B1689")}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
-                        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
-                        Asignar ({selectedOvas.length})
-                    </button>
+
+                <div className="px-6 py-4 border-t border-slate-100 flex gap-3 justify-between items-center">
+                    <div className="text-sm text-slate-500">
+                        {selectedOvas.length > 0 && (
+                            <span className="flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                {selectedOvas.length} OVA{selectedOvas.length !== 1 ? 's' : ''} seleccionado{selectedOvas.length !== 1 ? 's' : ''}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex gap-3">
+                        <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                            Cancelar
+                        </button>
+                        <button 
+                            onClick={handleAssign} 
+                            disabled={selectedOvas.length === 0 || submitting || loading}
+                            className="px-4 py-2 text-sm font-bold text-white rounded-lg transition-all disabled:opacity-40 flex items-center gap-2 shadow-sm hover:shadow-md"
+                            style={{ backgroundColor: "#540D6E" }}
+                            onMouseEnter={e => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = "#6B1689")}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
+                            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
+                            Asignar ({selectedOvas.length})
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-// ─── RENDIMIENTO ACADÉMICO ────────────────────────────────────────────────────
-function RendimientoTab({ course, students, ovas }) {
-    const [evaluations, setEvaluations] = useState([]);
-    const [loading, setLoading] = useState(false);
+// ─── RENDIMIENTO ACADÉMICO CON PODIO TRASLÚCIDO ───────────────────────────────
+function RendimientoTab({ course }) {
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [top3, setTop3] = useState([]);
+    const [ranking, setRanking] = useState([]);
+    const [stats, setStats] = useState({ total_evaluations: 0, total_students: 0 });
 
     useEffect(() => {
-        const loadEvaluations = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const response = await fetch(`/teacher/evaluations?course_id=${course.id}`, {
-                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    credentials: 'same-origin'
-                });
-                if (response.status === 419) { window.location.reload(); return; }
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                let evalArray = [];
-                if (Array.isArray(data)) evalArray = data;
-                else if (data?.data && Array.isArray(data.data)) evalArray = data.data;
-                setEvaluations(evalArray);
-            } catch (err) {
-                setError('No se pudieron cargar los datos de evaluación.');
-                setEvaluations([]);
-            } finally {
-                setLoading(false);
-            }
-        };
         loadEvaluations();
     }, [course.id]);
+
+    const loadEvaluations = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/teacher/courses/${course.id}/evaluations`, {
+                headers: { 
+                    'Accept': 'application/json', 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': getCsrfToken()
+                },
+                credentials: 'same-origin'
+            });
+            
+            if (response.status === 419) { 
+                window.location.reload(); 
+                return; 
+            }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                setTop3(result.data.top3 || []);
+                setRanking(result.data.ranking || []);
+                setStats({
+                    total_evaluations: result.data.total_evaluations || 0,
+                    total_students: result.data.total_students || 0
+                });
+            } else {
+                throw new Error(result.message || 'Error al cargar los datos');
+            }
+        } catch (err) {
+            console.error('Error loading evaluations:', err);
+            setError('No se pudieron cargar los datos de evaluación.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -701,14 +995,23 @@ function RendimientoTab({ course, students, ovas }) {
     if (error) {
         return (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
-                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#FEE2E2" }}>
+                    <AlertCircle className="w-8 h-8" style={{ color: "#EE4266" }} />
+                </div>
                 <p className="text-base font-semibold text-gray-700 mb-2">Error</p>
-                <p className="text-sm text-gray-500">{error}</p>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <button 
+                    onClick={loadEvaluations}
+                    className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all"
+                    style={{ backgroundColor: "#540D6E" }}
+                >
+                    Reintentar
+                </button>
             </div>
         );
     }
 
-    if (evaluations.length === 0) {
+    if (stats.total_evaluations === 0) {
         return (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
                 <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
@@ -721,162 +1024,146 @@ function RendimientoTab({ course, students, ovas }) {
         );
     }
 
-    // Calcular estadísticas resumen
-    const totalEvaluations = evaluations.length;
-    const uniqueStudents = new Set(evaluations.map(e => e.student?.id)).size;
-    const uniqueOvas = new Set(evaluations.map(e => e.ova?.id)).size;
-    const avgPercentage = evaluations.length > 0
-        ? (evaluations.reduce((sum, e) => sum + (e.percentage || 0), 0) / evaluations.length).toFixed(1)
-        : 0;
-
-    // Agrupar por área de OVA
-    const areaGroups = {};
-    evaluations.forEach(ev => {
-        const area = ev.ova?.area || "Sin área";
-        if (!areaGroups[area]) {
-            areaGroups[area] = { evals: [], avg: 0 };
-        }
-        areaGroups[area].evals.push(ev);
-    });
-
-    // Calcular promedio por área
-    const colorPalette = ["#540D6E", "#EE4266", "#0EAD69", "#3BCEAC", "#FFD23F"];
-    const areaColors = {};
-    Object.keys(areaGroups).forEach((area, idx) => {
-        const evals = areaGroups[area].evals;
-        areaGroups[area].avg = evals.length > 0
-            ? (evals.reduce((sum, e) => sum + (e.percentage || 0), 0) / evals.length)
-            : 0;
-        areaColors[area] = colorPalette[idx % colorPalette.length];
-    });
-
     return (
         <div className="space-y-6 animate-fade-in">
-            {/* Resumen de estadísticas */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: "Total Evaluaciones", value: totalEvaluations, Icon: FileText, bg: "#F3E8FF", color: "#540D6E" },
-                    { label: "Promedio General", value: `${avgPercentage}%`, Icon: Award, bg: "#E8F5F0", color: "#0EAD69" },
-                    { label: "Estudiantes", value: uniqueStudents, Icon: Users, bg: "#FEE2E2", color: "#EE4266" },
-                    { label: "OVAs Evaluados", value: uniqueOvas, Icon: Layers, bg: "#FFF4E0", color: "#FFD23F" },
-                ].map(({ label, value, Icon, bg, color }) => (
-                    <div key={label} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg" style={{ backgroundColor: bg }}>
-                                <Icon className="w-5 h-5" style={{ color }} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
-                                <p className="text-2xl font-bold mt-1" style={{ color }}>{value}</p>
-                            </div>
+            {/* Podio de Honor con escalones traslúcidos */}
+            {top3.length > 0 && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-3">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: "#FFF4E0" }}>
+                            <Trophy className="w-5 h-5" style={{ color: "#4B5563" }} />
                         </div>
+                        <h2 className="text-lg font-bold text-gray-900">Podio de Honor</h2>
                     </div>
-                ))}
-            </div>
-
-            {/* Promedio por área */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 flex items-center gap-3">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
-                        <BarChart3 className="w-5 h-5" style={{ color: "#540D6E" }} />
-                    </div>
-                    <h2 className="text-lg font-bold text-gray-900">Desempeño por Área</h2>
-                </div>
-                <div className="p-6 space-y-4">
-                    {Object.entries(areaGroups).map(([area, group]) => (
-                        <div key={area}>
-                            <div className="flex items-center justify-between mb-2">
-                                <p className="text-sm font-semibold text-gray-700">{area}</p>
-                                <p className="text-sm font-bold" style={{ color: areaColors[area] }}>
-                                    {group.avg.toFixed(1)}%
-                                </p>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                <div
-                                    className="h-full rounded-full transition-all"
-                                    style={{
-                                        width: `${group.avg}%`,
-                                        backgroundColor: areaColors[area]
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Tabla de evaluaciones */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 flex items-center gap-3">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#FFF4E0" }}>
-                        <FileText className="w-5 h-5" style={{ color: "#FFD23F" }} />
-                    </div>
-                    <h2 className="text-lg font-bold text-gray-900">Detalle de Evaluaciones</h2>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                {["Estudiante", "Área", "Temática", "Puntaje", "Total", "Porcentaje", "Intento", "Fecha"].map(h => (
-                                    <th key={h} className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                        {h}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {evaluations.map(ev => (
-                                <tr key={ev.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                                                style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
-                                                {ev.student?.name?.charAt(0).toUpperCase() || "?"}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-900">{ev.student?.name || "Desconocido"}</p>
-                                                <p className="text-xs text-gray-500">@{ev.student?.username || "—"}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm font-medium text-gray-700">{ev.ova?.area || "—"}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-600">{ev.ova?.tematica || "—"}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm font-semibold text-gray-900">{ev.score || 0}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-600">{ev.total || 0}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-bold" style={{ color: ev.percentage >= 70 ? "#0EAD69" : ev.percentage >= 50 ? "#FFD23F" : "#EE4266" }}>
-                                                {ev.percentage ? ev.percentage.toFixed(1) : 0}%
+                    <div className="px-6 py-8">
+                        {/* Escalones del podio traslúcidos con borde sólido */}
+                        <div className="flex items-end justify-center gap-0">
+                            {/* Segundo lugar (izquierda) */}
+                            {top3[1] && (
+                                <div className="flex-1 text-center">
+                                    <div className="mb-3">
+                                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: "#F3F4F6" }}>
+                                            <span className="text-2xl font-bold text-gray-600">
+                                                {top3[1].student.name.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-600">{ev.attempt || 1}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-500">
-                                            {ev.created_at ? new Date(ev.created_at).toLocaleDateString('es-ES') : "—"}
-                                        </span>
-                                    </td>
+                                        <p className="font-bold text-gray-800 text-sm mt-2">{top3[1].student.name}</p>
+                                        <p className="text-xs text-gray-500">@{top3[1].student.username}</p>
+                                        <p className="text-xl font-bold text-gray-600 mt-1">{top3[1].average_percentage}%</p>
+                                    </div>
+                                    <div className="h-28 rounded-t-xl flex items-end justify-center pb-2 border-2 border-b-0" style={{ backgroundColor: "rgba(156, 163, 175, 0.3)", borderColor: "#9CA3AF" }}>
+                                        <span className="text-gray-700 font-bold text-lg">2°</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Primer lugar (centro, más alto) */}
+                            {top3[0] && (
+                                <div className="flex-1 text-center relative" style={{ zIndex: 10 }}>
+                                    <div className="mb-3">
+                                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto border-4" style={{ borderColor: "#FFD23F", backgroundColor: "#FEF3C7" }}>
+                                            <span className="text-3xl font-bold text-gray-700">
+                                                {top3[0].student.name.charAt(0).toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                                            <Trophy className="w-8 h-8" style={{ color: "#FFD23F" }} />
+                                        </div>
+                                        <p className="font-bold text-gray-800 text-base mt-2 pt-2">{top3[0].student.name}</p>
+                                        <p className="text-xs text-gray-500">@{top3[0].student.username}</p>
+                                        <p className="text-2xl font-bold" style={{ color: "#FFD23F" }}>{top3[0].average_percentage}%</p>
+                                    </div>
+                                    <div className="h-36 rounded-t-xl flex items-end justify-center pb-2 border-2 border-b-0" style={{ backgroundColor: "rgba(255, 210, 63, 0.3)", borderColor: "#FFD23F" }}>
+                                        <span className="text-gray-700 font-bold text-xl">1°</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Tercer lugar (derecha) */}
+                            {top3[2] && (
+                                <div className="flex-1 text-center">
+                                    <div className="mb-3">
+                                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: "#FEE2E2" }}>
+                                            <span className="text-2xl font-bold" style={{ color: "#EE4266" }}>
+                                                {top3[2].student.name.charAt(0).toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <p className="font-bold text-gray-800 text-sm mt-2">{top3[2].student.name}</p>
+                                        <p className="text-xs text-gray-500">@{top3[2].student.username}</p>
+                                        <p className="text-xl font-bold" style={{ color: "#EE4266" }}>{top3[2].average_percentage}%</p>
+                                    </div>
+                                    <div className="h-20 rounded-t-xl flex items-end justify-center pb-2 border-2 border-b-0" style={{ backgroundColor: "rgba(238, 66, 102, 0.3)", borderColor: "#EE4266" }}>
+                                        <span className="text-gray-700 font-bold text-lg">3°</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Ranking de Estudiantes */}
+            {ranking.length > 0 && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-3">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                            <BarChart3 className="w-5 h-5" style={{ color: "#540D6E" }} />
+                        </div>
+                        <h2 className="text-lg font-bold text-gray-900">Ranking de Estudiantes</h2>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">#</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Estudiante</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Usuario</th>
+                                    <th className="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Promedio</th>
+                                    <th className="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Evaluaciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {ranking.map((item, idx) => (
+                                    <tr key={item.student.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <span className="font-bold text-gray-400">{idx + 4}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                                                    style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
+                                                    {item.student.name.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className="text-sm font-semibold text-gray-900">{item.student.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-mono text-gray-600">@{item.student.username}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-bold"
+                                                style={{ 
+                                                    backgroundColor: item.average_percentage >= 70 ? '#E8F5F0' : item.average_percentage >= 50 ? '#FEF3C7' : '#FEE2E2',
+                                                    color: item.average_percentage >= 70 ? '#0EAD69' : item.average_percentage >= 50 ? '#4B5563' : '#EE4266'
+                                                }}>
+                                                {item.average_percentage}%
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="text-sm text-gray-600">{item.total_evaluations}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="px-6 py-3 border-t border-gray-200 bg-gray-50">
+                        <p className="text-sm text-gray-600">
+                            Mostrando <strong>{ranking.length}</strong> estudiante{ranking.length !== 1 ? 's' : ''} en el ranking
+                        </p>
+                    </div>
                 </div>
-                <div className="px-6 py-3 border-t border-gray-200 bg-gray-50">
-                    <p className="text-sm text-gray-600">
-                        Mostrando <strong>{evaluations.length}</strong> evaluación{evaluations.length !== 1 ? "es" : ""}
-                    </p>
-                </div>
-            </div>
+            )}
         </div>
     );
 }
@@ -891,12 +1178,26 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
     const [generatedCredentials, setGeneratedCredentials] = useState([]);
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
     const [studentToRemove, setStudentToRemove] = useState(null);
+    const [ovaToRemove, setOvaToRemove] = useState(null);
     const [search, setSearch] = useState("");
     const [ovas, setOvas] = useState(courseOvas);
     const [showAssignOvaModal, setShowAssignOvaModal] = useState(false);
+    const [toast, setToast] = useState(null);
 
-    // Usar el hook del sidebar
     const [collapsed] = useSidebarState();
+
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    useEffect(() => {
+        const handleToast = (e) => {
+            showToast(e.detail.message, e.detail.type);
+        };
+        window.addEventListener('showToast', handleToast);
+        return () => window.removeEventListener('showToast', handleToast);
+    }, []);
 
     const loadOvas = async () => {
         try {
@@ -923,23 +1224,23 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
         setShowCredentialsModal(true);
     };
 
-    const confirmRemove = () => {
+    const confirmRemoveStudent = () => {
         if (!studentToRemove) return;
         router.delete(
             route("teacher.courses.students.destroy", [course.id, studentToRemove.id]),
-            { onSuccess: () => setStudentToRemove(null) }
+            { 
+                onSuccess: () => {
+                    setStudentToRemove(null);
+                    showToast('Estudiante retirado del curso', 'success');
+                }
+            }
         );
     };
 
-    const handleOvaSuccess = async (data) => {
-        if (data && Array.isArray(data)) setOvas(data);
-        else await loadOvas();
-    };
-
-    const handleRemoveOva = async (ovaId) => {
-        if (!confirm('¿Remover este OVA del curso?')) return;
+    const confirmRemoveOva = async () => {
+        if (!ovaToRemove) return;
         try {
-            const response = await fetch(`/teacher/courses/${course.id}/ovas/${ovaId}`, {
+            const response = await fetch(`/teacher/courses/${course.id}/ovas/${ovaToRemove.id}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': getCsrfToken(),
@@ -950,17 +1251,24 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                 credentials: 'same-origin'
             });
             if (response.status === 419) { alert('Sesión expirada. Recargando...'); window.location.reload(); return; }
-            if (response.status === 403) { alert('No tienes permiso para realizar esta acción.'); return; }
+            if (response.status === 403) { showToast('No tienes permiso para realizar esta acción', 'error'); return; }
             const result = await response.json().catch(() => null);
             if (response.ok && result?.success) {
                 if (result.data && Array.isArray(result.data)) setOvas(result.data);
                 else await loadOvas();
+                setOvaToRemove(null);
+                showToast('OVA retirado del curso', 'success');
             } else {
-                alert(result?.message || `Error ${response.status} al remover el OVA`);
+                showToast(result?.message || `Error al remover el OVA`, 'error');
             }
         } catch (error) {
-            alert('Error de red al remover el OVA.');
+            showToast('Error de red al remover el OVA', 'error');
         }
+    };
+
+    const handleOvaSuccess = async (data) => {
+        if (data && Array.isArray(data)) setOvas(data);
+        else await loadOvas();
     };
 
     const filteredStudents = students.filter(s =>
@@ -974,21 +1282,15 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
         { id: "rendimiento", label: "Rendimiento Académico", icon: BarChart3, count: null },
     ];
 
-    const recentActivities = [
-        { id: 1, description: "María González se unió al curso", time: "Hace 2 horas", icon: UserPlus, color: "#0EAD69" },
-        { id: 2, description: "Nuevo material: Guía de ejercicios", time: "Hace 5 horas", icon: Upload, color: "#FFD23F" },
-        { id: 3, description: "Evaluación parcial calificada", time: "Ayer", icon: Award, color: "#540D6E" },
-    ];
-
     return (
         <>
             <Head title={`${GRADE_LABELS[course.grade] ?? course.grade} — Sección ${course.section}`} />
 
-            {/* AppSidebar compartido */}
             <AppSidebar currentRoute="teacher.courses.show" />
 
-            {/* Main content */}
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
+                {toast && <ToastNotification message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                
                 <div className="py-8 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-7xl mx-auto">
 
@@ -1035,12 +1337,11 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             </div>
                         </div>
 
-                        {/* Stats */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        {/* Stats - Solo 3 tarjetas */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                             {[
                                 { label: "Estudiantes", value: students.length, sub: "Inscritos en el curso", Icon: Users, bg: "#F3E8FF", color: "#540D6E" },
                                 { label: "Rendimiento", value: "87%", sub: "Promedio general", Icon: Award, bg: "#E8F5F0", color: "#0EAD69" },
-                                { label: "Asistencia", value: "92%", sub: "Promedio del curso", Icon: CheckSquare, bg: "#FFF4E0", color: "#FFD23F" },
                                 { label: "OVAs", value: ovas.length, sub: "Recursos disponibles", Icon: Layers, bg: "#FEE2E2", color: "#EE4266" },
                             ].map(({ label, value, sub, Icon, bg, color }) => (
                                 <div key={label} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all">
@@ -1058,7 +1359,6 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             ))}
                         </div>
 
-                        {/* Tab nav */}
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 overflow-hidden">
                             <div className="flex divide-x divide-gray-200">
                                 {pageTabs.map(({ id, label, icon: Icon, count }) => (
@@ -1077,7 +1377,6 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             </div>
                         </div>
 
-                        {/* ── Estudiantes ── */}
                         {tab === "students" && (
                             <div className="space-y-6 animate-fade-in">
                                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -1116,7 +1415,6 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                                     <tr>
                                                         <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Estudiante</th>
                                                         <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Usuario</th>
-                                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Correo</th>
                                                         <th className="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -1132,8 +1430,9 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                                                     <span className="text-sm font-semibold text-gray-900">{student.name}</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-6 py-4"><span className="text-sm font-mono text-gray-600">@{student.username}</span></td>
-                                                            <td className="px-6 py-4"><span className="text-sm text-gray-500">{student.email || "—"}</span></td>
+                                                            <td className="px-6 py-4">
+                                                                <span className="text-sm font-mono text-gray-600">@{student.username}</span>
+                                                            </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <button onClick={() => setStudentToRemove(student)}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
@@ -1182,8 +1481,6 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             </div>
                         )}
 
-
-                        {/* ── OVAs ── */}
                         {tab === "ovas" && (
                             <div className="space-y-6 animate-fade-in">
                                 <div className="flex justify-end">
@@ -1234,7 +1531,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <button onClick={() => handleRemoveOva(ova.id)}
+                                                        <button onClick={() => setOvaToRemove(ova)}
                                                             className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors flex-shrink-0">
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
@@ -1247,16 +1544,14 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             </div>
                         )}
 
-                        {/* ── Rendimiento Académico ── */}
                         {tab === "rendimiento" && (
-                            <RendimientoTab course={course} students={students} ovas={ovas} />
+                            <RendimientoTab course={course} />
                         )}
 
                     </div>
                 </div>
             </main>
 
-            {/* Fondo */}
             <div className="fixed inset-0 -z-10 bg-gray-50">
                 <div className="absolute inset-0" style={{
                     backgroundImage: "radial-gradient(circle at 1px 1px, rgba(84,13,110,0.05) 1px, transparent 0)",
@@ -1267,19 +1562,21 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                 }} />
             </div>
 
-            {/* Modales */}
             {showAddModal && <AddStudentModal course={course} onClose={() => setShowAddModal(false)} onSuccess={handleStudentSuccess} />}
             {showCredentialsModal && generatedCredentials.length > 0 && (
                 <CredentialsListModal credentials={generatedCredentials} course={course}
                     onClose={() => { setShowCredentialsModal(false); setGeneratedCredentials([]); }} />
             )}
-            {studentToRemove && <RemoveStudentModal student={studentToRemove} onConfirm={confirmRemove} onClose={() => setStudentToRemove(null)} />}
+            {studentToRemove && <RemoveStudentModal student={studentToRemove} onConfirm={confirmRemoveStudent} onClose={() => setStudentToRemove(null)} />}
+            {ovaToRemove && <RemoveOvaConfirmModal ova={ovaToRemove} onConfirm={confirmRemoveOva} onClose={() => setOvaToRemove(null)} />}
             {showAssignOvaModal && <AssignOvaModal course={course} onClose={() => setShowAssignOvaModal(false)} onSuccess={handleOvaSuccess} />}
 
             <style>{`
                 @keyframes fadeIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:translateY(0) } }
                 @keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }
+                @keyframes slideDown { from { opacity:0; transform:translateY(-20px) } to { opacity:1; transform:translateY(0) } }
                 .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+                .animate-slide-down { animation: slideDown 0.3s ease-out; }
                 .line-clamp-2 {
                     display: -webkit-box;
                     -webkit-line-clamp: 2;

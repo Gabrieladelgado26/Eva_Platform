@@ -207,7 +207,7 @@ export default function Staff({ users = [], section = "staff" }) {
                                         <Users className="w-10 h-10" style={{ color: "#540D6E" }} />
                                     </div>
                                     <div>
-                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Personal</h1>
+                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Personal Institucional</h1>
                                         <p className="text-gray-600 text-base">Administración de administradores y docentes</p>
                                     </div>
                                 </div>

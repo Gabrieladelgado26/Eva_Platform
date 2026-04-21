@@ -28,9 +28,13 @@ class EvaluationController extends Controller
 
         // Filtro por cursos según el rol
         if ($isTeacher) {
-            // Teacher: solo sus cursos
             $courseIds = $user->courses()->pluck('id');
             $query->whereIn('course_id', $courseIds);
+        }
+
+        // Filtrar por curso específico si viene en la request
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
         }
 
         // Filtro por área temática
@@ -149,8 +153,108 @@ class EvaluationController extends Controller
                 'search'     => $request->search,
                 'area'       => $request->area,      
                 'teacher_id' => $request->teacher_id,
+                'course_id'  => $request->course_id,
             ],
             'userRole'    => $user->role->slug,
         ]);
+    }
+
+    /**
+     * Obtener evaluaciones de un curso específico
+     */
+    public function getCourseEvaluations(Course $course)
+    {
+        try {
+            $user = Auth::user();
+            
+            // Verificar permisos
+            if ($user->role->slug !== 'admin' && $course->teacher_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No autorizado'
+                ], 403);
+            }
+
+            // Obtener todas las evaluaciones del curso con sus relaciones
+            $evaluations = Evaluation::with(['user', 'ova'])
+                ->where('course_id', $course->id)
+                ->get();
+
+            // Si no hay evaluaciones, retornar respuesta vacía
+            if ($evaluations->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'top3' => [],
+                        'ranking' => [],
+                        'total_evaluations' => 0,
+                        'total_students' => 0
+                    ]
+                ]);
+            }
+
+            // Calcular promedios por estudiante
+            $studentAverages = [];
+            
+            foreach ($evaluations as $evaluation) {
+                $studentId = $evaluation->user_id;
+                if (!$studentId) continue;
+                
+                if (!isset($studentAverages[$studentId])) {
+                    $studentAverages[$studentId] = [
+                        'student' => [
+                            'id' => $evaluation->user?->id,
+                            'name' => $evaluation->user?->name ?? 'Desconocido',
+                            'username' => $evaluation->user?->username ?? 'sin_usuario',
+                            'avatar' => $evaluation->user?->avatar,
+                        ],
+                        'total_percentage' => 0,
+                        'count' => 0,
+                    ];
+                }
+                
+                $studentAverages[$studentId]['total_percentage'] += $evaluation->percentage;
+                $studentAverages[$studentId]['count']++;
+            }
+
+            // Construir ranking
+            $studentsRanking = [];
+            foreach ($studentAverages as $data) {
+                $avgPercentage = $data['count'] > 0 
+                    ? round($data['total_percentage'] / $data['count'], 1) 
+                    : 0;
+                    
+                $studentsRanking[] = [
+                    'student' => $data['student'],
+                    'average_percentage' => $avgPercentage,
+                    'total_evaluations' => $data['count'],
+                ];
+            }
+
+            // Ordenar por promedio descendente
+            usort($studentsRanking, function($a, $b) {
+                return $b['average_percentage'] <=> $a['average_percentage'];
+            });
+
+            // Separar top 3 y resto
+            $top3 = array_slice($studentsRanking, 0, 3);
+            $rest = array_slice($studentsRanking, 3);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'top3' => $top3,
+                    'ranking' => $rest,
+                    'total_evaluations' => $evaluations->count(),
+                    'total_students' => count($studentsRanking)
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Error interno del servidor: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -8,7 +8,7 @@ import {
 
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-    ResponsiveContainer, RadialBarChart, RadialBar
+    ResponsiveContainer
 } from 'recharts';
 
 export default function Analytics() {
@@ -41,6 +41,9 @@ export default function Analytics() {
         : [];
 
     const paletteColors = ['#540D6E', '#EE4266', '#0EAD69', '#3BCEAC', '#FFD23F'];
+    
+    // Verificar si hay datos reales
+    const hasData = dashboardStats.totalCourses > 0 || dashboardStats.totalStudents > 0 || dashboardStats.completedActivities > 0;
 
     const StatCard = ({ title, value, icon: Icon, accentColor, subtitle }) => (
         <div
@@ -154,7 +157,7 @@ export default function Analytics() {
                             value={dashboardStats.totalStudents}
                             icon={Users}
                             accentColor="#EE4266"
-                            subtitle="Inscritos"
+                            subtitle="Inscritos en tus cursos"
                         />
                         <StatCard
                             title="Total OVAs"
@@ -172,7 +175,7 @@ export default function Analytics() {
                             value={dashboardStats.completedActivities}
                             icon={CheckCircle}
                             accentColor="#FFD23F"
-                            subtitle="Pares únicos (estudiante, OVA)"
+                            subtitle="Total de evaluaciones"
                         />
                         <StatCard
                             title="Promedio de Notas"
@@ -190,10 +193,10 @@ export default function Analytics() {
                         />
                         <StatCard
                             title="Estado"
-                            value={dashboardStats.totalCourses > 0 ? "Activo" : "Sin datos"}
+                            value={hasData ? "Activo" : "Sin datos"}
                             icon={Activity}
                             accentColor="#3BCEAC"
-                            subtitle={dashboardStats.totalCourses > 0 ? "Sistema funcionando" : "Crea un curso para comenzar"}
+                            subtitle={hasData ? "Sistema funcionando" : "Crea un curso para comenzar"}
                         />
                     </div>
 
@@ -212,6 +215,7 @@ export default function Analytics() {
                                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                                     <Activity className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-sm">Sin datos de evaluaciones</p>
+                                    <p className="text-xs mt-1">Los estudiantes aún no han completado evaluaciones</p>
                                 </div>
                             ) : (
                                 <ResponsiveContainer width="100%" height={300}>
@@ -246,15 +250,16 @@ export default function Analytics() {
                                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                                     <Target className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-sm">Sin evaluaciones registradas</p>
+                                    <p className="text-xs mt-1">Los estudiantes aún no han completado evaluaciones</p>
                                 </div>
                             ) : (
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={ovaPerformanceData}>
+                                    <BarChart data={ovaPerformanceData} layout="vertical" margin={{ left: 80 }}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                                        <XAxis dataKey="area" stroke="#6B7280" angle={-45} height={80} />
-                                        <YAxis stroke="#6B7280" />
+                                        <XAxis type="number" stroke="#6B7280" domain={[0, 100]} />
+                                        <YAxis type="category" dataKey="area" stroke="#6B7280" width={100} />
                                         <Tooltip content={<CustomTooltip />} />
-                                        <Bar dataKey="avg" fill="#540D6E" name="Promedio %" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="avg" fill="#540D6E" name="Promedio %" radius={[0, 4, 4, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             )}
@@ -264,19 +269,21 @@ export default function Analytics() {
                     {/* Bottom row: 3 cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         {/* Progreso General */}
-                        <div className="rounded-xl shadow-sm p-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E", color: "#540D6E" }}>
+                        <div className="rounded-xl shadow-sm p-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-bold">Progreso General</h3>
-                                <Target className="w-5 h-5 opacity-60" />
+                                <h3 className="text-lg font-bold" style={{ color: "#540D6E" }}>Progreso General</h3>
+                                <Target className="w-5 h-5" style={{ color: "#540D6E", opacity: 0.6 }} />
                             </div>
                             <div className="text-center">
-                                <p className="text-5xl font-bold mb-1">{dashboardStats.avgProgress}%</p>
-                                <p className="text-sm opacity-80">
+                                <p className="text-5xl font-bold mb-1" style={{ color: "#540D6E" }}>{dashboardStats.avgProgress}%</p>
+                                <p className="text-sm" style={{ color: "#540D6E", opacity: 0.8 }}>
                                     {dashboardStats.completedActivities} evaluaciones completadas
                                 </p>
-                                <p className="text-xs mt-1 opacity-60">
-                                    de {dashboardStats.totalStudents} estudiantes × {dashboardStats.totalOVAs} OVAs
-                                </p>
+                                {dashboardStats.totalStudents > 0 && dashboardStats.totalOVAs > 0 && (
+                                    <p className="text-xs mt-1" style={{ color: "#540D6E", opacity: 0.6 }}>
+                                        de {dashboardStats.totalStudents} estudiantes × {dashboardStats.totalOVAs} OVAs
+                                    </p>
+                                )}
                             </div>
                             <div className="mt-4 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#540D6E30' }}>
                                 <div
@@ -292,10 +299,11 @@ export default function Analytics() {
                                 <h3 className="text-lg font-bold text-gray-900">Horas Pico</h3>
                                 <Clock className="w-5 h-5 text-gray-400" />
                             </div>
-                            {peakHoursData.length === 0 ? (
+                            {peakHoursData.length === 0 || peakHoursData.every(h => h.count === 0) ? (
                                 <div className="flex flex-col items-center justify-center py-8 text-gray-400">
                                     <Clock className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-sm">Sin datos disponibles</p>
+                                    <p className="text-xs mt-1">Los estudiantes aún no han realizado evaluaciones</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
@@ -332,16 +340,17 @@ export default function Analytics() {
                         {/* Rendimiento por Área (list) */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-bold text-gray-900">Áreas</h3>
+                                <h3 className="text-lg font-bold text-gray-900">Rendimiento por Área</h3>
                                 <Award className="w-5 h-5 text-gray-400" />
                             </div>
                             {ovaPerformanceData.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-8 text-gray-400">
                                     <Target className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-sm">Sin evaluaciones</p>
+                                    <p className="text-xs mt-1">Los estudiantes aún no han completado evaluaciones</p>
                                 </div>
                             ) : (
-                                <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
                                     {ovaPerformanceData.map((item, idx) => {
                                         const barColor = paletteColors[idx % paletteColors.length];
                                         return (

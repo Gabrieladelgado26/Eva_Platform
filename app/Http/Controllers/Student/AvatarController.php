@@ -11,11 +11,13 @@ class AvatarController extends Controller
 {
     /**
      * Mostrar la vista de selección de avatar
+     * Esta vista debe estar siempre accesible para cambiar el avatar
      */
     public function index()
     {
         $user = Auth::user();
         
+        // No redirigir - permitir cambiar avatar incluso si ya tiene uno
         return Inertia::render('Student/Avatar/Index', [
             'currentAvatar' => $user->avatar,
         ]);
@@ -31,16 +33,11 @@ class AvatarController extends Controller
         ]);
 
         $user = Auth::user();
-        $user->update([
-            'avatar' => $request->avatar,
-            'needs_avatar' => false, // Actualizar el campo en la BD
-        ]);
-
-        session()->forget('needs_avatar');
+        $user->update(['avatar' => $request->avatar]);
 
         // Redirigir al dashboard con mensaje de éxito
         return redirect()
-            ->route('student.avatar.index')
+            ->route('student.dashboard')
             ->with('success', '¡Avatar seleccionado correctamente!');
     }
 }

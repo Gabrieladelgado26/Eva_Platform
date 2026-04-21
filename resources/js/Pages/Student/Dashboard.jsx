@@ -1,4 +1,3 @@
-// Resources/js/Pages/Student/Dashboard.jsx
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import {
@@ -88,7 +87,7 @@ function groupOvasByArea(courses) {
 }
 
 // ─── Modal de Avatar Profesional ──────────────────────────────────────────────
-function AvatarPickerModal({ onClose }) {
+function AvatarPickerModal({ onClose, onSuccess }) {
     const [selected, setSelected] = useState(null);
     const [saving, setSaving] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
@@ -105,7 +104,12 @@ function AvatarPickerModal({ onClose }) {
                 preserveScroll: true,
                 onSuccess: () => {
                     setConfirmed(true);
-                    setTimeout(() => onClose(), 1500);
+                    setTimeout(() => {
+                        onClose();
+                        if (onSuccess) onSuccess();
+                        // Recargar la página para actualizar el estado
+                        window.location.reload();
+                    }, 1500);
                 },
                 onFinish: () => setSaving(false),
             }
@@ -233,15 +237,15 @@ function AvatarPickerModal({ onClose }) {
 export default function StudentDashboard({ courses = [], needsAvatar = false }) {
     const { props } = usePage();
     const flash = props.flash || {};
-    const pageProps = props;
 
     const [collapsed] = useSidebarState();
     const [activeArea, setActiveArea] = useState(null);
     const [search, setSearch] = useState("");
     const [filterArea, setFilterArea] = useState("all");
-    const [viewMode, setViewMode] = useState("table");
+    const [viewMode, setViewMode] = useState("grid"); // Cambiado a grid por defecto
     const [visible, setVisible] = useState(false);
     const [showAvatar, setShowAvatar] = useState(false);
+    const [avatarSelected, setAvatarSelected] = useState(false);
 
     const course = courses[0] ?? null;
     const ovasByArea = groupOvasByArea(courses);
@@ -260,15 +264,24 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
         return () => clearTimeout(t);
     }, []);
 
-    // ✅ CORRECCIÓN: Verificar needsAvatar de múltiples fuentes
+    // Mostrar el modal SOLO si el usuario no tiene avatar y no se ha seleccionado uno
     useEffect(() => {
-        const needsAvatarFromProp = needsAvatar;
-        const needsAvatarFromPage = pageProps?.needs_avatar || props?.needs_avatar;
+        // Verificar si realmente necesita avatar y no se ha seleccionado uno en esta sesión
+        const needsAvatarFromProp = needsAvatar === true;
         
-        if (needsAvatarFromProp || needsAvatarFromPage) {
-            setTimeout(() => setShowAvatar(true), 600);
+        if (needsAvatarFromProp && !avatarSelected) {
+            // Pequeño retraso para que la página cargue completamente
+            const timer = setTimeout(() => {
+                setShowAvatar(true);
+            }, 500);
+            return () => clearTimeout(timer);
         }
-    }, [needsAvatar, pageProps, props]);
+    }, [needsAvatar, avatarSelected]);
+
+    const handleAvatarSuccess = () => {
+        setAvatarSelected(true);
+        setShowAvatar(false);
+    };
 
     const activeOvas = activeArea
         ? (ovasByArea[activeArea] ?? []).filter(o => {
@@ -287,8 +300,13 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
             <Head title="Mis Materias" />
             <AppSidebar currentRoute="student.dashboard" />
 
-            {/* Modal de Avatar */}
-            {showAvatar && <AvatarPickerModal onClose={() => setShowAvatar(false)} />}
+            {/* Modal de Avatar - Solo se muestra si es necesario */}
+            {showAvatar && (
+                <AvatarPickerModal 
+                    onClose={() => setShowAvatar(false)} 
+                    onSuccess={handleAvatarSuccess}
+                />
+            )}
 
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
                 

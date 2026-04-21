@@ -29,17 +29,6 @@ class OvaController extends Controller
     private const OVA_PATHS_VALIDOS = [
         // Matemáticas — Adición y Sustracción
         '/ovas/matematicas/adicion-sustraccion/inicio',
-        '/ovas/matematicas/adicion-sustraccion/menu',
-        '/ovas/matematicas/adicion-sustraccion/adicion-sus-propiedades',
-        '/ovas/matematicas/adicion-sustraccion/adicion-dos-cifras',
-        '/ovas/matematicas/adicion-sustraccion/adicion-tres-cifras',
-        '/ovas/matematicas/adicion-sustraccion/adicion-hasta-19',
-        '/ovas/matematicas/adicion-sustraccion/sustraccion-dos-cifras',
-        '/ovas/matematicas/adicion-sustraccion/sustraccion-tres-cifras',
-        '/ovas/matematicas/adicion-sustraccion/sustraccion-hasta-19',
-        // Legado (conservados para compatibilidad)
-        '/ova/index',
-        '/ova/matematicas',
     ];
 
     public function index(Request $request)

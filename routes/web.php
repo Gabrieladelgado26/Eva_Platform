@@ -217,6 +217,8 @@ Route::middleware(['auth', 'role:teacher'])
         Route::put('courses/{course}/update-ova-config/{ova}', [CourseController::class, 'updateOvaConfig'])->name('courses.update-ova-config');
         Route::get('courses/{course}/ova-stats',               [CourseController::class, 'getOvaStats'])->name('courses.ova-stats');
         Route::get('courses/{course}/available-ovas',          [CourseController::class, 'getAvailableOvas'])->name('courses.available-ovas');
+        Route::get('courses/{course}/evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'getCourseEvaluations'])
+            ->name('courses.evaluations');
 
         // Estudiantes del curso — rutas específicas ANTES del resource
         Route::get('courses/{course}/students/search',     [CourseStudentController::class, 'search'])->name('courses.students.search');
@@ -227,11 +229,8 @@ Route::middleware(['auth', 'role:teacher'])
         Route::delete('courses/{course}/students/{student}', [CourseStudentController::class, 'destroy'])->name('courses.students.destroy');
 
         // Estudiantes — vista global del docente
-        // Rutas fijas
         Route::get('students/create',                   [CourseStudentController::class, 'create'])->name('students.create');
         Route::get('students/export-pdf',               [CourseStudentController::class, 'exportPdf'])->name('students.export-pdf');
-
-        // Despues las rutas dinámicas
         Route::get('students',                          [CourseStudentController::class, 'indexAll'])->name('students.index');
         Route::get('students/{user}',                   [CourseStudentController::class, 'show'])->name('students.show');
         Route::get('students/{user}/edit',              [CourseStudentController::class, 'edit'])->name('students.edit');
@@ -282,15 +281,12 @@ Route::middleware(['auth', 'role:student'])
         Route::get('ovas/{ova}',           [StudentOvaController::class, 'show'])->name('ovas.show');
         Route::post('ovas/{ova}/progress', [StudentOvaController::class, 'updateProgress'])->name('ovas.progress');
 
-        // Avatar (primer login)
-        Route::post('avatar', [AvatarController::class, 'store'])->name('avatar.store');
-
-        // Evaluaciones (desde Inertia, si se necesita)
+        // Evaluaciones
         Route::get('evaluations',  [EvaluationController::class, 'index'])->name('evaluations.index');
         Route::post('evaluations', [EvaluationController::class, 'store'])->name('evaluations.store');
 
         // Avatar
-        Route::get('avatar', [AvatarController::class, 'index'])->name('avatar.index');
+        Route::get('avatar',  [AvatarController::class, 'index'])->name('avatar.index');
         Route::post('avatar', [AvatarController::class, 'store'])->name('avatar.store');
     });
 

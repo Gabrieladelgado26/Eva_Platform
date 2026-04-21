@@ -21,6 +21,8 @@ class CourseController extends Controller
             ->with([
                 'ovas' => function ($query) {
                     $query->where('is_active', true)
+                          ->whereNotNull('url')
+                          ->where('url', '!=', '')
                           ->orderByPivot('order');
                 }
             ])
@@ -49,8 +51,12 @@ class CourseController extends Controller
                 ];
             });
 
+        // Verificar si el usuario necesita seleccionar avatar (SOLO para mostrar el modal la primera vez)
+        $needsAvatar = is_null($user->avatar);
+
         return Inertia::render('Student/Dashboard', [
-            'courses' => $courses,
+            'courses'      => $courses,
+            'needsAvatar'  => $needsAvatar,  // Solo true si NO tiene avatar
         ]);
     }
 
@@ -71,6 +77,8 @@ class CourseController extends Controller
 
         $ovas = $course->ovas()
             ->where('is_active', true)
+            ->whereNotNull('url')
+            ->where('url', '!=', '')
             ->orderByPivot('order')
             ->get()
             ->map(fn($ova) => [
