@@ -1,11 +1,11 @@
 import { Head, Link, usePage, router } from "@inertiajs/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     BookOpen, Layers, ChevronRight, GraduationCap,
     Clock, X, ChevronLeft, PlayCircle, Lock, Search, Filter,
     RotateCcw, ChevronDown, Calculator, BookMarked, 
     FlaskConical, Globe, Languages, LayoutGrid, List,
-    CheckCircle, Sparkles, User
+    CheckCircle, Sparkles, User, ChevronsLeft, ChevronsRight, Star, Compass
 } from "lucide-react";
 import AppSidebar, { useSidebarState } from "@/Components/AppSidebar";
 
@@ -15,46 +15,56 @@ const MATERIAS = [
         area:    'Matemáticas',
         icon:    Calculator,
         color:   '#FFD23F',
-        bg:      '#FEF3C7',
+        bg:      'rgba(255, 210, 63, 0.15)',
         border:  '#FFD23F',
         description: 'Números y operaciones',
-        textColor: '#374151'
+        textColor: '#374151',
+        gradient: 'linear-gradient(135deg, rgba(255, 210, 63, 0.12), rgba(245, 192, 0, 0.06))',
+        glow: '0 0 20px rgba(255, 210, 63, 0.15)'
     },
     {
         area:    'Español',
         icon:    BookMarked,
         color:   '#540D6E',
-        bg:      '#F3E8FF',
+        bg:      'rgba(187, 98, 220, 0.15)',
         border:  '#540D6E',
         description: 'Lectura y escritura',
-        textColor: '#FFFFFF'
+        textColor: '#FFFFFF',
+        gradient: 'linear-gradient(135deg, rgba(84, 13, 110, 0.12), rgba(107, 22, 137, 0.06))',
+        glow: '0 0 20px rgba(84, 13, 110, 0.15)'
     },
     {
         area:    'Ciencias Naturales',
         icon:    FlaskConical,
         color:   '#0EAD69',
-        bg:      '#E8F5F0',
+        bg:      'rgba(14, 173, 105, 0.15)',
         border:  '#0EAD69',
         description: 'Explora el mundo natural',
-        textColor: '#FFFFFF'
+        textColor: '#FFFFFF',
+        gradient: 'linear-gradient(135deg, rgba(14, 173, 105, 0.12), rgba(59, 206, 172, 0.06))',
+        glow: '0 0 20px rgba(14, 173, 105, 0.15)'
     },
     {
         area:    'Ciencias Sociales',
         icon:    Globe,
         color:   '#EE4266',
-        bg:      '#FEE2E2',
+        bg:      'rgba(238, 66, 102, 0.15)',
         border:  '#EE4266',
         description: 'Descubre historia y geografía',
-        textColor: '#FFFFFF'
+        textColor: '#FFFFFF',
+        gradient: 'linear-gradient(135deg, rgba(238, 66, 102, 0.12), rgba(255, 107, 107, 0.06))',
+        glow: '0 0 20px rgba(238, 66, 102, 0.15)'
     },
     {
         area:    'Inglés',
         icon:    Languages,
         color:   '#3BCEAC',
-        bg:      '#E8F5F0',
+        bg:      'rgba(59, 206, 172, 0.15)',
         border:  '#3BCEAC',
         description: 'Aprende un nuevo idioma',
-        textColor: '#FFFFFF'
+        textColor: '#FFFFFF',
+        gradient: 'linear-gradient(135deg, rgba(59, 206, 172, 0.12), rgba(43, 168, 142, 0.06))',
+        glow: '0 0 20px rgba(59, 206, 172, 0.15)'
     },
 ];
 
@@ -86,7 +96,398 @@ function groupOvasByArea(courses) {
     return grouped;
 }
 
-// ─── Modal de Avatar Profesional ──────────────────────────────────────────────
+// ─── Componente de Slider Circular Continuo con transición lateral ────────────
+function SubjectSlider({ subjects, onSelectSubject, visible }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+    const autoPlayRef = useRef(null);
+    const itemsPerPage = 3;
+    
+    const extendedSubjects = [...subjects, ...subjects, ...subjects];
+    const startIndex = subjects.length;
+    const visibleSubjects = extendedSubjects.slice(
+        startIndex + currentIndex,
+        startIndex + currentIndex + itemsPerPage
+    );
+
+    const nextSlide = () => {
+        if (isAnimating) return;
+        setIsAnimating(true);
+        setCurrentIndex((prev) => prev + 1);
+        setTimeout(() => setIsAnimating(false), 400);
+    };
+
+    const prevSlide = () => {
+        if (isAnimating) return;
+        setIsAnimating(true);
+        setCurrentIndex((prev) => prev - 1);
+        setTimeout(() => setIsAnimating(false), 400);
+    };
+
+    useEffect(() => {
+        if (currentIndex >= subjects.length) {
+            setTimeout(() => {
+                setCurrentIndex(currentIndex - subjects.length);
+                setTimeout(() => setIsAnimating(false), 50);
+            }, 400);
+        } else if (currentIndex < 0) {
+            setTimeout(() => {
+                setCurrentIndex(currentIndex + subjects.length);
+                setTimeout(() => setIsAnimating(false), 50);
+            }, 400);
+        }
+    }, [currentIndex, subjects.length]);
+
+    useEffect(() => {
+        if (isAutoPlaying && subjects.length > itemsPerPage) {
+            autoPlayRef.current = setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+        return () => {
+            if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+        };
+    }, [isAutoPlaying, subjects.length]);
+
+    const handleMouseEnter = () => setIsAutoPlaying(false);
+    const handleMouseLeave = () => setIsAutoPlaying(true);
+
+    if (subjects.length === 0) return null;
+
+    return (
+        <div 
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            {subjects.length > itemsPerPage && (
+                <div className="flex justify-center gap-4 mb-8">
+                    <button
+                        onClick={prevSlide}
+                        className="p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 hover:scale-110"
+                        style={{ backgroundColor: 'white' }}
+                    >
+                        <ChevronsLeft className="w-5 h-5" style={{ color: '#540D6E' }} />
+                    </button>
+                    <button
+                        onClick={nextSlide}
+                        className="p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 hover:scale-110"
+                        style={{ backgroundColor: 'white' }}
+                    >
+                        <ChevronsRight className="w-5 h-5" style={{ color: '#540D6E' }} />
+                    </button>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-400 ease-in-out">
+                {visibleSubjects.map((subject, idx) => {
+                    const Icon = subject.icon;
+                    const hasContent = subject.ovas && subject.ovas.length > 0;
+                    const delay = idx * 100;
+                    
+                    return (
+                        <button
+                            key={`${subject.area}-${currentIndex}-${idx}`}
+                            onClick={() => hasContent && onSelectSubject(subject.area)}
+                            disabled={!hasContent}
+                            className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
+                                visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+                            } ${hasContent ? 'cursor-pointer hover:-translate-y-2' : 'cursor-not-allowed opacity-60'}`}
+                            style={{
+                                transitionDelay: `${delay}ms`,
+                                animation: `fadeInRight 0.5s ease-out ${delay}ms both`,
+                                background: subject.gradient,
+                                backdropFilter: 'blur(12px)',
+                                border: `1px solid ${subject.color}40`,
+                                boxShadow: subject.glow
+                            }}
+                        >
+                            <div 
+                                className="absolute top-0 left-0 h-1.5 transition-all duration-300 group-hover:h-2"
+                                style={{ 
+                                    width: '100%',
+                                    background: `linear-gradient(to right, ${subject.color}, ${subject.color}cc)`
+                                }}
+                            />
+                            
+                            <div className="relative p-6 h-full flex flex-col min-h-[260px]">
+                                <div className="flex items-start justify-between mb-4">
+                                    <div 
+                                        className="p-3 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-md"
+                                        style={{ backgroundColor: subject.bg }}
+                                    >
+                                        <Icon className="w-8 h-8" style={{ color: subject.color }} />
+                                    </div>
+                                    
+                                    <div className="text-right">
+                                        <span 
+                                            className="text-3xl font-black"
+                                            style={{ fontFamily: "'Chewy', cursive", color: subject.color }}
+                                        >
+                                            {subject.ovas?.length || 0}
+                                        </span>
+                                        <p className="text-xs text-gray-400 font-medium">
+                                            {(subject.ovas?.length || 0) === 1 ? 'Recurso' : 'Recursos'}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <h3 className="text-xl font-bold mb-3 transition-colors duration-300 text-gray-800">
+                                    {subject.area}
+                                </h3>
+                                
+                                <p className="text-lg text-gray-600 mb-4 flex-1 leading-relaxed">
+                                    {subject.description}
+                                </p>
+                                
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
+                                    {hasContent ? (
+                                        <>
+                                            <div className="flex -space-x-2">
+                                                {[...Array(Math.min(3, subject.ovas.length))].map((_, idx2) => (
+                                                    <div 
+                                                        key={idx2}
+                                                        className="w-8 h-8 rounded-full border-2 border-white shadow-sm transition-transform duration-300 group-hover:scale-110"
+                                                        style={{ 
+                                                            backgroundColor: subject.color,
+                                                            opacity: 1 - (idx2 * 0.15),
+                                                            boxShadow: `0 0 8px ${subject.color}80`
+                                                        }}
+                                                    />
+                                                ))}
+                                                {subject.ovas.length > 3 && (
+                                                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center shadow-sm">
+                                                        <span className="text-gray-600 font-bold text-xs">
+                                                            +{subject.ovas.length - 3}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div 
+                                                className="flex items-center gap-1 text-sm font-bold transition-all duration-300 group-hover:gap-2"
+                                                style={{ color: subject.color }}
+                                            >
+                                                Explorar <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-gray-400 w-full justify-center">
+                                            <Lock className="w-4 h-4" />
+                                            <span className="text-sm font-medium">Próximamente</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500">
+                                <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent" />
+                            </div>
+                        </button>
+                    );
+                })}
+            </div>
+            
+            {subjects.length > itemsPerPage && (
+                <div className="flex justify-center gap-3 mt-10">
+                    {subjects.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => {
+                                if (isAnimating) return;
+                                setIsAnimating(true);
+                                setCurrentIndex(idx);
+                                setTimeout(() => setIsAnimating(false), 400);
+                            }}
+                            className="transition-all duration-300 rounded-full"
+                            style={{
+                                width: (currentIndex % subjects.length) === idx ? '32px' : '8px',
+                                height: '8px',
+                                backgroundColor: (currentIndex % subjects.length) === idx ? '#540D6E' : '#E5E7EB',
+                                boxShadow: (currentIndex % subjects.length) === idx ? '0 0 8px rgba(84, 13, 110, 0.5)' : 'none'
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ─── Componente de Tabla de OVAs ──────────────────────────────────────────────
+function OVATable({ ovas, materia, courseId }) {
+    return (
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+            <div className="overflow-x-auto">
+                <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                <div className="flex items-center gap-2"><BookOpen className="w-4 h-4" /> Recurso</div>
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                                <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> Descripción</div>
+                            </th>
+                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {ovas.map((ova) => (
+                            <tr key={ova.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        {ova.thumbnail ? (
+                                            <img 
+                                                src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
+                                                alt={ova.tematica}
+                                                className="w-12 h-12 rounded-xl object-cover shadow-sm"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
+                                                style={{ backgroundColor: materia.bg }}>
+                                                <materia.icon className="w-6 h-6" style={{ color: materia.color }} />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">{ova.tematica}</p>
+                                            <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-lg text-xs font-medium"
+                                                style={{ backgroundColor: materia.bg, color: materia.color }}>
+                                                <materia.icon className="w-3 h-3" />
+                                                {ova.area}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <p className="text-sm text-gray-600 max-w-lg line-clamp-2">
+                                        {ova.description || "Sin descripción disponible"}
+                                    </p>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    {ova.url ? (
+                                        <a
+                                            href={`${ova.url}?ova_id=${ova.id}&course_id=${courseId}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg"
+                                            style={{ 
+                                                backgroundColor: materia.color,
+                                                color: materia.textColor || '#FFFFFF'
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+                                            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                                        >
+                                            <PlayCircle className="w-4 h-4" /> Abrir recurso
+                                        </a>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200">
+                                            <Clock className="w-4 h-4" /> Próximamente
+                                        </span>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+// ─── Componente de OVAs en Grid ──────────────────────────────────────────────
+function OVAGrid({ ovas, materia, courseId }) {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {ovas.map((ova, index) => (
+                <div 
+                    key={ova.id} 
+                    className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-200"
+                    style={{ 
+                        animation: `fadeUp 0.5s ease-out ${index * 80}ms both`,
+                        borderTop: `4px solid ${materia.color}`
+                    }}
+                >
+                    {/* Cabecera con color sólido y patrón decorativo */}
+                    <div className="relative overflow-hidden h-32" style={{ backgroundColor: `${materia.color}10` }}>
+                        
+                        {/* Círculos decorativos estáticos */}
+                        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full" style={{ backgroundColor: materia.color, opacity: 0.12 }} />
+                        <div className="absolute -bottom-8 -left-8 w-20 h-20 rounded-full" style={{ backgroundColor: materia.color, opacity: 0.1 }} />
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full" style={{ backgroundColor: materia.color, opacity: 0.08 }} />
+                        
+                        {/* Contenido de la cabecera */}
+                        {ova.thumbnail ? (
+                            <>
+                                <img
+                                    src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
+                                    alt={ova.tematica}
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 relative z-0"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                            </>
+                        ) : (
+                            <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+                                <materia.icon className="w-14 h-14" style={{ color: materia.color, opacity: 0.5 }} />
+                            </div>
+                        )}
+                        
+                        {/* Badge de área */}
+                        <div className="absolute top-3 left-3 z-10">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/95 backdrop-blur-sm shadow-md"
+                                style={{ color: materia.color }}>
+                                <materia.icon className="w-3 h-3" />
+                                {ova.area}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {/* Contenido con más espacio */}
+                    <div className="p-5">
+                        <h3 className="font-bold text-gray-800 text-lg mb-2 line-clamp-2 leading-relaxed group-hover:text-purple-900 transition-colors duration-300">
+                            {ova.tematica}
+                        </h3>
+                        
+                        {ova.description && (
+                            <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+                                {ova.description}
+                            </p>
+                        )}
+                        
+                        {/* Línea decorativa */}
+                        <div className="mb-4">
+                            <div className="w-12 h-0.5 rounded-full" style={{ backgroundColor: materia.color, opacity: 0.3 }} />
+                        </div>
+                        
+                        {ova.url ? (
+                            <a
+                                href={`${ova.url}?ova_id=${ova.id}&course_id=${courseId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-md"
+                                style={{ 
+                                    backgroundColor: materia.color,
+                                    color: materia.textColor || '#FFFFFF'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                            >
+                                <PlayCircle className="w-4 h-4" /> 
+                                <span>Comenzar recurso</span>
+                            </a>
+                        ) : (
+                            <div className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-gray-400 rounded-xl bg-gray-50 border border-gray-100">
+                                <Clock className="w-4 h-4" /> 
+                                <span>Próximamente</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// ─── Modal de Avatar ──────────────────────────────────────────────────────────
 function AvatarPickerModal({ onClose, onSuccess }) {
     const [selected, setSelected] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -107,7 +508,6 @@ function AvatarPickerModal({ onClose, onSuccess }) {
                     setTimeout(() => {
                         onClose();
                         if (onSuccess) onSuccess();
-                        // Recargar la página para actualizar el estado
                         window.location.reload();
                     }, 1500);
                 },
@@ -120,21 +520,28 @@ function AvatarPickerModal({ onClose, onSuccess }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
             
-            <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full overflow-hidden animate-slide-up">
-                {/* Barra superior de color */}
-                <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-lg w-full overflow-hidden animate-slide-up">
+                {/* Barra superior con gradiente */}
+                <div className="h-1.5" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F)" }} />
                 
-                {/* Header */}
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
-                            <User className="w-6 h-6" style={{ color: "#540D6E" }} />
+                {/* Header - Icono y texto en la misma fila */}
+                <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 rounded-xl shadow-md" style={{ backgroundColor: "#F3E8FF" }}>
+                            <User className="w-7 h-7" style={{ color: "#540D6E" }} />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900">Elige tu avatar</h3>
+                        <div className="flex-1">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-1" style={{ color: "#540D6E" }}>
+                                Elige tu avatar
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                                Selecciona el personaje que te representará
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-gray-600 text-sm">Selecciona el personaje que te representará</p>
                 </div>
 
+                {/* Grid de avatares */}
                 <div className="p-6">
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         {AVATARS.map(av => {
@@ -147,22 +554,23 @@ function AvatarPickerModal({ onClose, onSuccess }) {
                                     onClick={() => setSelected(av.id)}
                                     onMouseEnter={() => setHoveredAvatar(av.id)}
                                     onMouseLeave={() => setHoveredAvatar(null)}
-                                    className="relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200"
+                                    className="relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 group"
                                     style={{
                                         borderColor: isSelected ? av.color : "#E5E7EB",
-                                        backgroundColor: isSelected ? `${av.color}10` : "white",
+                                        backgroundColor: isSelected ? `${av.color}08` : "white",
                                         transform: isSelected ? "scale(1.02)" : "scale(1)",
-                                        boxShadow: isSelected ? `0 8px 20px ${av.color}20` : "none"
+                                        boxShadow: isSelected ? `0 8px 25px ${av.color}25` : "0 2px 8px rgba(0,0,0,0.05)"
                                     }}
                                 >
                                     {isSelected && (
-                                        <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-lg"
-                                            style={{ backgroundColor: "#0EAD69", border: "2px solid white" }}>
-                                            <CheckCircle className="w-4 h-4 text-white" />
+                                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-10"
+                                            style={{ backgroundColor: "#540D6E", border: "2px solid white" }}>
+                                            <CheckCircle className="w-3.5 h-3.5 text-white" />
                                         </div>
                                     )}
 
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                                    {/* Avatar circular */}
+                                    <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
                                         style={{ 
                                             background: isSelected || isHovered
                                                 ? `linear-gradient(135deg, ${av.color}, ${av.color}dd)` 
@@ -172,14 +580,14 @@ function AvatarPickerModal({ onClose, onSuccess }) {
                                             src={`/avatars/${av.id}.png`}
                                             alt={av.label}
                                             className="w-full h-full object-cover"
-                                            onError={e => {
+                                            onError={(e) => {
                                                 e.currentTarget.style.display = "none";
                                                 e.currentTarget.parentElement.innerHTML = `<span style="font-size:2.5rem">${av.emoji}</span>`;
                                             }}
                                         />
                                     </div>
 
-                                    <span className="text-sm font-bold" style={{ color: isSelected ? av.color : "#4B5563" }}>
+                                    <span className="text-sm font-semibold mt-1" style={{ color: isSelected ? av.color : "#4B5563" }}>
                                         {av.label}
                                     </span>
                                 </button>
@@ -188,45 +596,54 @@ function AvatarPickerModal({ onClose, onSuccess }) {
                     </div>
 
                     {confirmed ? (
-                        <div className="w-full relative overflow-hidden rounded-lg">
+                        <div className="w-full relative overflow-hidden rounded-xl">
                             <div 
                                 className="flex items-center justify-center gap-3 py-4 px-6 text-white font-bold shadow-lg"
                                 style={{ 
-                                    background: "linear-gradient(135deg, #0EAD69 0%, #3BCEAC 100%)",
+                                    background: "linear-gradient(135deg, #540D6E, #EE4266)",
                                 }}
                             >
                                 <div className="absolute inset-0 bg-white/10"></div>
-                                <Sparkles className="w-5 h-5 relative z-10" />
-                                <span className="relative z-10">¡Perfecto! Bienvenido a tu aventura</span>
-                                <CheckCircle className="w-5 h-5 relative z-10" />
+                                <span className="relative z-10 text-lg">Bienvenido a tu aventura</span>
                             </div>
                         </div>
                     ) : (
                         <button
                             onClick={handleSave}
                             disabled={!selected || saving}
-                            className="w-full py-3.5 rounded-lg text-sm font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+                            className="w-full py-3.5 rounded-xl text-base font-bold text-white transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                             style={{ 
                                 background: selected 
                                     ? `linear-gradient(135deg, ${AVATARS.find(a => a.id === selected)?.color || '#540D6E'}, ${AVATARS.find(a => a.id === selected)?.color || '#EE4266'}dd)` 
-                                    : "#D1D5DB"
+                                    : "linear-gradient(135deg, #9CA3AF, #6B7280)"
                             }}
                         >
-                            {saving ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Guardando...
-                                </span>
-                            ) : (
-                                selected 
-                                    ? `¡Elegir a ${AVATARS.find(a => a.id === selected)?.label}!` 
-                                    : "Selecciona un personaje"
-                            )}
+                            {/* Efecto de brillo al hover */}
+                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                {saving ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    selected 
+                                        ? `¡Elegir a ${AVATARS.find(a => a.id === selected)?.label}!` 
+                                        : "Selecciona un personaje"
+                                )}
+                            </span>
                         </button>
                     )}
+                </div>
+                
+                {/* Footer decorativo */}
+                <div className="px-6 pb-4">
+                    <p className="text-xs text-center text-gray-400">
+                        Puedes cambiar tu avatar cuando quieras desde la configuración
+                    </p>
                 </div>
             </div>
         </div>
@@ -242,7 +659,7 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
     const [activeArea, setActiveArea] = useState(null);
     const [search, setSearch] = useState("");
     const [filterArea, setFilterArea] = useState("all");
-    const [viewMode, setViewMode] = useState("grid"); // Cambiado a grid por defecto
+    const [viewMode, setViewMode] = useState("grid");
     const [visible, setVisible] = useState(false);
     const [showAvatar, setShowAvatar] = useState(false);
     const [avatarSelected, setAvatarSelected] = useState(false);
@@ -250,6 +667,11 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
     const course = courses[0] ?? null;
     const ovasByArea = groupOvasByArea(courses);
     const totalOvas = Object.values(ovasByArea).flat().length;
+
+    const subjectsWithOvas = MATERIAS.map(materia => ({
+        ...materia,
+        ovas: ovasByArea[materia.area] || []
+    }));
 
     const areasConOvas = MATERIAS.filter(m => (ovasByArea[m.area]?.length ?? 0) > 0).map(m => m.area);
     const hasActiveFilters = search || filterArea !== "all";
@@ -264,13 +686,10 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
         return () => clearTimeout(t);
     }, []);
 
-    // Mostrar el modal SOLO si el usuario no tiene avatar y no se ha seleccionado uno
     useEffect(() => {
-        // Verificar si realmente necesita avatar y no se ha seleccionado uno en esta sesión
         const needsAvatarFromProp = needsAvatar === true;
         
         if (needsAvatarFromProp && !avatarSelected) {
-            // Pequeño retraso para que la página cargue completamente
             const timer = setTimeout(() => {
                 setShowAvatar(true);
             }, 500);
@@ -281,6 +700,10 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
     const handleAvatarSuccess = () => {
         setAvatarSelected(true);
         setShowAvatar(false);
+    };
+
+    const handleSelectSubject = (area) => {
+        setActiveArea(area);
     };
 
     const activeOvas = activeArea
@@ -300,7 +723,6 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
             <Head title="Mis Materias" />
             <AppSidebar currentRoute="student.dashboard" />
 
-            {/* Modal de Avatar - Solo se muestra si es necesario */}
             {showAvatar && (
                 <AvatarPickerModal 
                     onClose={() => setShowAvatar(false)} 
@@ -308,9 +730,33 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                 />
             )}
 
-            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gray-50`}>
+            <main className={`transition-all duration-300 ease-in-out ${collapsed ? "lg:ml-20" : "lg:ml-72"} min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden`}>
                 
-                <div className="py-8 px-4 sm:px-6 lg:px-8">
+                {/* Figuras decorativas de fondo */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {/* Anillos de esquinas - más visibles */}
+                    <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full border-8 border-purple-300/25 animate-float-slow" />
+                    <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full border-8 border-purple-300/20 animate-float-medium" />
+                    
+                    {/* Anillos secundarios */}
+                    <div className="absolute top-1/3 left-[12%] w-64 h-64 rounded-full border-4 border-purple-200/15 animate-float-fast" />
+                    <div className="absolute bottom-1/3 right-[18%] w-72 h-72 rounded-full border-4 border-purple-200/15 animate-float-slow" style={{ animationDelay: '2s' }} />
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border-4 border-purple-100/10 animate-pulse-slow" />
+                    
+                    {/* Burbujas - pequeñas, claritas y estratégicamente distribuidas */}
+                    <div className="absolute top-[15%] left-[8%] w-6 h-6 rounded-full bg-purple-200/20 animate-bubble-slow" />
+                    <div className="absolute top-[30%] right-[12%] w-5 h-5 rounded-full bg-purple-200/15 animate-bubble-medium" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-[25%] left-[15%] w-7 h-7 rounded-full bg-purple-200/20 animate-bubble-slow" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-[40%] right-[20%] w-4 h-4 rounded-full bg-purple-200/15 animate-bubble-fast" style={{ animationDelay: '0.5s' }} />
+                    <div className="absolute top-[60%] left-[25%] w-5 h-5 rounded-full bg-purple-200/18 animate-bubble-medium" style={{ animationDelay: '3s' }} />
+                    <div className="absolute top-[20%] right-[30%] w-6 h-6 rounded-full bg-purple-200/15 animate-bubble-slow" style={{ animationDelay: '1.5s' }} />
+                    <div className="absolute bottom-[15%] right-[35%] w-4 h-4 rounded-full bg-purple-200/20 animate-bubble-fast" style={{ animationDelay: '2.5s' }} />
+                    <div className="absolute top-[75%] left-[40%] w-5 h-5 rounded-full bg-purple-200/15 animate-bubble-medium" style={{ animationDelay: '4s' }} />
+                    <div className="absolute bottom-[60%] left-[55%] w-6 h-6 rounded-full bg-purple-200/18 animate-bubble-slow" style={{ animationDelay: '0.8s' }} />
+                    <div className="absolute top-[45%] right-[45%] w-4 h-4 rounded-full bg-purple-200/15 animate-bubble-fast" style={{ animationDelay: '3.5s' }} />
+                </div>
+                
+                <div className="py-8 px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="max-w-7xl mx-auto">
                         
                         {/* Breadcrumb */}
@@ -326,29 +772,33 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                             </div>
                         </div>
 
-                        {/* Header */}
-                        <div className="mb-8">
-                            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                        {/* Header mejorado */}
+                        <div className="mb-12 relative">
+                            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-4 rounded-xl shadow-sm border" style={{ backgroundColor: "white", borderColor: "#540D6E" }}>
-                                        <BookOpen className="w-10 h-10" style={{ color: "#540D6E" }} />
+                                    <div className="p-4 rounded-2xl shadow-lg border bg-white/80 backdrop-blur-sm" style={{ borderColor: "#540D6E" }}>
+                                        <BookOpen className="w-9 h-9" style={{ color: "#540D6E" }} />
                                     </div>
                                     <div>
-                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Mis Materias</h1>
-                                        <p className="text-gray-600 text-base">
-                                            {course ? (
-                                                <>Explora tus recursos educativos · {GRADE_LABELS[course.grade] ?? course.grade} · Sección {course.section} · {course.school_year}</>
-                                            ) : (
-                                                "Explora tus recursos educativos"
-                                            )}
-                                        </p>
+                                        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                                            Mis Materias
+                                        </h1>
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <span>
+                                                {course ? (
+                                                    <>Explora tus recursos educativos · {GRADE_LABELS[course.grade] ?? course.grade} · Sección {course.section} · {course.school_year}</>
+                                                ) : (
+                                                    "Explora tus recursos educativos"
+                                                )}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Stats Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
                             {[
                                 { 
                                     icon: Layers, 
@@ -356,7 +806,8 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                     color: "#540D6E", 
                                     label: "Total Recursos", 
                                     desc: "Disponibles en tu curso", 
-                                    value: totalOvas 
+                                    value: totalOvas,
+                                    iconBg: "bg-purple-100"
                                 },
                                 { 
                                     icon: BookOpen, 
@@ -364,7 +815,8 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                     color: "#0EAD69", 
                                     label: "Materias Activas", 
                                     desc: "Con contenido disponible", 
-                                    value: `${activeMaterias} de ${MATERIAS.length}` 
+                                    value: `${activeMaterias} de ${MATERIAS.length}`,
+                                    iconBg: "bg-green-100"
                                 },
                                 { 
                                     icon: GraduationCap, 
@@ -372,13 +824,14 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                     color: "#FFD23F", 
                                     label: "Grado", 
                                     desc: course ? "Nivel educativo actual" : "Sin curso asignado", 
-                                    value: course ? GRADE_LABELS[course.grade] ?? course.grade : "—" 
+                                    value: course ? GRADE_LABELS[course.grade] ?? course.grade : "—",
+                                    iconBg: "bg-yellow-100"
                                 }
                             ].map((stat, i) => (
-                                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                                <div key={i} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group min-h-[100px]">
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-start gap-3">
-                                            <div className="p-3 rounded-lg" style={{ backgroundColor: stat.bg }}>
+                                            <div className={`p-3 rounded-xl transition-all duration-300 group-hover:scale-110 ${stat.iconBg}`}>
                                                 <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
                                             </div>
                                             <div>
@@ -386,7 +839,7 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                                 <p className="text-sm text-gray-600 mt-0.5">{stat.desc}</p>
                                             </div>
                                         </div>
-                                        <p className="text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
+                                        <p className="text-4xl font-black" style={{ color: stat.color, fontFamily: "'Chewy', cursive" }}>{stat.value}</p>
                                     </div>
                                 </div>
                             ))}
@@ -394,13 +847,13 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
 
                         {/* Sin curso */}
                         {!course && (
-                            <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                            <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden border border-gray-200">
                                 <div className="text-center py-16 px-6">
-                                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
-                                        style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
-                                        <BookOpen className="w-10 h-10 text-white" />
+                                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 shadow-lg"
+                                        style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
+                                        <BookOpen className="w-12 h-12 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
                                         Aún no estás inscrito en un curso
                                     </h3>
                                     <p className="text-gray-600 max-w-md mx-auto">
@@ -410,126 +863,48 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                             </div>
                         )}
 
-                        {/* ─── CARDS DE MATERIAS ─── */}
+                        {/* ─── CARDS DE MATERIAS CON SLIDER ─── */}
                         {course && !activeArea && (
-                            <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                    {MATERIAS.map((materia, i) => {
-                                        const Icon = materia.icon;
-                                        const ovas = ovasByArea[materia.area] ?? [];
-                                        const hasOvas = ovas.length > 0;
-
-                                        return (
-                                            <button
-                                                key={materia.area}
-                                                onClick={() => hasOvas && setActiveArea(materia.area)}
-                                                disabled={!hasOvas}
-                                                className={`text-left bg-white rounded-xl shadow-sm border-2 overflow-hidden transition-all duration-300 group relative
-                                                    ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
-                                                    ${hasOvas ? "cursor-pointer hover:shadow-lg hover:-translate-y-1" : "cursor-not-allowed opacity-75"}
-                                                `}
-                                                style={{
-                                                    borderColor: hasOvas ? materia.border : "#E5E7EB",
-                                                    transitionDelay: `${i * 60}ms`,
-                                                }}
-                                            >
-                                                <div 
-                                                    className="h-1.5 w-full"
-                                                    style={{ 
-                                                        background: hasOvas 
-                                                            ? `linear-gradient(to right, ${materia.color}, ${materia.color}cc)` 
-                                                            : "#E5E7EB" 
-                                                    }}
-                                                />
-
-                                                <div className="p-5">
-                                                    <div className="flex items-start justify-between mb-3">
-                                                        <div className="p-3 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-110"
-                                                            style={{ backgroundColor: materia.bg }}>
-                                                            <Icon className="w-6 h-6" style={{ color: materia.color }} />
-                                                        </div>
-                                                        
-                                                        <div className="text-right">
-                                                            <span className="text-2xl font-black" style={{ color: materia.color }}>
-                                                                {ovas.length}
-                                                            </span>
-                                                            <p className="text-xs text-gray-400 font-medium">
-                                                                {ovas.length === 1 ? 'Recurso' : 'Recursos'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <h3 className="text-lg font-bold text-gray-900 mb-1">
-                                                        {materia.area}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500 mb-4">
-                                                        {materia.description}
-                                                    </p>
-
-                                                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                                        {hasOvas ? (
-                                                            <>
-                                                                <div className="flex -space-x-1.5">
-                                                                    {[...Array(Math.min(3, ovas.length))].map((_, idx) => (
-                                                                        <div 
-                                                                            key={idx}
-                                                                            className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                                                                            style={{ 
-                                                                                backgroundColor: materia.color,
-                                                                                opacity: 1 - (idx * 0.15)
-                                                                            }}
-                                                                        />
-                                                                    ))}
-                                                                    {ovas.length > 3 && (
-                                                                        <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center shadow-sm">
-                                                                            <span className="text-gray-600 font-bold text-[10px]">
-                                                                                +{ovas.length - 3}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                                <div className="flex items-center gap-1 text-sm font-bold transition-all duration-300 group-hover:gap-2"
-                                                                    style={{ color: materia.color }}>
-                                                                    Explorar <ChevronRight className="w-4 h-4" />
-                                                                </div>
-                                                            </>
-                                                        ) : (
-                                                            <div className="flex items-center gap-2 text-gray-400 w-full justify-center">
-                                                                <Lock className="w-4 h-4" />
-                                                                <span className="text-sm font-medium">Próximamente</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
+                            <div className="relative">
+                                <div className="text-center mb-10">
+                                    <h2 className="text-4xl font-bold mb-3" style={{ fontFamily: "'Chewy', cursive", color: "#540D6E" }}>
+                                        Explora tus materias
+                                    </h2>
+                                    <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+                                        Selecciona un área para comenzar tu aventura de aprendizaje
+                                    </p>
                                 </div>
-                            </>
+                                
+                                <SubjectSlider 
+                                    subjects={subjectsWithOvas}
+                                    onSelectSubject={handleSelectSubject}
+                                    visible={visible}
+                                />
+                            </div>
                         )}
 
                         {/* ─── VISTA OVAs de una materia ─── */}
                         {activeArea && activeMateria && (
                             <div className={`transition-all duration-500 ${visible ? "opacity-100" : "opacity-0"}`}>
-
-                                {/* Header de retorno */}
                                 <div className="mb-8">
                                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                                         <div className="flex items-start gap-4">
                                             <button
                                                 onClick={() => { setActiveArea(null); setSearch(""); setFilterArea("all"); }}
-                                                className="p-4 rounded-xl shadow-sm border bg-white hover:bg-gray-50 transition-colors"
+                                                className="group p-4 rounded-2xl shadow-md border bg-white/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300 hover:-translate-x-1"
                                                 style={{ borderColor: activeMateria.color }}
                                             >
-                                                <ChevronLeft className="w-6 h-6" style={{ color: activeMateria.color }} />
+                                                <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform duration-300" style={{ color: activeMateria.color }} />
                                             </button>
                                             <div className="flex items-start gap-4">
-                                                <div className="p-4 rounded-xl shadow-sm border" 
-                                                     style={{ backgroundColor: "white", borderColor: activeMateria.color }}>
+                                                <div className="p-4 rounded-2xl shadow-md border bg-white/80 backdrop-blur-sm" 
+                                                     style={{ borderColor: activeMateria.color }}>
                                                     <activeMateria.icon className="w-10 h-10" style={{ color: activeMateria.color }} />
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-4xl font-bold text-gray-900 mb-2">{activeArea}</h2>
+                                                    <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                                                        {activeArea}
+                                                    </h2>
                                                     <p className="text-gray-600 text-base">
                                                         {ovasByArea[activeArea]?.length ?? 0} recurso{(ovasByArea[activeArea]?.length ?? 0) !== 1 ? "s" : ""} disponible{(ovasByArea[activeArea]?.length ?? 0) !== 1 ? "s" : ""} · {course ? `${GRADE_LABELS[course.grade]} ${course.section}` : ""}
                                                     </p>
@@ -539,8 +914,8 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                     </div>
                                 </div>
 
-                                {/* Filtros + Toggle de vista */}
-                                <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                {/* Filtros y Toggle de vista */}
+                                <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6">
                                     <div className="flex flex-col lg:flex-row gap-4">
                                         <div className="relative flex-1">
                                             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -549,7 +924,7 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                                 placeholder={`Buscar recurso en ${activeArea}...`} 
                                                 value={search}
                                                 onChange={e => setSearch(e.target.value)}
-                                                className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
+                                                className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
                                                 style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                                 onFocus={e => e.currentTarget.style.borderColor = activeMateria.color}
                                                 onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"} 
@@ -560,11 +935,11 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                                 </button>
                                             )}
                                         </div>
-                                        <div className="relative">
+                                        <div className="relative w-64">
                                             <select
                                                 value={filterArea}
                                                 onChange={e => setFilterArea(e.target.value)}
-                                                className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                                className="w-full px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
                                                 style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                                 onFocus={e => e.currentTarget.style.borderColor = activeMateria.color}
                                                 onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
@@ -580,24 +955,10 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                         </div>
                                         
                                         {/* Toggle de vista */}
-                                        <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                                            <button
-                                                onClick={() => setViewMode("table")}
-                                                className={`p-2 rounded-md transition-all duration-200 ${
-                                                    viewMode === "table" 
-                                                        ? "bg-white shadow-sm" 
-                                                        : "text-gray-500 hover:text-gray-700"
-                                                }`}
-                                                style={{ 
-                                                    color: viewMode === "table" ? activeMateria.color : undefined 
-                                                }}
-                                                title="Vista de tabla"
-                                            >
-                                                <List className="w-5 h-5" />
-                                            </button>
+                                        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
                                             <button
                                                 onClick={() => setViewMode("grid")}
-                                                className={`p-2 rounded-md transition-all duration-200 ${
+                                                className={`p-2 rounded-lg transition-all duration-200 ${
                                                     viewMode === "grid" 
                                                         ? "bg-white shadow-sm" 
                                                         : "text-gray-500 hover:text-gray-700"
@@ -609,6 +970,20 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                             >
                                                 <LayoutGrid className="w-5 h-5" />
                                             </button>
+                                            <button
+                                                onClick={() => setViewMode("table")}
+                                                className={`p-2 rounded-lg transition-all duration-200 ${
+                                                    viewMode === "table" 
+                                                        ? "bg-white shadow-sm" 
+                                                        : "text-gray-500 hover:text-gray-700"
+                                                }`}
+                                                style={{ 
+                                                    color: viewMode === "table" ? activeMateria.color : undefined 
+                                                }}
+                                                title="Vista de tabla"
+                                            >
+                                                <List className="w-5 h-5" />
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -616,16 +991,16 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                 {/* Indicador de filtros activos */}
                                 {hasActiveFilters && (
                                     <div className="mb-6">
-                                        <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                        <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-4 shadow-sm">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 rounded-lg" style={{ backgroundColor: activeMateria.bg }}>
+                                                <div className="p-2 rounded-xl" style={{ backgroundColor: activeMateria.bg }}>
                                                     <Filter className="w-4 h-4" style={{ color: activeMateria.color }} />
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-gray-900">Filtros Aplicados</p>
                                                     <div className="flex flex-wrap gap-2 mt-1">
                                                         {search && (
-                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-medium"
                                                                 style={{ backgroundColor: activeMateria.bg, borderColor: activeMateria.color, color: activeMateria.color }}>
                                                                 Búsqueda: "{search}"
                                                                 <button onClick={() => setSearch("")} className="hover:bg-white/50 p-0.5 rounded">
@@ -634,7 +1009,7 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                                             </span>
                                                         )}
                                                         {filterArea !== "all" && (
-                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
+                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-medium"
                                                                 style={{ backgroundColor: activeMateria.bg, borderColor: activeMateria.color, color: activeMateria.color }}>
                                                                 Área: {filterArea}
                                                                 <button onClick={() => setFilterArea("all")} className="hover:bg-white/50 p-0.5 rounded">
@@ -645,168 +1020,36 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
+                                            <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all">
                                                 <RotateCcw className="w-4 h-4" /> Limpiar
                                             </button>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Contenido - Tabla o Grid */}
+                                {/* Contenido - Grid o Tabla de OVAs */}
                                 {activeOvas.length > 0 ? (
-                                    viewMode === "table" ? (
-                                        <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full">
-                                                    <thead className="bg-gray-50 border-b border-gray-200">
-                                                        <tr>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2"><BookOpen className="w-4 h-4" /> Recurso</div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                                                                <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> Descripción</div>
-                                                            </th>
-                                                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">Acción</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-100">
-                                                        {activeOvas.map((ova) => (
-                                                            <tr key={ova.id} className="hover:bg-gray-50 transition-colors">
-                                                                <td className="px-6 py-4">
-                                                                    <div className="flex items-center gap-3">
-                                                                        {ova.thumbnail ? (
-                                                                            <img 
-                                                                                src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
-                                                                                alt={ova.tematica}
-                                                                                className="w-12 h-12 rounded-lg object-cover shadow-sm"
-                                                                            />
-                                                                        ) : (
-                                                                            <div className="w-12 h-12 rounded-lg flex items-center justify-center shadow-sm"
-                                                                                 style={{ backgroundColor: activeMateria.bg }}>
-                                                                                <activeMateria.icon className="w-6 h-6" style={{ color: activeMateria.color }} />
-                                                                            </div>
-                                                                        )}
-                                                                        <div>
-                                                                            <p className="text-sm font-bold text-gray-900">{ova.tematica}</p>
-                                                                            <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-xs font-medium"
-                                                                                style={{ backgroundColor: activeMateria.bg, color: activeMateria.color }}>
-                                                                                <activeMateria.icon className="w-3 h-3" />
-                                                                                {ova.area}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-6 py-4">
-                                                                    <p className="text-sm text-gray-600 max-w-lg line-clamp-2">
-                                                                        {ova.description || "Sin descripción disponible"}
-                                                                    </p>
-                                                                </td>
-                                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                                    {ova.url ? (
-                                                                        <a
-                                                                            href={`${ova.url}?ova_id=${ova.id}&course_id=${ova.course?.id}`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm hover:shadow-md"
-                                                                            style={{ 
-                                                                                backgroundColor: activeMateria.color,
-                                                                                color: activeMateria.textColor || '#FFFFFF'
-                                                                            }}
-                                                                            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-                                                                            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-                                                                        >
-                                                                            <PlayCircle className="w-4 h-4" /> Abrir recurso
-                                                                        </a>
-                                                                    ) : (
-                                                                        <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200">
-                                                                            <Clock className="w-4 h-4" /> Próximamente
-                                                                        </span>
-                                                                    )}
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
+                                    viewMode === "grid" ? (
+                                        <OVAGrid 
+                                            ovas={activeOvas} 
+                                            materia={activeMateria} 
+                                            courseId={course?.id} 
+                                        />
                                     ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                            {activeOvas.map((ova, i) => (
-                                                <div key={ova.id} 
-                                                    className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border border-gray-100"
-                                                    style={{ animation: `fadeUp 0.4s ease-out ${i * 60}ms both` }}>
-                                                    
-                                                    {ova.thumbnail ? (
-                                                        <div className="relative overflow-hidden h-40">
-                                                            <img
-                                                                src={ova.thumbnail.startsWith('http') ? ova.thumbnail : `/storage/${ova.thumbnail}`}
-                                                                alt={ova.tematica}
-                                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                            />
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="h-40 flex flex-col items-center justify-center relative overflow-hidden"
-                                                            style={{ 
-                                                                background: `linear-gradient(135deg, ${activeMateria.color}20, ${activeMateria.color}10)`
-                                                            }}>
-                                                            <activeMateria.icon className="w-14 h-14 mb-2 opacity-30 transition-transform duration-300 group-hover:scale-110"
-                                                                style={{ color: activeMateria.color }} />
-                                                            <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full opacity-10"
-                                                                style={{ backgroundColor: activeMateria.color }} />
-                                                            <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full opacity-10"
-                                                                style={{ backgroundColor: activeMateria.color }} />
-                                                        </div>
-                                                    )}
-
-                                                    <div className="p-5">
-                                                        <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
-                                                            style={{ backgroundColor: activeMateria.bg, color: activeMateria.color }}>
-                                                            <activeMateria.icon className="w-3 h-3" />
-                                                            {ova.area}
-                                                        </span>
-
-                                                        <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 leading-snug">
-                                                            {ova.tematica}
-                                                        </h3>
-
-                                                        {ova.description && (
-                                                            <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">
-                                                                {ova.description}
-                                                            </p>
-                                                        )}
-
-                                                        {ova.url ? (
-                                                            <a href={`${ova.url}?ova_id=${ova.id}&course_id=${ova.course?.id}`}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-                                                                style={{ 
-                                                                    backgroundColor: activeMateria.color,
-                                                                    color: activeMateria.textColor || '#FFFFFF'
-                                                                }}
-                                                                onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
-                                                                onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
-                                                                <PlayCircle className="w-4 h-4" /> Abrir recurso OVA
-                                                            </a>
-                                                        ) : (
-                                                            <div className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-gray-400 rounded-xl bg-gray-50 border border-gray-100">
-                                                                <Clock className="w-4 h-4" /> Recurso próximamente
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <OVATable 
+                                            ovas={activeOvas} 
+                                            materia={activeMateria} 
+                                            courseId={course?.id} 
+                                        />
                                     )
                                 ) : (
-                                    <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                                    <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden border border-gray-200">
                                         <div className="text-center py-16 px-6">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-sm"
+                                            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 shadow-lg"
                                                 style={{ backgroundColor: activeMateria.bg }}>
-                                                <Search className="w-10 h-10" style={{ color: activeMateria.color }} />
+                                                <Search className="w-12 h-12" style={{ color: activeMateria.color }} />
                                             </div>
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
                                                 {search || filterArea !== "all" ? "No se encontraron recursos" : "No hay recursos en esta materia"}
                                             </h3>
                                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -815,7 +1058,7 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
                                             {hasActiveFilters && (
                                                 <button 
                                                     onClick={clearFilters}
-                                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all"
+                                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all"
                                                 >
                                                     <RotateCcw className="w-5 h-5" /> Limpiar Filtros
                                                 </button>
@@ -831,28 +1074,131 @@ export default function StudentDashboard({ courses = [], needsAvatar = false }) 
             </main>
 
             <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+                
+                body {
+                    font-family: 'Quicksand', sans-serif;
+                }
+                
+                h1, h2, h3, h4, h5, h6 {
+                    font-family: 'Quicksand', sans-serif;
+                }
+                
                 .line-clamp-2 {
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                 }
+                
                 @keyframes fadeUp {
-                    from { opacity: 0; transform: translateY(12px); }
-                    to   { opacity: 1; transform: translateY(0); }
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
+                
+                @keyframes fadeInRight {
+                    from { opacity: 0; transform: translateX(20px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(20px); }
-                    to   { opacity: 1; transform: translateY(0); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
+                
                 @keyframes slideUp {
                     from { opacity: 0; transform: translateY(30px); }
-                    to   { opacity: 1; transform: translateY(0); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
+                
+                @keyframes float-slow {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(20px, -25px) rotate(5deg); }
+                    50% { transform: translate(-10px, -35px) rotate(-3deg); }
+                    75% { transform: translate(-25px, -20px) rotate(8deg); }
+                }
+                
+                @keyframes float-medium {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    33% { transform: translate(-20px, -30px) rotate(-6deg); }
+                    66% { transform: translate(25px, -20px) rotate(4deg); }
+                }
+                
+                @keyframes float-fast {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    50% { transform: translate(30px, -25px) rotate(10deg); }
+                }
+                
+                @keyframes pulse-slow {
+                    0%, 100% { opacity: 0.06; transform: scale(1); }
+                    50% { opacity: 0.12; transform: scale(1.05); }
+                }
+                
+                @keyframes bubble-slow {
+                    0% {
+                        transform: translateY(0) translateX(0) scale(1);
+                        opacity: 0;
+                    }
+                    20% {
+                        opacity: 0.4;
+                    }
+                    80% {
+                        opacity: 0.2;
+                    }
+                    100% {
+                        transform: translateY(-100px) translateX(30px) scale(1.2);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes bubble-medium {
+                    0% {
+                        transform: translateY(0) translateX(0) scale(1);
+                        opacity: 0;
+                    }
+                    20% {
+                        opacity: 0.35;
+                    }
+                    80% {
+                        opacity: 0.15;
+                    }
+                    100% {
+                        transform: translateY(-120px) translateX(40px) scale(1.3);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes bubble-fast {
+                    0% {
+                        transform: translateY(0) translateX(0) scale(1);
+                        opacity: 0;
+                    }
+                    20% {
+                        opacity: 0.3;
+                    }
+                    80% {
+                        opacity: 0.1;
+                    }
+                    100% {
+                        transform: translateY(-80px) translateX(20px) scale(1.1);
+                        opacity: 0;
+                    }
+                }
+                
+                .animate-float-slow { animation: float-slow 18s ease-in-out infinite; }
+                .animate-float-medium { animation: float-medium 12s ease-in-out infinite; }
+                .animate-float-fast { animation: float-fast 8s ease-in-out infinite; }
+                .animate-pulse-slow { animation: pulse-slow 10s ease-in-out infinite; }
+                .animate-bubble-slow { animation: bubble-slow 8s ease-in-out infinite; }
+                .animate-bubble-medium { animation: bubble-medium 6s ease-in-out infinite; }
+                .animate-bubble-fast { animation: bubble-fast 4s ease-in-out infinite; }
+                
                 .animate-fade-in { 
                     opacity: 0;
                     animation: fadeIn 0.3s ease-out forwards; 
                 }
+                
                 .animate-slide-up { 
                     animation: slideUp 0.3s ease-out forwards; 
                 }

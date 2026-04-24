@@ -121,9 +121,13 @@ export default function Index({ ovas, filters, areas }) {
     useEffect(() => {
         if (flash?.success) {
             setToast({ message: flash.success, type: 'success' });
+            // Limpiar el flash después de mostrarlo
+            flash.success = null;
         }
         if (flash?.error) {
             setToast({ message: flash.error, type: 'error' });
+            // Limpiar el flash después de mostrarlo
+            flash.error = null;
         }
     }, [flash]);
 
@@ -161,13 +165,34 @@ export default function Index({ ovas, filters, areas }) {
     const confirmDelete = () => {
         router.delete(route('admin.ovas.destroy', ovaToDelete.id), {
             preserveScroll: true,
-            onSuccess: () => { 
-                setShowDeleteModal(false); 
+            preserveState: true,
+            onSuccess: (page) => {
+                setShowDeleteModal(false);
                 setOvaToDelete(null);
-                setToast({ message: 'OVA eliminado correctamente', type: 'success' });
+                
+                // Usar el mensaje exacto que viene del servidor
+                if (page.props.flash?.error) {
+                    setToast({ 
+                        message: page.props.flash.error, 
+                        type: 'error' 
+                    });
+                } else if (page.props.flash?.success) {
+                    setToast({ 
+                        message: page.props.flash.success, 
+                        type: 'success' 
+                    });
+                }
             },
-            onError: () => {
-                setToast({ message: 'Error al eliminar el OVA', type: 'error' });
+            onError: (errors) => {
+                setShowDeleteModal(false);
+                setOvaToDelete(null);
+                
+                // Mostrar errores de validación si los hay
+                const errorMessage = Object.values(errors).flat().join('\n') || 'Error al eliminar el OVA';
+                setToast({ 
+                    message: errorMessage, 
+                    type: 'error' 
+                });
             }
         });
     };

@@ -4,11 +4,10 @@ import {
     BookOpen, GraduationCap, Users, Search, X, UserPlus, UserX,
     Layers, ChevronRight, ChevronLeft, Copy, Check, AlertCircle,
     Loader2, LogOut, Menu, Calendar, BarChart3,
-    Shield, User, Home, TrendingUp,
-    Bell, FileText, CheckSquare,
-    Upload, Eye, Edit2,
-    MessageSquare, PlusCircle, Video,
-    FileSpreadsheet, Printer, ListPlus, Award, Trash2, CheckCircle, Info, Trophy
+    Shield, User, Home, TrendingUp, ChevronDown,
+    Bell, FileText, CheckSquare, Upload, Eye, Edit2, Download,
+    PlusCircle, Video, FileSpreadsheet, Printer, ListPlus, 
+    Award, Trash2, CheckCircle, Info, Trophy, ExternalLink
 } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -31,16 +30,17 @@ const escapeCSV = (value) => {
 };
 
 const getCsrfToken = () => {
-    const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (meta) return meta;
-    const cookie = document.cookie
+    // La cookie XSRF-TOKEN siempre está fresca (Laravel la actualiza en cada respuesta).
+    // El meta tag csrf-token puede quedar desactualizado tras navegación SPA con Inertia.
+    const xsrf = document.cookie
         .split('; ')
-        .find(r => r.startsWith('XSRF-TOKEN='))
-        ?.split('=').slice(1).join('=');
-    if (cookie) {
-        try { return decodeURIComponent(cookie); } catch { return cookie; }
+        .find(row => row.startsWith('XSRF-TOKEN='));
+    if (xsrf) {
+        try { return decodeURIComponent(xsrf.split('=')[1]); }
+        catch { return xsrf.split('=')[1]; }
     }
-    return '';
+    // Fallback: meta tag
+    return document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 };
 
 // ─── TOAST NOTIFICATION ───────────────────────────────────────────────────────
@@ -114,10 +114,23 @@ function CredentialsListModal({ credentials, course, onClose }) {
     const [copied, setCopied] = useState({});
     const [copiedAll, setCopiedAll] = useState(false);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
+    const [showDownloadOptions, setShowDownloadOptions] = useState(false);
+    const downloadRef = useRef(null);
 
     const safe = (credentials || []).filter(
         c => c && typeof c === "object" && c.name && c.username && c.pin
     );
+
+    // Cerrar el dropdown al hacer clic fuera
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (downloadRef.current && !downloadRef.current.contains(event.target)) {
+                setShowDownloadOptions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const copyOne = (cred, idx) => {
         navigator.clipboard.writeText(`Usuario: ${cred.username}\nPIN: ${cred.pin}`);
@@ -141,17 +154,19 @@ function CredentialsListModal({ credentials, course, onClose }) {
         a.download = `credenciales_${Date.now()}.csv`;
         a.click();
         URL.revokeObjectURL(a.href);
+        setShowDownloadOptions(false);
     };
 
     const downloadPDF = async () => {
         if (downloadingPdf) return;
         setDownloadingPdf(true);
+        setShowDownloadOptions(false);
         try {
             const response = await fetch(`/teacher/courses/${course.id}/students/bulk`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": getCsrfToken(),
+                    "X-XSRF-TOKEN": getCsrfToken(),
                     "Accept": "application/pdf",
                 },
                 body: JSON.stringify({ generate_pdf: "1", students: safe }),
@@ -194,19 +209,61 @@ function CredentialsListModal({ credentials, course, onClose }) {
                     </button>
                 </div>
                 <div className="px-6 pt-4 pb-2 flex gap-2 justify-end">
-                    <button onClick={copyAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
+                    <button onClick={copyAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
                         {copiedAll ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar todo
                     </button>
-                    <button onClick={downloadCSV} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
-                        <FileSpreadsheet className="w-3.5 h-3.5" /> CSV
-                    </button>
-                    <button onClick={downloadPDF} disabled={downloadingPdf}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg disabled:opacity-60"
-                        style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
-                        {downloadingPdf
-                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
-                            : <><Printer className="w-3.5 h-3.5" /> PDF</>}
-                    </button>
+                    
+                    {/* Botón de Descargar con dropdown */}
+                    <div className="relative" ref={downloadRef}>
+                        <button 
+                            onClick={() => setShowDownloadOptions(!showDownloadOptions)}
+                            disabled={downloadingPdf}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm disabled:opacity-60"
+                            style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}
+                        >
+                            {downloadingPdf ? (
+                                <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="w-3.5 h-3.5" /> Descargar
+                                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDownloadOptions ? 'rotate-180' : ''}`} />
+                                </>
+                            )}
+                        </button>
+                        
+                        {/* Dropdown menu */}
+                        {showDownloadOptions && !downloadingPdf && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50 animate-fade-in"
+                                style={{ animation: "modalIn 0.15s ease-out" }}>
+                                <button
+                                    onClick={downloadCSV}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors"
+                                >
+                                    <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#E8F5F0" }}>
+                                        <FileSpreadsheet className="w-4 h-4" style={{ color: "#0EAD69" }} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-medium text-slate-900">CSV</p>
+                                        <p className="text-xs text-slate-500">Hoja de cálculo</p>
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={downloadPDF}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors"
+                                >
+                                    <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
+                                        <FileText className="w-4 h-4" style={{ color: "#EE4266" }} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-medium text-slate-900">PDF</p>
+                                        <p className="text-xs text-slate-500">Documento pdf</p>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="px-6 pb-4 overflow-y-auto" style={{ maxHeight: "calc(85vh - 200px)" }}>
                     <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -300,8 +357,19 @@ function AddStudentModal({ course, onClose, onSuccess }) {
         setSubmitting(true);
         router.post(
             route("teacher.courses.students.store", course.id),
-            { student_id: selected.id },
-            { preserveScroll: true, onFinish: () => setSubmitting(false), onSuccess: () => onClose() }
+            { student_id: selected.id, stay_on_page: true },
+            { 
+                preserveScroll: true, 
+                preserveState: true,
+                onFinish: () => setSubmitting(false), 
+                onSuccess: (page) => {
+                    onClose();
+                    const cred = page.props.flash?.credentials;
+                    if (cred && onSuccess) {
+                        onSuccess([{ name: selected.name, username: cred.username, pin: String(cred.pin) }]);
+                    }
+                }
+            }
         );
     };
 
@@ -311,9 +379,10 @@ function AddStudentModal({ course, onClose, onSuccess }) {
         setSubmitting(true);
         router.post(
             route("teacher.courses.students.store", course.id),
-            { name },
+            { name, stay_on_page: true },
             {
                 preserveScroll: true,
+                preserveState: true,
                 onFinish: () => setSubmitting(false),
                 onSuccess: (page) => {
                     const cred = page.props.flash?.credentials;
@@ -329,9 +398,10 @@ function AddStudentModal({ course, onClose, onSuccess }) {
         setSubmitting(true);
         router.post(
             route("teacher.courses.students.bulk", course.id),
-            { students: studentsList },
+            { students: studentsList, stay_on_page: true },
             {
                 preserveScroll: true,
+                preserveState: true,
                 onFinish: () => setSubmitting(false),
                 onSuccess: (page) => {
                     const bulk = page.props.flash?.bulk_credentials;
@@ -618,7 +688,6 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
             const validOvas = ovasArray.filter(ova => ova.url && ova.url.trim() !== '');
             setAvailableOvas(validOvas);
             
-            // Seleccionar la primera área disponible por defecto
             const ovasByAreaTemp = {};
             validOvas.forEach(ova => {
                 if (!ovasByAreaTemp[ova.area]) ovasByAreaTemp[ova.area] = [];
@@ -637,14 +706,12 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
         }
     };
 
-    // Agrupar OVAs por área
     const ovasByArea = {};
     availableOvas.forEach(ova => {
         if (!ovasByArea[ova.area]) ovasByArea[ova.area] = [];
         ovasByArea[ova.area].push(ova);
     });
 
-    // Obtener áreas que tienen OVAs
     const areasWithOvas = AREAS.filter(area => ovasByArea[area] && ovasByArea[area].length > 0);
 
     const handleAssign = async () => {
@@ -653,7 +720,6 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
             return;
         }
         setSubmitting(true);
-        setError(null);
         try {
             const response = await fetch(
                 route('teacher.courses.ovas.assign', course.id),
@@ -662,31 +728,33 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-XSRF-TOKEN': getCsrfToken(),
                         'X-Requested-With': 'XMLHttpRequest',
                     },
                     credentials: 'same-origin',
                     body: JSON.stringify({ ova_ids: selectedOvas }),
                 }
             );
-
-            if (response.status === 419) { window.location.reload(); return; }
-            if (response.status === 403) { showToast('No tienes permiso para realizar esta acción', 'error'); return; }
-
+            if (response.status === 419) {
+                showToast('Sesión expirada. Recargando...', 'info');
+                setTimeout(() => window.location.reload(), 1000);
+                return;
+            }
+            if (response.status === 403) {
+                showToast('No tienes permiso para realizar esta acción', 'error');
+                return;
+            }
             const result = await response.json();
-
             if (response.ok && result?.success) {
                 if (onSuccess) onSuccess(result.data ?? null);
                 onClose();
                 setTimeout(() => {
-                    const toastEvent = new CustomEvent('showToast', { 
+                    window.dispatchEvent(new CustomEvent('showToast', { 
                         detail: { message: `${selectedOvas.length} OVA(s) asignado(s) correctamente`, type: 'success' }
-                    });
-                    window.dispatchEvent(toastEvent);
+                    }));
                 }, 300);
             } else {
-                const errorMsg = result?.message || 'Error al asignar los OVAs';
-                showToast(errorMsg, 'error');
+                showToast(result?.message || 'Error al asignar los OVAs', 'error');
             }
         } catch (err) {
             showToast('Error de red al asignar los OVAs.', 'error');
@@ -748,7 +816,6 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                 </div>
 
                 <div className="flex h-full" style={{ maxHeight: "calc(90vh - 130px)" }}>
-                    {/* Sidebar de áreas - SIN el botón "Todas las áreas" */}
                     <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto flex-shrink-0">
                         <div className="p-3">
                             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 px-2">Áreas</div>
@@ -785,7 +852,6 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                         </div>
                     </div>
 
-                    {/* Contenido de OVAs - SOLO muestra el área seleccionada */}
                     <div className="flex-1 overflow-y-auto p-6">
                         {loading ? (
                             <div className="flex justify-center py-12">
@@ -813,7 +879,6 @@ function AssignOvaModal({ course, onClose, onSuccess }) {
                                 </p>
                             </div>
                         ) : selectedArea && ovasByArea[selectedArea] ? (
-                            // Mostrar solo el área seleccionada
                             (() => {
                                 const area = selectedArea;
                                 const ovas = ovasByArea[area];
@@ -983,6 +1048,8 @@ function RendimientoTab({ course }) {
         }
     };
 
+    const courseName = `${GRADE_LABELS[course.grade] ?? course.grade} - Sección ${course.section}`;
+
     if (loading) {
         return (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
@@ -1026,6 +1093,25 @@ function RendimientoTab({ course }) {
 
     return (
         <div className="space-y-6 animate-fade-in">
+            {/* Mensaje introductorio centrado */}
+            <div className="flex justify-center">
+                <div className="bg-gradient-to-r from-purple-50 via-white to-purple-50/30 rounded-2xl border border-purple-100 p-6 shadow-sm max-w-7xl w-full">
+                    <div className="text-center space-y-3">
+                        <div className="flex items-center justify-center gap-3">
+                            <div className="p-2.5 rounded-xl" style={{ backgroundColor: "#F3E8FF" }}>
+                                <BarChart3 className="w-5 h-5" style={{ color: "#540D6E" }} />
+                            </div>
+                            <h3 className="font-bold text-gray-900 text-lg">Desempeño General del Curso</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 leading-relaxed max-w-5xl mx-auto">
+                            Aquí encontrarás el listado de estudiantes de <strong style={{ color: "#540D6E" }}>{courseName}</strong>, 
+                            ordenados de mayor a menor rendimiento según el promedio obtenido en las calificaciones 
+                            de todos los OVAs asignados a este curso.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {/* Podio de Honor con escalones traslúcidos */}
             {top3.length > 0 && (
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -1201,8 +1287,13 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
 
     const loadOvas = async () => {
         try {
+            const csrfToken = getCsrfToken();
             const response = await fetch(`/teacher/courses/${course.id}/ovas`, {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 
+                    'Accept': 'application/json', 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-XSRF-TOKEN': csrfToken
+                },
                 credentials: 'same-origin'
             });
             if (response.ok) {
@@ -1239,29 +1330,55 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
 
     const confirmRemoveOva = async () => {
         if (!ovaToRemove) return;
+        
         try {
+            const csrfToken = getCsrfToken();
+            
+            // Si no hay token, mostrar error
+            if (!csrfToken) {
+                showToast('Error de autenticación. Recargando página...', 'error');
+                setTimeout(() => window.location.reload(), 1500);
+                return;
+            }
+            
             const response = await fetch(`/teacher/courses/${course.id}/ovas/${ovaToRemove.id}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': getCsrfToken(),
+                    'X-XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 credentials: 'same-origin'
             });
-            if (response.status === 419) { alert('Sesión expirada. Recargando...'); window.location.reload(); return; }
-            if (response.status === 403) { showToast('No tienes permiso para realizar esta acción', 'error'); return; }
+            
+            if (response.status === 419) {
+                // Token expirado, recargar para obtener uno nuevo
+                showToast('Sesión expirada. Recargando...', 'info');
+                setTimeout(() => window.location.reload(), 1000);
+                return;
+            }
+            
+            if (response.status === 403) {
+                showToast('No tienes permiso para realizar esta acción', 'error');
+                return;
+            }
+            
             const result = await response.json().catch(() => null);
+            
             if (response.ok && result?.success) {
-                if (result.data && Array.isArray(result.data)) setOvas(result.data);
-                else await loadOvas();
+                if (result.data && Array.isArray(result.data)) {
+                    setOvas(result.data);
+                } else {
+                    await loadOvas();
+                }
                 setOvaToRemove(null);
                 showToast('OVA retirado del curso', 'success');
             } else {
-                showToast(result?.message || `Error al remover el OVA`, 'error');
+                showToast(result?.message || 'Error al remover el OVA', 'error');
             }
         } catch (error) {
+            console.error('Error en confirmRemoveOva:', error);
             showToast('Error de red al remover el OVA', 'error');
         }
     };
@@ -1279,8 +1396,16 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
     const pageTabs = [
         { id: "students", label: "Estudiantes", icon: Users, count: students.length },
         { id: "ovas", label: "Recursos OVAs", icon: Layers, count: ovas.length },
-        { id: "rendimiento", label: "Rendimiento Académico", icon: BarChart3, count: null },
+        { id: "rendimiento", label: "Desempeño General", icon: BarChart3, count: null },
     ];
+
+    // Agrupar OVAs por área para la vista
+    const ovasByArea = {};
+    ovas.forEach(ova => {
+        if (!ovasByArea[ova.area]) ovasByArea[ova.area] = [];
+        ovasByArea[ova.area].push(ova);
+    });
+    const areasWithOvas = Object.keys(ovasByArea).sort();
 
     return (
         <>
@@ -1325,28 +1450,26 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <button className="relative p-2.5 bg-white border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
-                                        <Bell className="w-5 h-5 text-gray-600" />
-                                        <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ backgroundColor: "#EE4266" }} />
-                                    </button>
-                                    <button className="p-2.5 bg-white border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
-                                        <MessageSquare className="w-5 h-5 text-gray-600" />
-                                    </button>
-                                </div>
+                                <Link 
+                                    href={route("teacher.dashboard")}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-300 rounded-xl hover:bg-[#540D6E] hover:text-white hover:border-[#540D6E] transition-all text-gray-700 font-medium shadow-sm"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                    <span>Regresar</span>
+                                </Link>
                             </div>
                         </div>
 
-                        {/* Stats - Solo 3 tarjetas */}
+                        {/* Stats */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                             {[
                                 { label: "Estudiantes", value: students.length, sub: "Inscritos en el curso", Icon: Users, bg: "#F3E8FF", color: "#540D6E" },
-                                { label: "Rendimiento", value: "87%", sub: "Promedio general", Icon: Award, bg: "#E8F5F0", color: "#0EAD69" },
-                                { label: "OVAs", value: ovas.length, sub: "Recursos disponibles", Icon: Layers, bg: "#FEE2E2", color: "#EE4266" },
+                                { label: "OVAs asignados", value: ovas.length, sub: "Recursos disponibles", Icon: Layers, bg: "#E8F5F0", color: "#0EAD69" },
+                                { label: "Áreas cubiertas", value: areasWithOvas.length, sub: "Áreas temáticas", Icon: BookOpen, bg: "#FEE2E2", color: "#EE4266" },
                             ].map(({ label, value, sub, Icon, bg, color }) => (
-                                <div key={label} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all">
+                                <div key={label} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all">
                                     <div className="flex items-start gap-3">
-                                        <div className="p-3 rounded-lg" style={{ backgroundColor: bg }}>
+                                        <div className="p-3 rounded-xl" style={{ backgroundColor: bg }}>
                                             <Icon className="w-6 h-6" style={{ color }} />
                                         </div>
                                         <div>
@@ -1359,7 +1482,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             ))}
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 overflow-hidden">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
                             <div className="flex divide-x divide-gray-200">
                                 {pageTabs.map(({ id, label, icon: Icon, count }) => (
                                     <button key={id} onClick={() => setTab(id)}
@@ -1379,7 +1502,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
 
                         {tab === "students" && (
                             <div className="space-y-6 animate-fade-in">
-                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         <div className="relative flex-1">
                                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -1387,7 +1510,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                                 placeholder="Buscar estudiante por nombre o username..."
                                                 value={search}
                                                 onChange={e => setSearch(e.target.value)}
-                                                className="w-full pl-9 pr-9 py-3 text-sm border border-gray-200 rounded-lg focus:outline-none transition-all"
+                                                className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none transition-all bg-gray-50 focus:bg-white"
                                                 onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                                 onBlur={e => e.currentTarget.style.borderColor = "#E2E8F0"}
                                             />
@@ -1398,7 +1521,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                             )}
                                         </div>
                                         <button onClick={() => setShowAddModal(true)}
-                                            className="px-4 py-3 text-sm font-bold text-white rounded-lg transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+                                            className="px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all shadow-sm hover:shadow-md flex items-center gap-2"
                                             style={{ backgroundColor: "#540D6E" }}
                                             onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
                                             onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
@@ -1408,14 +1531,14 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                 </div>
 
                                 {filteredStudents.length > 0 ? (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                         <div className="overflow-x-auto">
                                             <table className="w-full">
                                                 <thead className="bg-gray-50 border-b border-gray-200">
                                                     <tr>
-                                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Estudiante</th>
-                                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Usuario</th>
-                                                        <th className="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Acciones</th>
+                                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Estudiante</th>
+                                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Usuario</th>
+                                                        <th className="px-6 py-3 text-right text-xs font-bold text-gray-600 uppercase">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100">
@@ -1423,15 +1546,15 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                                         <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                                                             <td className="px-6 py-4">
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                                                                        style={{ background: "linear-gradient(to bottom right, #540D6E, #EE4266)" }}>
+                                                                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm"
+                                                                        style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
                                                                         {getInitials(student.name)}
                                                                     </div>
                                                                     <span className="text-sm font-semibold text-gray-900">{student.name}</span>
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4">
-                                                                <span className="text-sm font-mono text-gray-600">@{student.username}</span>
+                                                                <span className="text-sm font-mono text-gray-500">@{student.username}</span>
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <button onClick={() => setStudentToRemove(student)}
@@ -1454,7 +1577,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 py-16 text-center">
                                         {search ? (
                                             <>
                                                 <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -1463,14 +1586,14 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                             </>
                                         ) : (
                                             <>
-                                                <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                                                <div className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4"
                                                     style={{ background: "linear-gradient(135deg, #540D6E10, #EE426610)" }}>
-                                                    <Users className="w-10 h-10" style={{ color: "#540D6E40" }} />
+                                                    <Users className="w-12 h-12" style={{ color: "#540D6E40" }} />
                                                 </div>
                                                 <p className="text-base font-bold text-gray-700 mb-1">No hay estudiantes inscritos</p>
                                                 <p className="text-sm text-gray-400 mb-4">Comienza agregando estudiantes al curso</p>
                                                 <button onClick={() => setShowAddModal(true)}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white rounded-lg"
+                                                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm hover:shadow-md transition-all"
                                                     style={{ backgroundColor: "#540D6E" }}>
                                                     <UserPlus className="w-4 h-4" /> Agregar Estudiante
                                                 </button>
@@ -1485,7 +1608,7 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                             <div className="space-y-6 animate-fade-in">
                                 <div className="flex justify-end">
                                     <button onClick={() => setShowAssignOvaModal(true)}
-                                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white rounded-lg shadow-sm hover:shadow-md transition-all"
+                                        className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm hover:shadow-md transition-all"
                                         style={{ backgroundColor: "#540D6E" }}
                                         onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
                                         onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>
@@ -1494,47 +1617,137 @@ export default function TeacherCourseShow({ course, students, courseOvas = [] })
                                 </div>
 
                                 {ovas.length === 0 ? (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 py-16 text-center">
-                                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 py-16 text-center">
+                                        <div className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4"
                                             style={{ background: "linear-gradient(135deg, #540D6E10, #EE426610)" }}>
-                                            <Layers className="w-10 h-10" style={{ color: "#540D6E40" }} />
+                                                <Layers className="w-12 h-12" style={{ color: "#540D6E40" }} />
                                         </div>
                                         <p className="text-base font-bold text-gray-700 mb-1">No hay OVAs asignados</p>
-                                        <p className="text-sm text-gray-400 mb-4">Comienza asignando recursos OVA al curso</p>
+                                        <p className="text-sm text-gray-400 mb-4">Asigna recursos educativos para tus estudiantes</p>
                                         <button onClick={() => setShowAssignOvaModal(true)}
-                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white rounded-lg"
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm hover:shadow-md transition-all"
                                             style={{ backgroundColor: "#540D6E" }}>
                                             <PlusCircle className="w-4 h-4" /> Asignar OVAs
                                         </button>
-                                    </div>
+                                        </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {ovas.map(ova => (
-                                            <div key={ova.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all">
-                                                <div className="p-5">
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex items-start gap-3 flex-1">
-                                                            <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: "#F3E8FF" }}>
-                                                                <Video className="w-5 h-5" style={{ color: "#540D6E" }} />
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "#540D6E" }}>
-                                                                    {ova.area}
-                                                                </p>
-                                                                <h3 className="font-bold text-gray-900">{ova.tematica}</h3>
-                                                                <p className="text-sm text-gray-500 mt-1">{ova.description || "Sin descripción"}</p>
-                                                                {ova.url && (
-                                                                    <a href={ova.url} target="_blank" rel="noopener noreferrer"
-                                                                        className="text-xs text-purple-600 hover:text-purple-700 mt-2 inline-flex items-center gap-1">
-                                                                        <Eye className="w-3 h-3" /> Ver recurso
-                                                                    </a>
-                                                                )}
-                                                            </div>
+                                    <div className="space-y-6">
+                                        {areasWithOvas.map(area => (
+                                            <div key={area} 
+                                                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:shadow-purple-100/20 transition-all duration-300">
+                                                
+                                                {/* Header del área - Diseño con gradiente */}
+                                                <div className="px-6 py-4 flex items-center justify-between bg-gradient-to-r from-purple-50 via-white to-purple-50/30 border-b-2 border-purple-100">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full shadow-sm" 
+                                                                style={{ 
+                                                                    background: "#540D6E",
+                                                                    boxShadow: "0 2px 4px rgba(84, 13, 110, 0.2)"
+                                                                }} 
+                                                            />
+                                                            <h3 className="text-lg font-bold" style={{ color: "#540D6E" }}>
+                                                                {area}
+                                                            </h3>
                                                         </div>
-                                                        <button onClick={() => setOvaToRemove(ova)}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors flex-shrink-0">
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
+                                                    </div>
+                                                    <span 
+                                                        className="px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm"
+                                                        style={{ 
+                                                            background: "linear-gradient(135deg, #F3E8FF, #EDE9FE)",
+                                                            color: "#540D6E",
+                                                            border: "1px solid rgba(84, 13, 110, 0.1)"
+                                                        }}
+                                                    >
+                                                        {ovasByArea[area].length} {ovasByArea[area].length === 1 ? 'recurso' : 'recursos'}
+                                                    </span>
+                                                </div>
+                                                
+                                                {/* Contenido de OVAs */}
+                                                <div className="p-6">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        {ovasByArea[area].map(ova => (
+                                                            <div key={ova.id} 
+                                                                className="group bg-white rounded-xl border-2 border-gray-100 hover:border-purple-100 hover:shadow-lg hover:shadow-purple-50 transition-all duration-300 overflow-hidden relative">
+                                                                
+                                                                {/* Línea decorativa al hacer hover */}
+                                                                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-900 to-red-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                                                                
+                                                                <div className="p-5">
+                                                                    <div className="flex items-start gap-4">
+                                                                        {/* Icono del OVA */}
+                                                                        <div className="relative flex-shrink-0">
+                                                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                                                                style={{ backgroundColor: "#F3E8FF" }}>
+                                                                                <Video className="w-5 h-5" style={{ color: "#540D6E" }} />
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        {/* Información del OVA */}
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <h4 className="font-bold text-gray-900 mb-1.5 group-hover:text-purple-900 transition-colors">
+                                                                                {ova.tematica}
+                                                                            </h4>
+                                                                            
+                                                                            <div className="relative mb-4">
+                                                                                <p className="text-sm text-gray-500 line-clamp-2 group-hover:text-gray-600 transition-colors">
+                                                                                    {ova.description || "Sin descripción disponible"}
+                                                                                </p>
+                                                                            </div>
+                                                                            
+                                                                            {/* Botón de recurso principal */}
+                                                                            {ova.url ? (
+                                                                                <a 
+                                                                                    href={ova.url} 
+                                                                                    target="_blank" 
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all duration-200 hover:shadow-lg active:scale-95"
+                                                                                    style={{ 
+                                                                                        backgroundColor: "#540D6E",
+                                                                                        boxShadow: "0 4px 6px -1px rgba(84, 13, 110, 0.1)"
+                                                                                    }}
+                                                                                    onMouseEnter={e => {
+                                                                                        e.currentTarget.style.backgroundColor = "#6B1689";
+                                                                                        e.currentTarget.style.boxShadow = "0 8px 12px -3px rgba(84, 13, 110, 0.2)";
+                                                                                    }}
+                                                                                    onMouseLeave={e => {
+                                                                                        e.currentTarget.style.backgroundColor = "#540D6E";
+                                                                                        e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(84, 13, 110, 0.1)";
+                                                                                    }}
+                                                                                >
+                                                                                    <ExternalLink className="w-4 h-4" />
+                                                                                    <span>Ver recurso</span>
+                                                                                </a>
+                                                                            ) : (
+                                                                                <span className="inline-flex items-center gap-1.5 text-xs text-gray-400 italic">
+                                                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                                                                    </svg>
+                                                                                    Recurso no disponible
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        
+                                                                        {/* Botón eliminar */}
+                                                                        <button 
+                                                                            onClick={() => setOvaToRemove(ova)}
+                                                                            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-2 rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-1.5"
+                                                                            style={{ color: "#EE4266" }}
+                                                                            onMouseEnter={e => {
+                                                                                e.currentTarget.style.backgroundColor = "#FEE2E2";
+                                                                            }}
+                                                                            onMouseLeave={e => {
+                                                                                e.currentTarget.style.backgroundColor = "transparent";
+                                                                            }}
+                                                                            title="Retirar OVA"
+                                                                        >
+                                                                            <Trash2 className="w-4 h-4" />
+                                                                            <span className="text-xs font-medium">Retirar</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>

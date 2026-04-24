@@ -566,21 +566,21 @@ export default function Students({ users = [], stats = {} }) {
                                                                     style={{ backgroundColor: active ? "#6B7280" : "#0EAD69" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = active ? "#4B5563" : "#059669"}
                                                                     onMouseLeave={e => e.currentTarget.style.backgroundColor = active ? "#6B7280" : "#0EAD69"}>
-                                                                    {active ? <><EyeOff className="w-4 h-4" /> Desactivar</> : <><Power className="w-4 h-4" /> Activar</>}
+                                                                    {active ? <><EyeOff className="w-4 h-4" /> </> : <><Power className="w-4 h-4" /> </>}
                                                                 </button>
                                                                 <Link href={route("admin.users.edit", u.id)}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
                                                                     style={{ backgroundColor: "#FFD23F" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
                                                                     onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}>
-                                                                    <Edit2 className="w-4 h-4" /> Editar
+                                                                    <Edit2 className="w-4 h-4" /> 
                                                                 </Link>
                                                                 <button onClick={() => handleDeleteClick(u)}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
                                                                     style={{ backgroundColor: "#EE4266" }}
                                                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
                                                                     onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}>
-                                                                    <Trash2 className="w-4 h-4" /> Eliminar
+                                                                    <Trash2 className="w-4 h-4" /> 
                                                                 </button>
                                                             </div>
                                                         </td>

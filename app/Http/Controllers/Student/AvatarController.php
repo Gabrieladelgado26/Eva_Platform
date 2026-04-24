@@ -16,7 +16,7 @@ class AvatarController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // No redirigir - permitir cambiar avatar incluso si ya tiene uno
         return Inertia::render('Student/Avatar/Index', [
             'currentAvatar' => $user->avatar,
@@ -35,9 +35,21 @@ class AvatarController extends Controller
         $user = Auth::user();
         $user->update(['avatar' => $request->avatar]);
 
-        // Redirigir al dashboard con mensaje de éxito
+        // Obtener el nombre del avatar seleccionado
+        $avatarNames = [
+            'avatar1' => 'Pili',
+            'avatar2' => 'Willy',
+            'avatar3' => 'Pipe',
+            'avatar4' => 'Beto',
+            'avatar5' => 'Ivy',
+            'avatar6' => 'Juli',
+        ];
+
+        $avatarName = $avatarNames[$request->avatar] ?? 'tu nuevo avatar';
+
+        // Redirigir de vuelta a la misma página (avatar.index) con mensaje de éxito
         return redirect()
-            ->route('student.dashboard')
-            ->with('success', '¡Avatar seleccionado correctamente!');
+            ->route('student.avatar.index')
+            ->with('success', '¡Fantástico! Ahora ' . $avatarName . ' te acompañará en tu aventura');
     }
 }

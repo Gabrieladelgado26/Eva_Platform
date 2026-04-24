@@ -798,7 +798,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 @keyframes slideDown {
                     from {
                         opacity: 0;

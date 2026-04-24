@@ -10,7 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <script src="https://use.edgefonts.net/chewy:n4:all.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
@@ -23,11 +23,11 @@
         @inertia
 
         <!-- Scripts globales -->
-        <script src="/js/jquery-1.10.2.min.js"></script>
-        <script src="/js/bootstrap.js"></script>
-        <script src="/js/ovas/matematicas/adicion-sustraccion/audios.js"></script>
-        <script src="/js/ovas/matematicas/adicion-sustraccion/hover.js"></script>
-        <script src="/js/ovas/modals.js"></script>
-        <script src="/js/ovas/resize.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/jquery-1.10.2.min.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/bootstrap.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/audios.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/hover.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/modals.js"></script>
+        <script src="/Ovas/Matematicas/Adicion-Sustraccion/js/resize.js"></script>
     </body>
 </html>

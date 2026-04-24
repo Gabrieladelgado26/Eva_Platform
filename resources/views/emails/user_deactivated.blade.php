@@ -84,7 +84,7 @@
                                     <td align="center">
                                         <p style="margin: 0; color: #7f8c8d; font-size: 13px;">
                                             Para más información: 
-                                            <a href="mailto:admin@evaplatform.com" style="color: #540D6E; text-decoration: none;">admin@evaplatform.com</a>
+                                            <a href="mailto:evaplatformservice@gmail.com" style="color: #540D6E; text-decoration: none;">admin@evaplatform.com</a>
                                         </p>
                                     </td>
                                 </tr>

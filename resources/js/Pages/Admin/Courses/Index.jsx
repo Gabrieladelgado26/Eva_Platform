@@ -5,7 +5,7 @@ import {
     BookOpen, Plus, Edit2, Trash2, Search, X, RotateCcw,
     AlertCircle, Power, Users, Calendar, GraduationCap,
     ChevronDown, Filter, ChevronLeft, ChevronRight, EyeOff,
-    CheckCircle, AlertTriangle
+    CheckCircle, AlertTriangle, UserPlus
 } from "lucide-react";
 
 const GRADES = [
@@ -473,33 +473,52 @@ export default function Index({ courses, teachers, filters }) {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                                         <div className="flex items-center justify-end gap-2">
+                                                            {/* Botón Estudiantes (segundo) */}
+                                                            <Link
+                                                                href={route("admin.courses.students", course.id)}
+                                                                className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                                                                style={{ backgroundColor: "#3BCEAC" }}
+                                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#2BA88E"}
+                                                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#3BCEAC"}
+                                                                title="Gestionar estudiantes del curso"
+                                                            >
+                                                                <Users className="w-4 h-4 text-white" />
+                                                            </Link>
+                                                            
+                                                            {/* Botón Activar/Desactivar (primero) */}
                                                             <button
                                                                 onClick={() => handleToggleClick(course)}
-                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
+                                                                className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                                                                 style={{ backgroundColor: course.is_active ? "#6B7280" : "#0EAD69" }}
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = course.is_active ? "#4B5563" : "#059669"}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = course.is_active ? "#6B7280" : "#0EAD69"}
+                                                                title={course.is_active ? "Desactivar curso" : "Activar curso"}
                                                             >
-                                                                <Power className="w-4 h-4" />
-                                                                {course.is_active ? "Desactivar" : "Activar"}
+                                                                <Power className="w-4 h-4 text-white" />
                                                             </button>
+                                                            
+                                                            {/* Botón Editar */}
                                                             <Link
                                                                 href={route("admin.courses.edit", course.id)}
-                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all shadow-sm hover:shadow-md"
+                                                                className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                                                                 style={{ backgroundColor: "#FFD23F" }}
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
+                                                                title="Editar curso"
                                                             >
-                                                                <Edit2 className="w-4 h-4" /> Editar
+                                                                <Edit2 className="w-4 h-4 text-gray-700" />
                                                             </Link>
+                                                            
+                                                            {/* Botón Eliminar */}
                                                             <button
                                                                 onClick={() => handleDeleteClick(course)}
-                                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
+                                                                className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                                                                 style={{ backgroundColor: "#EE4266" }}
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
+                                                                title="Eliminar curso"
                                                             >
-                                                                <Trash2 className="w-4 h-4" /> Eliminar
+                                                                <Trash2 className="w-4 h-4 text-white" />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -601,6 +620,208 @@ export default function Index({ courses, teachers, filters }) {
                     </div>
                 </div>
             </main>
+
+            {/* Modal de Creación */}
+            {showCreateModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+                        <div className="p-6">
+                            <button onClick={() => setShowCreateModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                                    <Plus className="w-6 h-6" style={{ color: "#540D6E" }} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Crear Curso</h3>
+                            </div>
+                            <form onSubmit={handleSubmitCreate} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Grado *</label>
+                                    <select
+                                        value={formData.grade}
+                                        onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        required
+                                    >
+                                        <option value="">Seleccione un grado</option>
+                                        {GRADES.map(grade => (
+                                            <option key={grade.value} value={grade.value}>{grade.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Sección *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.section}
+                                        onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        placeholder="Ej: A, B, C"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Docente *</label>
+                                    <select
+                                        value={formData.teacher_id}
+                                        onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        required
+                                    >
+                                        <option value="">Seleccione un docente</option>
+                                        {teachers.map(teacher => (
+                                            <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Año Escolar *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.school_year}
+                                        onChange={(e) => setFormData({ ...formData, school_year: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        placeholder="Ej: 2024"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        rows="3"
+                                        placeholder="Descripción del curso (opcional)"
+                                    />
+                                </div>
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCreateModal(false)}
+                                        className="flex-1 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                                        style={{ backgroundColor: "#540D6E" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
+                                    >
+                                        Crear Curso
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Edición */}
+            {showEditModal && selectedCourse && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowEditModal(false)} />
+                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
+                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+                        <div className="p-6">
+                            <button onClick={() => setShowEditModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2.5 rounded-lg" style={{ backgroundColor: "#F3E8FF" }}>
+                                    <Edit2 className="w-6 h-6" style={{ color: "#540D6E" }} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Editar Curso</h3>
+                            </div>
+                            <form onSubmit={handleSubmitEdit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Grado *</label>
+                                    <select
+                                        value={formData.grade}
+                                        onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        required
+                                    >
+                                        <option value="">Seleccione un grado</option>
+                                        {GRADES.map(grade => (
+                                            <option key={grade.value} value={grade.value}>{grade.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Sección *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.section}
+                                        onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        placeholder="Ej: A, B, C"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Docente *</label>
+                                    <select
+                                        value={formData.teacher_id}
+                                        onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        required
+                                    >
+                                        <option value="">Seleccione un docente</option>
+                                        {teachers.map(teacher => (
+                                            <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Año Escolar *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.school_year}
+                                        onChange={(e) => setFormData({ ...formData, school_year: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        placeholder="Ej: 2024"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                        rows="3"
+                                        placeholder="Descripción del curso (opcional)"
+                                    />
+                                </div>
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEditModal(false)}
+                                        className="flex-1 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                                        style={{ backgroundColor: "#540D6E" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
+                                    >
+                                        Actualizar Curso
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Modal de Confirmación para Activar/Desactivar */}
             {showToggleModal && selectedCourse && (

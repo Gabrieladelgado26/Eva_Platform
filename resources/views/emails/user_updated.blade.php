@@ -100,7 +100,7 @@
                                     <td align="center">
                                         <p style="margin: 0; color: #7f8c8d; font-size: 13px;">
                                             ¿No reconoce este cambio? 
-                                            <a href="mailto:soporte@evaplatform.com" style="color: #540D6E; text-decoration: none;">soporte@evaplatform.com</a>
+                                            <a href="mailto:evaplatformservice@gmail.com" style="color: #540D6E; text-decoration: none;">soporte@evaplatform.com</a>
                                         </p>
                                     </td>
                                 </tr>

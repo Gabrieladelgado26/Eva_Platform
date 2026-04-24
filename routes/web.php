@@ -187,6 +187,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('courses/{course}', [AdminCourseController::class, 'update'])->name('courses.update');
         Route::delete('courses/{course}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
         Route::patch('courses/{course}/toggle-status', [AdminCourseController::class, 'toggleStatus'])->name('courses.toggleStatus');
+        
+        Route::get('courses/{course}/students', [App\Http\Controllers\Admin\CourseController::class, 'students'])->name('courses.students');
+        Route::get('courses/{course}/students/search', [App\Http\Controllers\Admin\CourseController::class, 'searchStudents'])->name('courses.students.search');
+        Route::post('courses/{course}/students/store', [App\Http\Controllers\Admin\CourseController::class, 'storeStudent'])->name('courses.students.store');
+        Route::post('courses/{course}/students/bulk', [App\Http\Controllers\Admin\CourseController::class, 'bulkStoreStudents'])->name('courses.students.bulk');
+        Route::delete('courses/{course}/students/{student}', [App\Http\Controllers\Admin\CourseController::class, 'destroyStudent'])->name('courses.students.destroy');
+
 
         Route::get('evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'index'])
             ->name('evaluations.index');
@@ -219,7 +226,7 @@ Route::middleware(['auth', 'role:teacher'])
         Route::get('courses/{course}/available-ovas',          [CourseController::class, 'getAvailableOvas'])->name('courses.available-ovas');
         Route::get('courses/{course}/evaluations', [App\Http\Controllers\Teacher\EvaluationController::class, 'getCourseEvaluations'])
             ->name('courses.evaluations');
-
+        
         // Estudiantes del curso — rutas específicas ANTES del resource
         Route::get('courses/{course}/students/search',     [CourseStudentController::class, 'search'])->name('courses.students.search');
         Route::get('courses/{course}/students/export-pdf', [CourseStudentController::class, 'exportPdf'])->name('courses.students.export-pdf');

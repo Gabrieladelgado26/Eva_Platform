@@ -7,7 +7,7 @@ import {
     LogOut, Settings, HelpCircle, Calendar, ClipboardList, BarChart3,
     LayoutDashboard, Home, School, Grid, List, User, Clock, BookMarked,
     TrendingUp, Award, FileText, MoreVertical, Star, Sparkles, UsersRound,
-    Shield, Copy, Check
+    Shield, Copy, Check, LogIn
 } from "lucide-react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 
@@ -443,272 +443,371 @@ export default function Dashboard({ courses = [], teacher = null }) {
                             ) : (
                                 <>
                                     {viewMode === "cards" ? (
-                                        /* Vista de Tarjetas */
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {filteredCourses.map((course, index) => {
-                                                const gradient = courseGradients[index % courseGradients.length];
-                                                return (
-                                                    <div key={course.id} className="group bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 animate-fade-in relative">
-                                                        {/* Badge de estado flotante */}
-                                                        <div className="absolute top-8 right-4 z-10">
-                                                            <div className={`px-3 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-1.5
-                                                                ${course.is_active 
-                                                                    ? "bg-green-100 text-green-700 border border-green-200" 
-                                                                    : "bg-gray-100 text-gray-600 border border-gray-200"
-                                                                }`}>
-                                                                <span className={`w-1.5 h-1.5 rounded-full ${course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
-                                                                {course.is_active ? "Activo" : "Inactivo"}
-                                                            </div>
-                                                        </div>
+                                    /* Vista de Tarjetas */
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {filteredCourses.map((course, index) => {
+                                            const gradient = courseGradients[index % courseGradients.length];
+                                            return (
+                                                <div key={course.id} 
+                                                    className="group bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-2xl hover:shadow-purple-100/20 transition-all duration-300 animate-fade-in relative cursor-pointer"
+                                                    onClick={() => router.visit(route("teacher.courses.show", course.id))}
+                                                >
 
-                                                        {/* Contenido de la tarjeta - Estilo modal */}
-                                                        <div className="p-6">
-                                                            {/* Header con icono y título - AHORA ES EL ENLACE */}
-                                                            <Link href={route("teacher.courses.show", course.id)} className="block cursor-pointer">
-                                                                <div className="flex items-center gap-4 mb-4">
-                                                                    <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                                                                        <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
-                                                                    </div>
-                                                                    <div>
-                                                                        <h2 className="text-2xl font-bold text-gray-900 capitalize">
-                                                                            {getGradeLabel(course.grade)}
-                                                                        </h2>
-                                                                        <p className="text-sm text-gray-600">Sección {course.section}</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Descripción */}
-                                                                {course.description ? (
-                                                                    <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
-                                                                        <p className="text-xs text-gray-600 flex items-center gap-2">
-                                                                            <BookOpen className="w-4 h-4 text-gray-400" />
-                                                                            {course.description}
-                                                                        </p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="p-3 rounded-lg mb-4 bg-gray-50 border border-gray-200">
-                                                                        <p className="text-xs text-gray-400 italic flex items-center gap-2">
-                                                                            <BookOpen className="w-4 h-4 text-gray-400" />
-                                                                            Sin descripción
-                                                                        </p>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Estadísticas */}
-                                                                <div className="grid grid-cols-2 gap-3 mb-4">
-                                                                    <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
-                                                                        <Users className="w-4 h-4 mx-auto mb-1 text-gray-600" />
-                                                                        <p className="text-xs text-gray-500">Estudiantes</p>
-                                                                        <p className="text-lg font-bold text-gray-900">{course.students_count || 0}</p>
-                                                                    </div>
-                                                                    <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
-                                                                        <BookMarked className="w-4 h-4 mx-auto mb-1 text-gray-600" />
-                                                                        <p className="text-xs text-gray-500">Materias</p>
-                                                                        <p className="text-lg font-bold text-gray-900">6</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Progreso */}
-                                                                <div className="mb-4">
-                                                                    <div className="flex items-center justify-between text-xs mb-1">
-                                                                        <span className="text-gray-600">Progreso del período</span>
-                                                                        <span className="font-semibold text-gray-900">65%</span>
-                                                                    </div>
-                                                                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                                                        <div className="h-full rounded-full" style={{ width: "65%", background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
-                                                                    </div>
-                                                                </div>
-                                                            </Link>
-
-                                                            {/* Acciones - botón estilo modal (AHORA FUERA DEL LINK) */}
-                                                            <div className="flex items-center gap-2">
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        e.stopPropagation();
-                                                                        confirmToggleStatus(course);
-                                                                    }}
-                                                                    className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md ${
-                                                                        course.is_active
-                                                                            ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                                                            : "text-white"
-                                                                    }`}
-                                                                    style={!course.is_active ? { backgroundColor: "#0EAD69" } : {}}
-                                                                >
-                                                                    {course.is_active ? (
-                                                                        <span className="flex items-center justify-center gap-2">
-                                                                            <EyeOff className="w-4 h-4" /> Desactivar
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span className="flex items-center justify-center gap-2">
-                                                                            <Power className="w-4 h-4" /> Activar
-                                                                        </span>
-                                                                    )}
-                                                                </button>
-
-                                                                <Link
-                                                                    href={route("teacher.courses.edit", course.id)}
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    className="p-3 rounded-lg transition-all shadow-sm hover:shadow-md"
-                                                                    style={{ backgroundColor: "#FFD23F" }}
-                                                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
-                                                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
-                                                                    title="Editar curso"
-                                                                >
-                                                                    <Edit2 className="w-5 h-5 text-gray-700" />
-                                                                </Link>
-
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        e.stopPropagation();
-                                                                        confirmDelete(course);
-                                                                    }}
-                                                                    className="p-3 rounded-lg text-white transition-all shadow-sm hover:shadow-md"
-                                                                    style={{ backgroundColor: "#EE4266" }}
-                                                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
-                                                                    title="Eliminar curso"
-                                                                >
-                                                                    <Trash2 className="w-5 h-5" />
-                                                                </button>
-                                                            </div>
+                                                    {/* Badge de estado flotante */}
+                                                    <div className="absolute top-4 right-4 z-10">
+                                                        <div className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5 backdrop-blur-sm
+                                                            ${course.is_active 
+                                                                ? "bg-green-50/90 text-green-700 border border-green-200" 
+                                                                : "bg-gray-50/90 text-gray-600 border border-gray-200"
+                                                            }`}>
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
+                                                            {course.is_active ? "Activo" : "Inactivo"}
                                                         </div>
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : (
-                                        /* Vista de Tabla - Mejorada con líneas de color */
-                                        <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-                                            <div className="overflow-x-auto">
-                                               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                            <div className="flex items-center gap-2">
-                                <School className="w-4 h-4" /> Curso
-                            </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                            <div className="flex items-center gap-2">
-                                <User className="w-4 h-4" /> Profesor
-                            </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                            <div className="flex items-center gap-2">
-                                <Users className="w-4 h-4" /> Estudiantes
-                            </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="w-4 h-4" /> Estado
-                            </div>
-                        </th>
-                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wide">
-                            Acciones
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                    {filteredCourses.map((course, index) => (
-                        <tr key={course.id} className="hover:bg-gray-50 transition-colors group">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-1 h-10 rounded-full" style={{ background: "linear-gradient(to bottom, #540D6E, #EE4266)" }} />
-                                    <div>
-                                        <p className="text-sm font-semibold text-gray-900 capitalize">
-                                            {getGradeLabel(course.grade)} {course.section}
-                                        </p>
-                                        {course.description && (
-                                            <p className="text-xs text-gray-500 truncate max-w-xs">
-                                                {course.description}
-                                            </p>
-                                        )}
+
+                                                    {/* Contenido de la tarjeta */}
+                                                    <div className="p-6">
+                                                        {/* Header con icono y título */}
+                                                        <div className="flex items-center gap-4 mb-5">
+                                                            <div className="p-3 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-110"
+                                                                style={{ 
+                                                                    background: course.is_active 
+                                                                        ? "linear-gradient(135deg, #F3E8FF, #EDE9FE)" 
+                                                                        : "linear-gradient(135deg, #F3F4F6, #E5E7EB)"
+                                                                }}>
+                                                                <GraduationCap className="w-7 h-7" style={{ color: course.is_active ? "#540D6E" : "#9CA3AF" }} />
+                                                            </div>
+                                                            <div>
+                                                                <h2 className="text-xl font-bold text-gray-900 capitalize group-hover:text-purple-900 transition-colors">
+                                                                    {getGradeLabel(course.grade)}
+                                                                </h2>
+                                                                <p className="text-sm text-gray-500">Sección {course.section}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Descripción */}
+                                                        <div className="p-3.5 rounded-xl mb-5 bg-gray-50/80 border border-gray-100 group-hover:border-purple-100 transition-colors">
+                                                            <div className="flex items-start gap-2">
+                                                                <BookOpen className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                                                {course.description ? (
+                                                                    <p className="text-xs text-gray-600 line-clamp-2">{course.description}</p>
+                                                                ) : (
+                                                                    <p className="text-xs text-gray-400 italic">Sin descripción</p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Estadísticas */}
+                                                        <div className="grid grid-cols-2 gap-3 mb-5">
+                                                            <div className="bg-purple-50/50 rounded-xl p-3.5 text-center border border-purple-100 group-hover:border-purple-200 transition-colors">
+                                                                <Users className="w-4 h-4 mx-auto mb-1" style={{ color: "#540D6E" }} />
+                                                                <p className="text-xs text-gray-500 font-medium">Estudiantes</p>
+                                                                <p className="text-xl font-bold" style={{ color: "#540D6E" }}>{course.students_count || 0}</p>
+                                                            </div>
+                                                            <div className="bg-purple-50/50 rounded-xl p-3.5 text-center border border-purple-100 group-hover:border-purple-200 transition-colors">
+                                                                <BookMarked className="w-4 h-4 mx-auto mb-1" style={{ color: "#540D6E" }} />
+                                                                <p className="text-xs text-gray-500 font-medium">Áreas</p>
+                                                                <p className="text-xl font-bold" style={{ color: "#540D6E" }}>5</p>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Barra de progreso */}
+                                                        <div className="mb-5">
+                                                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                                <div className="h-full rounded-full transition-all duration-500" 
+                                                                    style={{ 
+                                                                        width: course.is_active ? "100%" : "30%", 
+                                                                        background: course.is_active 
+                                                                            ? "linear-gradient(to right, #540D6E, #EE4266)" 
+                                                                            : "linear-gradient(to right, #D1D5DB, #9CA3AF)"
+                                                                    }} 
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Acciones */}
+                                                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                                            {/* Botón Ingresar */}
+                                                            <Link
+                                                                href={route("teacher.courses.show", course.id)}
+                                                                className="flex-1 py-3 text-sm font-bold text-white rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                                                                style={{ 
+                                                                    background: "linear-gradient(135deg, #540D6E, #6B1689)",
+                                                                    boxShadow: "0 4px 15px rgba(84, 13, 110, 0.3)"
+                                                                }}
+                                                                onMouseEnter={e => {
+                                                                    e.currentTarget.style.transform = "translateY(-2px)";
+                                                                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(84, 13, 110, 0.4)";
+                                                                }}
+                                                                onMouseLeave={e => {
+                                                                    e.currentTarget.style.transform = "translateY(0)";
+                                                                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(84, 13, 110, 0.3)";
+                                                                }}
+                                                            >
+                                                                <LogIn className="w-4 h-4" />
+                                                                Ingresar
+                                                            </Link>
+
+                                                            {/* Botón Activar/Desactivar */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    confirmToggleStatus(course);
+                                                                }}
+                                                                className={`p-3 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 ${
+                                                                    course.is_active
+                                                                        ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                                        : "text-white"
+                                                                }`}
+                                                                style={!course.is_active ? { 
+                                                                    backgroundColor: "#0EAD69",
+                                                                    boxShadow: "0 4px 15px rgba(14, 173, 105, 0.3)"
+                                                                } : {}}
+                                                                title={course.is_active ? "Desactivar curso" : "Activar curso"}
+                                                            >
+                                                                {course.is_active ? (
+                                                                    <EyeOff className="w-5 h-5" />
+                                                                ) : (
+                                                                    <Power className="w-5 h-5" />
+                                                                )}
+                                                            </button>
+
+                                                            {/* Botón Editar */}
+                                                            <Link
+                                                                href={route("teacher.courses.edit", course.id)}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="p-3 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95"
+                                                                style={{ 
+                                                                    backgroundColor: "#FFD23F",
+                                                                    boxShadow: "0 4px 15px rgba(255, 210, 63, 0.3)"
+                                                                }}
+                                                                onMouseEnter={e => {
+                                                                    e.currentTarget.style.backgroundColor = "#F5C000";
+                                                                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(255, 210, 63, 0.4)";
+                                                                }}
+                                                                onMouseLeave={e => {
+                                                                    e.currentTarget.style.backgroundColor = "#FFD23F";
+                                                                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(255, 210, 63, 0.3)";
+                                                                }}
+                                                                title="Editar curso"
+                                                            >
+                                                                <Edit2 className="w-5 h-5 text-gray-800" />
+                                                            </Link>
+
+                                                            {/* Botón Eliminar */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    confirmDelete(course);
+                                                                }}
+                                                                className="p-3 rounded-xl text-white transition-all shadow-sm hover:shadow-md active:scale-95"
+                                                                style={{ 
+                                                                    backgroundColor: "#EE4266",
+                                                                    boxShadow: "0 4px 15px rgba(238, 66, 102, 0.3)"
+                                                                }}
+                                                                onMouseEnter={e => {
+                                                                    e.currentTarget.style.backgroundColor = "#DC2F55";
+                                                                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(238, 66, 102, 0.4)";
+                                                                }}
+                                                                onMouseLeave={e => {
+                                                                    e.currentTarget.style.backgroundColor = "#EE4266";
+                                                                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(238, 66, 102, 0.3)";
+                                                                }}
+                                                                title="Eliminar curso"
+                                                            >
+                                                                <Trash2 className="w-5 h-5" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <span className="text-xs font-semibold text-gray-700">
-                                            {teacher?.name?.charAt(0) || "P"}
-                                        </span>
-                                    </div>
-                                    <span className="text-sm text-gray-700">
-                                        {teacher?.name?.split(' ')[0] || "Profesor"}
-                                    </span>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="text-sm font-medium text-gray-900">
-                                    {course.students_count || 0}
-                                </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border ${
-                                    course.is_active 
-                                        ? "bg-green-50 border-green-200" 
-                                        : "bg-gray-50 border-gray-200"
-                                }`}>
-                                    <div className={`w-2 h-2 rounded-full ${
-                                        course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"
-                                    }`} />
-                                    <span className={`text-xs font-medium ${
-                                        course.is_active ? "text-green-700" : "text-gray-600"
-                                    }`}>
-                                        {course.is_active ? "Activo" : "Inactivo"}
-                                    </span>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                    <button
-                                        onClick={() => confirmToggleStatus(course)}
-                                        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                            course.is_active
-                                                ? "text-gray-700 bg-gray-100 hover:bg-gray-200"
-                                                : "text-white"
-                                        }`}
-                                        style={!course.is_active ? { backgroundColor: "#0EAD69" } : {}}
-                                    >
-                                        {course.is_active ? (
-                                            <>
-                                                <EyeOff className="w-4 h-4" /> Desactivar
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Power className="w-4 h-4" /> Activar
-                                            </>
-                                        )}
-                                    </button>
-                                    <Link
-                                        href={route("teacher.courses.edit", course.id)}
-                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-all"
-                                        style={{ backgroundColor: "#FFD23F" }}
-                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F5C000"}
-                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#FFD23F"}
-                                    >
-                                        <Edit2 className="w-4 h-4" /> Editar
-                                    </Link>
-                                    <button
-                                        onClick={() => confirmDelete(course)}
-                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all"
-                                        style={{ backgroundColor: "#EE4266" }}
-                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#DC2F55"}
-                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#EE4266"}
-                                    >
-                                        <Trash2 className="w-4 h-4" /> Eliminar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-                                            </div>
+                                ) : (
+                                    /* Vista de Tabla - Mejorada con líneas de color */
+                                    <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full">
+                                                <thead>
+                                                    <tr style={{ background: "linear-gradient(to right, #F3E8FF, #FAF5FF)" }}>
+                                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase" style={{ color: "#540D6E" }}>
+                                                            <div className="flex items-center gap-2">
+                                                                <School className="w-4 h-4" /> Curso
+                                                            </div>
+                                                        </th>
+                                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase" style={{ color: "#540D6E" }}>
+                                                            <div className="flex items-center gap-2">
+                                                                <User className="w-4 h-4" /> Profesor
+                                                            </div>
+                                                        </th>
+                                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase" style={{ color: "#540D6E" }}>
+                                                            <div className="flex items-center gap-2">
+                                                                <Users className="w-4 h-4" /> Estudiantes
+                                                            </div>
+                                                        </th>
+                                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase" style={{ color: "#540D6E" }}>
+                                                            <div className="flex items-center gap-2">
+                                                                <CheckCircle className="w-4 h-4" /> Estado
+                                                            </div>
+                                                        </th>
+                                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase" style={{ color: "#540D6E" }}>
+                                                            Acciones
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100">
+                                                    {filteredCourses.map((course, index) => (
+                                                        <tr key={course.id} 
+                                                            className="hover:bg-purple-50/30 transition-colors group cursor-pointer"
+                                                            onClick={() => router.visit(route("teacher.courses.show", course.id))}
+                                                        >
+                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-1.5 h-12 rounded-full" 
+                                                                        style={{ 
+                                                                            background: course.is_active 
+                                                                                ? "linear-gradient(to bottom, #540D6E, #EE4266)" 
+                                                                                : "linear-gradient(to bottom, #D1D5DB, #9CA3AF)"
+                                                                        }} 
+                                                                    />
+                                                                    <div>
+                                                                        <p className="text-sm font-semibold text-gray-900 capitalize group-hover:text-purple-900 transition-colors">
+                                                                            {getGradeLabel(course.grade)} {course.section}
+                                                                        </p>
+                                                                        {course.description && (
+                                                                            <p className="text-xs text-gray-500 truncate max-w-xs">
+                                                                                {course.description}
+                                                                            </p>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                                                        style={{ background: "linear-gradient(135deg, #540D6E, #EE4266)" }}>
+                                                                        {teacher?.name?.charAt(0) || "P"}
+                                                                    </div>
+                                                                    <span className="text-sm text-gray-700">
+                                                                        {teacher?.name?.split(' ')[0] || "Profesor"}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50 text-sm font-bold" style={{ color: "#540D6E" }}>
+                                                                    {course.students_count || 0}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${
+                                                                    course.is_active 
+                                                                        ? "bg-green-50 border-green-200" 
+                                                                        : "bg-gray-50 border-gray-200"
+                                                                }`}>
+                                                                    <div className={`w-2 h-2 rounded-full ${
+                                                                        course.is_active ? "bg-green-500 animate-pulse" : "bg-gray-400"
+                                                                    }`} />
+                                                                    <span className={`text-xs font-medium ${
+                                                                        course.is_active ? "text-green-700" : "text-gray-600"
+                                                                    }`}>
+                                                                        {course.is_active ? "Activo" : "Inactivo"}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                                                                <div className="flex items-center justify-end gap-1.5">
+                                                                    {/* Botón Ingresar - Solo icono */}
+                                                                    <Link
+                                                                        href={route("teacher.courses.show", course.id)}
+                                                                        className="p-2.5 rounded-lg transition-all hover:shadow-md active:scale-95"
+                                                                        style={{ 
+                                                                            background: "linear-gradient(135deg, #540D6E, #6B1689)",
+                                                                            boxShadow: "0 2px 8px rgba(84, 13, 110, 0.2)"
+                                                                        }}
+                                                                        onMouseEnter={e => {
+                                                                            e.currentTarget.style.boxShadow = "0 4px 15px rgba(84, 13, 110, 0.4)";
+                                                                        }}
+                                                                        onMouseLeave={e => {
+                                                                            e.currentTarget.style.boxShadow = "0 2px 8px rgba(84, 13, 110, 0.2)";
+                                                                        }}
+                                                                        title="Ingresar al curso"
+                                                                    >
+                                                                        <LogIn className="w-4 h-4 text-white" />
+                                                                    </Link>
+
+                                                                    {/* Botón Activar/Desactivar - Solo icono */}
+                                                                    <button
+                                                                        onClick={() => confirmToggleStatus(course)}
+                                                                        className={`p-2.5 rounded-lg transition-all hover:shadow-md active:scale-95 ${
+                                                                            course.is_active
+                                                                                ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                                                : "text-white"
+                                                                        }`}
+                                                                        style={!course.is_active ? { 
+                                                                            backgroundColor: "#0EAD69",
+                                                                            boxShadow: "0 2px 8px rgba(14, 173, 105, 0.2)"
+                                                                        } : {}}
+                                                                        title={course.is_active ? "Desactivar curso" : "Activar curso"}
+                                                                    >
+                                                                        {course.is_active ? (
+                                                                            <EyeOff className="w-4 h-4" />
+                                                                        ) : (
+                                                                            <Power className="w-4 h-4" />
+                                                                        )}
+                                                                    </button>
+
+                                                                    {/* Botón Editar - Solo icono */}
+                                                                    <Link
+                                                                        href={route("teacher.courses.edit", course.id)}
+                                                                        className="p-2.5 rounded-lg transition-all hover:shadow-md active:scale-95"
+                                                                        style={{ 
+                                                                            backgroundColor: "#FFD23F",
+                                                                            boxShadow: "0 2px 8px rgba(255, 210, 63, 0.2)"
+                                                                        }}
+                                                                        onMouseEnter={e => {
+                                                                            e.currentTarget.style.backgroundColor = "#F5C000";
+                                                                            e.currentTarget.style.boxShadow = "0 4px 15px rgba(255, 210, 63, 0.4)";
+                                                                        }}
+                                                                        onMouseLeave={e => {
+                                                                            e.currentTarget.style.backgroundColor = "#FFD23F";
+                                                                            e.currentTarget.style.boxShadow = "0 2px 8px rgba(255, 210, 63, 0.2)";
+                                                                        }}
+                                                                        title="Editar curso"
+                                                                    >
+                                                                        <Edit2 className="w-4 h-4 text-gray-800" />
+                                                                    </Link>
+
+                                                                    {/* Botón Eliminar - Solo icono */}
+                                                                    <button
+                                                                        onClick={() => confirmDelete(course)}
+                                                                        className="p-2.5 rounded-lg text-white transition-all hover:shadow-md active:scale-95"
+                                                                        style={{ 
+                                                                            backgroundColor: "#EE4266",
+                                                                            boxShadow: "0 2px 8px rgba(238, 66, 102, 0.2)"
+                                                                        }}
+                                                                        onMouseEnter={e => {
+                                                                            e.currentTarget.style.backgroundColor = "#DC2F55";
+                                                                            e.currentTarget.style.boxShadow = "0 4px 15px rgba(238, 66, 102, 0.4)";
+                                                                        }}
+                                                                        onMouseLeave={e => {
+                                                                            e.currentTarget.style.backgroundColor = "#EE4266";
+                                                                            e.currentTarget.style.boxShadow = "0 2px 8px rgba(238, 66, 102, 0.2)";
+                                                                        }}
+                                                                        title="Eliminar curso"
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
                                 </>
                             )}
                         </div>

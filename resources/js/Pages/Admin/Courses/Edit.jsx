@@ -146,35 +146,6 @@ export default function Edit({ course, teachers = [] }) {
                             {/* Main Form */}
                             <div className="lg:col-span-2">
                                 <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden animate-slide-up">
-                                    {/* Status Banner */}
-                                    <div 
-                                        className="border-b border-gray-200 p-4"
-                                        style={{ backgroundColor: data.is_active ? '#E8F5F0' : '#FEE2E2' }}
-                                    >
-                                        <div className="flex items-start gap-3 p-4 bg-white rounded-lg border" style={{ borderColor: data.is_active ? '#0EAD69' : '#EE4266' }}>
-                                            {data.is_active ? (
-                                                <>
-                                                    <Power className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#0EAD69' }} />
-                                                    <div>
-                                                        <p className="text-sm font-bold text-gray-900 mb-1">Curso Activo</p>
-                                                        <p className="text-sm text-gray-700">
-                                                            El curso es visible para los estudiantes y pueden acceder a él.
-                                                        </p>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <EyeOff className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#EE4266' }} />
-                                                    <div>
-                                                        <p className="text-sm font-bold text-gray-900 mb-1">Curso Inactivo</p>
-                                                        <p className="text-sm text-gray-700">
-                                                            El curso no es visible para los estudiantes. Active para permitir el acceso.
-                                                        </p>
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
 
                                     {/* Progress indicator */}
                                     <div className="h-1 bg-gray-100 relative overflow-hidden">

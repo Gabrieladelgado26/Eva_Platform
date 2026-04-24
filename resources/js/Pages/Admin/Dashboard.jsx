@@ -106,7 +106,7 @@ export default function Dashboard() {
         <div
             className="rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 group"
             style={{
-                backgroundColor: accentColor ? `${accentColor}08` : '#ffffff',
+                backgroundColor: '#ffffff',  // ← Fondo siempre blanco sólido
                 border: '1px solid #E5E7EB',
                 borderLeft: accentColor ? `4px solid ${accentColor}` : '4px solid #E5E7EB',
             }}
@@ -220,23 +220,6 @@ export default function Dashboard() {
                                             <Filter className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                         </div>
                                     )}
-                                    {/* Filtro de rango de fechas */}
-                                    <div className="flex gap-1 bg-white rounded-lg border border-gray-200 p-1">
-                                        {['semana', 'mes', 'año'].map((range) => (
-                                            <button
-                                                key={range}
-                                                onClick={() => setDateRange(range)}
-                                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                                    dateRange === range
-                                                        ? 'text-white'
-                                                        : 'text-gray-600 hover:bg-gray-100'
-                                                }`}
-                                                style={dateRange === range ? { backgroundColor: '#540D6E' } : {}}
-                                            >
-                                                {range.charAt(0).toUpperCase() + range.slice(1)}
-                                            </button>
-                                        ))}
-                                    </div>
                                 </div>
                             </div>
                         </div>

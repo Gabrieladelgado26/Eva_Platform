@@ -47,6 +47,11 @@ class CourseStudentController extends Controller
 
             $course->students()->syncWithoutDetaching([$student->id]);
 
+            // Si se solicita quedarse en la página, redirigir back
+            if ($request->boolean('stay_on_page')) {
+                return back()->with('success', 'Estudiante agregado al curso.');
+            }
+
             return redirect()
                 ->route('teacher.students.index')
                 ->with('success', 'Estudiante agregado al curso.');
@@ -77,6 +82,16 @@ class CourseStudentController extends Controller
         ]);
 
         $course->students()->attach($student->id);
+
+        // Si se solicita quedarse en la página, redirigir back
+        if ($request->boolean('stay_on_page')) {
+            return back()
+                ->with('credentials', [
+                    'username' => $username,
+                    'pin'      => $generatedPin,
+                ])
+                ->with('success', 'Estudiante registrado correctamente.');
+        }
 
         return redirect()
             ->route('teacher.students.index')
@@ -176,7 +191,7 @@ class CourseStudentController extends Controller
             return $pdf->download('credenciales.pdf');
         }
 
-        // Modo creación de estudiantes (llamado desde Inertia)
+        // Modo creación de estudiantes
         $request->validate([
             'students'       => ['required', 'array'],
             'students.*.name' => ['required', 'string', 'max:255'],
@@ -213,7 +228,15 @@ class CourseStudentController extends Controller
             ];
         }
 
-        // Devuelve flash para que Inertia lo maneje
+        // Si se solicita quedarse en la página, redirigir back
+        if ($request->boolean('stay_on_page')) {
+            return back()
+                ->with('bulk_credentials', json_decode(
+                    json_encode($createdStudents, JSON_UNESCAPED_UNICODE),
+                    true
+                ));
+        }
+
         return redirect()
             ->back()
             ->with('bulk_credentials', json_decode(

@@ -216,8 +216,8 @@ export default function EvaluationsIndex({ evaluations, courses = [], teachers =
 
     // Columnas de la tabla según rol
     const tableColumns = isAdmin 
-        ? ["Estudiante", "Curso", "OVA", "Evaluación", "Puntaje", "Calificación", "Intento", "Fecha"]
-        : ["Estudiante", "Curso", "OVA", "Evaluación", "Puntaje", "Calificación", "Intento", "Fecha"];
+        ? ["Estudiante", "Curso", "OVA", "Evaluación", "Puntaje", "Calificación", "Intento"]
+        : ["Estudiante", "Curso", "OVA", "Evaluación", "Puntaje", "Calificación", "Intento"];
 
     return (
         <>
@@ -425,7 +425,7 @@ export default function EvaluationsIndex({ evaluations, courses = [], teachers =
                             </div>
                         )}
 
-                        {/* Tabla - MANTENIENDO EXACTAMENTE LOS ESTILOS ORIGINALES */}
+                        {/* Tabla */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             {data.length > 0 ? (
                                 <>
@@ -481,11 +481,11 @@ export default function EvaluationsIndex({ evaluations, courses = [], teachers =
                                                         </td>
 
                                                         {/* Puntaje */}
-                                                        <td className="px-4 py-4">
+                                                        <td className="px-4 py-4" style={{ textAlign: "center" }}>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-sm font-bold text-gray-900">{ev.score}</span>
-                                                                <span className="text-xs text-gray-400">/ {ev.total}</span>
-                                                                <div className="w-16 h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                                                                <span className="text-lg font-bold text-gray-900">{ev.score}</span>
+                                                                <span className="text-sm text-gray-400">/ {ev.total}</span>
+                                                                <div className="w-16 h-2 rounded-full bg-gray-200 overflow-hidden">
                                                                     <div className="h-full rounded-full"
                                                                         style={{
                                                                             width: `${ev.percentage}%`,
@@ -496,18 +496,13 @@ export default function EvaluationsIndex({ evaluations, courses = [], teachers =
                                                         </td>
 
                                                         {/* Calificación */}
-                                                        <td className="px-4 py-4">
+                                                        <td className="px-4 py-4" style={{ textAlign: "center" }}>
                                                             <ScoreBadge percentage={ev.percentage} />
                                                         </td>
 
                                                         {/* Intento */}
                                                         <td className="px-4 py-4">
                                                             <span className="text-sm text-gray-600">#{ev.attempt}</span>
-                                                        </td>
-
-                                                        {/* Fecha */}
-                                                        <td className="px-4 py-4">
-                                                            <span className="text-xs text-gray-500">{ev.created_at}</span>
                                                         </td>
                                                     </tr>
                                                 ))}

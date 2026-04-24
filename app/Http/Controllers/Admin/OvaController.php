@@ -7,6 +7,8 @@ use App\Models\Ova;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class OvaController extends Controller
 {
@@ -39,8 +41,8 @@ class OvaController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('area', 'like', "%{$search}%")
-                  ->orWhere('tematica', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('tematica', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -80,13 +82,25 @@ class OvaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'area'      => ['required', 'string', 'in:' . implode(',', self::AREAS_VALIDAS)],
-            'tematica'  => ['required', 'string', 'max:255'],
+            'area'        => ['required', 'string', 'in:' . implode(',', self::AREAS_VALIDAS)],
+            'tematica'    => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('ovas', 'tematica')
+            ],
             'description' => ['nullable', 'string'],
-            // url ahora es un path interno (ej: /ova/matematicas) o null
-            'url'       => ['nullable', 'string', 'in:' . implode(',', self::OVA_PATHS_VALIDOS)],
-            'thumbnail' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'is_active' => ['boolean'],
+            'url'         => [
+                'nullable',
+                'string',
+                'in:' . implode(',', self::OVA_PATHS_VALIDOS),
+                Rule::unique('ovas', 'url')->whereNotNull('url')
+            ],
+            'thumbnail'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'is_active'   => ['boolean'],
+        ], [
+            'tematica.unique' => 'Ya existe una OVA con el nombre ":input". Por favor, elija un nombre diferente.',
+            'url.unique'      => 'La URL seleccionada ya está siendo utilizada por otra OVA.',
         ]);
 
         try {
@@ -103,13 +117,12 @@ class OvaController extends Controller
             Ova::create($validated);
 
             return redirect()->route('admin.ovas.index')
-                ->with('success', 'OVA creada exitosamente.');
-
+                ->with('success', 'OVA creado exitosamente.');
         } catch (\Exception $e) {
-            \Log::error('Error al crear OVA: ' . $e->getMessage());
+            Log::error('Error al crear OVA: ' . $e->getMessage());
 
             return redirect()->back()
-                ->with('error', 'Error al crear la OVA: ' . $e->getMessage())
+                ->with('error', 'Error al crear el OVA. Por favor, intente nuevamente.')
                 ->withInput();
         }
     }
@@ -134,11 +147,24 @@ class OvaController extends Controller
     {
         $validated = $request->validate([
             'area'        => ['required', 'string', 'in:' . implode(',', self::AREAS_VALIDAS)],
-            'tematica'    => ['required', 'string', 'max:255'],
+            'tematica'    => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('ovas', 'tematica')->ignore($ova->id)
+            ],
             'description' => ['nullable', 'string'],
-            'url'         => ['nullable', 'string', 'in:' . implode(',', self::OVA_PATHS_VALIDOS)],
+            'url'         => [
+                'nullable',
+                'string',
+                'in:' . implode(',', self::OVA_PATHS_VALIDOS),
+                Rule::unique('ovas', 'url')->whereNotNull('url')->ignore($ova->id)
+            ],
             'thumbnail'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active'   => ['boolean'],
+        ], [
+            'tematica.unique' => 'Ya existe una OVA con el nombre ":input". Por favor, elija un nombre diferente.',
+            'url.unique'      => 'La URL seleccionada ya está siendo utilizada por otra OVA.',
         ]);
 
         try {
@@ -158,32 +184,41 @@ class OvaController extends Controller
             $ova->update($validated);
 
             return redirect()->route('admin.ovas.index')
-                ->with('success', 'OVA actualizada exitosamente.');
-
+                ->with('success', 'OVA actualizado exitosamente.');
         } catch (\Exception $e) {
-            \Log::error('Error al actualizar OVA: ' . $e->getMessage());
+            Log::error('Error al actualizar OVA: ' . $e->getMessage());
 
             return redirect()->back()
-                ->with('error', 'Error al actualizar la OVA: ' . $e->getMessage())
+                ->with('error', 'Error al actualizar el OVA. Por favor, intente nuevamente.')
                 ->withInput();
         }
     }
 
     public function destroy(Ova $ova)
     {
-        if ($ova->courses()->count() > 0) {
+        // Verificar si el OVA está siendo utilizado en cursos
+        $coursesCount = $ova->courses()->count();
+
+        if ($coursesCount > 0) {
             return redirect()->route('admin.ovas.index')
-                ->with('error', 'No se puede eliminar la OVA porque está siendo utilizada en uno o más cursos.');
+                ->with('error', 'No se puede eliminar el OVA "' . $ova->tematica . '" porque está siendo utilizada en ' . $coursesCount . ' curso(s).');
         }
 
-        if ($ova->thumbnail) {
-            Storage::disk('public')->delete($ova->thumbnail);
+        try {
+            if ($ova->thumbnail) {
+                Storage::disk('public')->delete($ova->thumbnail);
+            }
+
+            $ova->delete();
+
+            return redirect()->route('admin.ovas.index')
+                ->with('success', 'OVA "' . $ova->tematica . '" eliminado exitosamente.');
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar OVA: ' . $e->getMessage());
+
+            return redirect()->route('admin.ovas.index')
+                ->with('error', 'Error al eliminar la OVA. Por favor, intente nuevamente.');
         }
-
-        $ova->delete();
-
-        return redirect()->route('admin.ovas.index')
-            ->with('success', 'OVA eliminada exitosamente.');
     }
 
     public function toggleStatus(Ova $ova)

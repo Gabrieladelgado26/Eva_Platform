@@ -1,258 +1,211 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+
+const HAND = "url('/OVAs/Matematicas/Adicion-Sustraccion/images/hand.cur'), pointer";
+const SND  = { skip: '/OVAs/Matematicas/Adicion-Sustraccion/sounds/intro/intro_skip.mp3' };
+
+/* ── Icono SVG de mano apuntando (sin emojis) ──────────────────────────────── */
+const HandIcon = () => (
+    <svg width="38" height="38" viewBox="0 0 24 24" fill="white"
+         xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}>
+        {/*  Material "touch_app" path  */}
+        <path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18
+                 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74z
+                 M18.84 15.87l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5
+                 S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31
+                 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79
+                 c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2
+                 0-.62-.38-1.16-.91-1.38z"/>
+    </svg>
+);
 
 const OVAIndex = () => {
-    const [introHover, setIntroHover] = useState(false);
-    const [skipHover, setSkipHover] = useState(false);
-    const videoRef = useRef(null);
-    const [isRedirecting, setIsRedirecting] = useState(false);
+    const videoRef            = useRef(null);
+    const [skipHover,         setSkipHover]   = useState(false);
+    const [showHint,          setShowHint]    = useState(true);
 
     useEffect(() => {
-        // Inicializar Adobe Edge (tu código existente)
-        const initializeAdobeEdge = () => {
-            if (window.AdobeEdge && window.AdobeEdge.loadComposition) {
-                window.AdobeEdge.loadComposition(
-                    "Menuprincipalovas5",
-                    "EDGE-16317474",
-                    {
-                        scaleToFit: "width",
-                        centerStage: "horizontal",
-                        minW: "0px",
-                        maxW: "undefined",
-                        width: "1920px",
-                        height: "1080px",
-                    },
-                    {
-                        style: {
-                            "${symbolSelector}": {
-                                isStage: "true",
-                                rect: ["undefined", "undefined", "1920px", "1080px"],
-                                fill: ["rgba(255,255,255,1)"],
-                            },
-                        },
-                    },
-                    {
-                        style: {
-                            "${symbolSelector}": {
-                                isStage: "true",
-                                rect: ["undefined", "undefined", "1920px", "1080px"],
-                                fill: ["rgba(255,255,255,1)"],
-                            },
-                        },
-                        dom: [
-                            {
-                                rect: ["0", "0", "1920px", "1080px", "auto", "auto"],
-                                id: "Poster",
-                                fill: [
-                                    "rgba(0,0,0,0)",
-                                    "/OVAs/Matematicas/Adicion-Sustraccion/images/backgrounds/bg_main_poster.png",
-                                    "0px",
-                                    "0px",
-                                ],
-                                type: "image",
-                                tag: "img",
-                            },
-                        ],
-                    }
-                );
-                console.log('Adobe Edge cargado correctamente');
-            } else {
-                console.log('Esperando a Adobe Edge...');
-                setTimeout(initializeAdobeEdge, 500);
+        const video = videoRef.current;
+        if (!video) return;
+
+        video.muted = true;
+
+        // Esperar 2 s antes de reproducir → el usuario tiene tiempo de hacer clic
+        const startTimer = setTimeout(() => {
+            video.play().catch(() => {});
+        }, 2000);
+
+        // Primer clic en cualquier parte → activar sonido + ocultar indicador
+        const unmuteOnClick = () => {
+            video.muted = false;
+            setShowHint(false);
+            document.removeEventListener('click', unmuteOnClick);
+        };
+        document.addEventListener('click', unmuteOnClick);
+
+        // Al terminar el video → ir al menú
+        let redirecting = false;
+        const handleEnd = () => {
+            if (!redirecting) {
+                redirecting = true;
+                router.visit('/ovas/matematicas/adicion-sustraccion/menu');
             }
         };
-
-        const loadAdobeEdge = () => {
-            if (typeof window.AdobeEdge !== 'undefined' && window.AdobeEdge.loadComposition) {
-                initializeAdobeEdge();
-            } else {
-                const edgeScript = document.createElement('script');
-                edgeScript.src = '/OVAs/Matematicas/Adicion-Sustraccion/js/edge.6.0.0.min.js';
-                edgeScript.onload = () => {
-                    setTimeout(initializeAdobeEdge, 500);
-                };
-                edgeScript.onerror = () => {
-                    console.error('Error cargando Adobe Edge');
-                };
-                document.body.appendChild(edgeScript);
-            }
-        };
-
-        if (typeof window.$ === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js';
-            script.onload = () => {
-                console.log('jQuery cargado');
-                loadAdobeEdge();
-            };
-            script.onerror = () => {
-                console.error('Error cargando jQuery');
-                loadAdobeEdge();
-            };
-            document.body.appendChild(script);
-        } else {
-            loadAdobeEdge();
-        }
-
-        // SOLUCIÓN: Video silencioso que activa sonido automáticamente
-        const videoElement = videoRef.current;
-        if (!videoElement) return;
-
-        // Función para activar el sonido después de que el video comience a reproducirse
-        const enableSound = () => {
-            if (videoElement) {
-                videoElement.muted = false;
-                console.log('Sonido activado automáticamente');
-            }
-        };
-
-        // Función para manejar el fin del video
-        const handleVideoEnd = () => {
-            if (!isRedirecting) {
-                setIsRedirecting(true);
-                console.log('Video terminado, redirigiendo...');
-                setTimeout(() => {
-                    window.location.href = '/ovas/matematicas/adicion-sustraccion/menu';
-                }, 500);
-            }
-        };
-
-        // Configurar el video
-        videoElement.loop = false;
-        videoElement.muted = true; // Inicia silencioso
-        
-        // Intentar reproducir
-        const playPromise = videoElement.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log('Video iniciado silenciosamente');
-                // Activar sonido después de 100ms
-                setTimeout(enableSound, 100);
-            }).catch(error => {
-                console.log('Error al reproducir:', error);
-                // Fallback: mostrar mensaje sutil
-                const message = document.createElement('div');
-                message.textContent = 'Haz clic en cualquier lugar para iniciar el video';
-                message.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background: rgba(0,0,0,0.7);
-                    color: white;
-                    padding: 10px;
-                    border-radius: 5px;
-                    z-index: 10000;
-                    font-size: 12px;
-                `;
-                document.body.appendChild(message);
-                setTimeout(() => message.remove(), 3000);
-            });
-        }
-
-        videoElement.addEventListener('ended', handleVideoEnd);
+        video.addEventListener('ended', handleEnd);
 
         return () => {
-            videoElement.removeEventListener('ended', handleVideoEnd);
+            clearTimeout(startTimer);
+            video.removeEventListener('ended', handleEnd);
+            document.removeEventListener('click', unmuteOnClick);
         };
-    }, [isRedirecting]);
+    }, []);
 
-    const handleIntroMouseOver = () => {
-        setIntroHover(true);
-        const audio = new Audio('/OVAs/Matematicas/Adicion-Sustraccion/sounds/intro/intro_play.mp3');
-        audio.play().catch(e => console.log('Error playing sound:', e));
-    };
+    const goToMenu = () => router.visit('/ovas/matematicas/adicion-sustraccion/menu');
 
-    const handleIntroMouseOut = () => {
-        setIntroHover(false);
-    };
-
-    const handleSkipMouseOver = () => {
+    const handleSkipEnter = () => {
         setSkipHover(true);
-    };
-
-    const handleSkipMouseOut = () => {
-        setSkipHover(false);
-    };
-
-    const handleRedirect = () => {
-        if (!isRedirecting) {
-            setIsRedirecting(true);
-            window.location.href = '/ovas/matematicas/adicion-sustraccion/menu';
-        }
+        new Audio(SND.skip).play().catch(() => {});
     };
 
     return (
         <>
             <Head title="Investic - OVA" />
-            
-            <video 
+
+            <style>{`
+                @keyframes ovaHandBounce {
+                    0%, 100% { transform: translateY(0);     }
+                    40%       { transform: translateY(-14px); }
+                    60%       { transform: translateY(-7px);  }
+                }
+                @keyframes ovaFadePulse {
+                    0%, 100% { opacity: 1;    }
+                    50%       { opacity: 0.5;  }
+                }
+                @keyframes ovaRipple {
+                    0%   { transform: scale(0.5); opacity: 0.8; }
+                    100% { transform: scale(2.4); opacity: 0;   }
+                }
+                @keyframes ovaHintIn {
+                    from { opacity: 0; transform: translate(-50%, -44%) scale(0.88); }
+                    to   { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+                }
+            `}</style>
+
+            {/* ── Video de introducción (sin autoPlay — se lanza tras 2 s) ──── */}
+            <video
                 ref={videoRef}
-                autoPlay 
-                loop={false}
-                muted={true}  // Importante: inicia muteado
                 playsInline
+                muted
                 style={{
                     position: 'fixed',
-                    top: 0,
-                    left: 0,
+                    inset: 0,
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    zIndex: -1
+                    zIndex: 0,
                 }}
             >
                 <source src="/OVAs/Matematicas/Adicion-Sustraccion/media/Introduccioninicio3.mp4" type="video/mp4" />
-                Tu navegador no soporta videos HTML5.
             </video>
-            
-            <div id="todosonido"></div>
 
-            <Link
-                href="#"
-                onClick={(e) => {
-                    e.preventDefault();
-                    handleRedirect();
-                }}
+            {/* ── Indicador centrado: haz clic para sonido ─────────────────── */}
+            {showHint && (
+                <div
+                    onClick={() => {}}          /* el clic real lo captura document */
+                    style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 5000,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '18px',
+                        cursor: HAND,
+                        animation: 'ovaHintIn 0.4s cubic-bezier(0.34,1.4,0.64,1) both, ovaFadePulse 2s ease-in-out 0.4s infinite',
+                    }}
+                >
+                    {/* Círculo con ripples + icono de mano */}
+                    <div style={{ position: 'relative', width: '90px', height: '90px' }}>
+                        {/* Fondo translúcido del círculo */}
+                        <div style={{
+                            position: 'absolute', inset: 0,
+                            borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.18)',
+                            backdropFilter: 'blur(6px)',
+                        }} />
+                        {/* Ripple 1 */}
+                        <span style={{
+                            position: 'absolute', inset: 0,
+                            borderRadius: '50%',
+                            border: '2.5px solid rgba(255,255,255,0.75)',
+                            animation: 'ovaRipple 1.6s ease-out infinite',
+                        }} />
+                        {/* Ripple 2 — desfasado */}
+                        <span style={{
+                            position: 'absolute', inset: 0,
+                            borderRadius: '50%',
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            animation: 'ovaRipple 1.6s ease-out infinite 0.6s',
+                        }} />
+                        {/* Icono SVG de mano */}
+                        <span style={{
+                            position: 'absolute', inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            animation: 'ovaHandBounce 1.1s ease-in-out infinite',
+                        }}>
+                            <HandIcon />
+                        </span>
+                    </div>
+
+                    {/* Etiqueta */}
+                    <span style={{
+                        background: 'rgba(0,0,0,0.58)',
+                        color: '#fff',
+                        fontSize: '15px',
+                        fontWeight: 700,
+                        padding: '8px 22px',
+                        borderRadius: '24px',
+                        whiteSpace: 'nowrap',
+                        backdropFilter: 'blur(8px)',
+                        fontFamily: 'Chewy, sans-serif',
+                        letterSpacing: '0.5px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+                    }}>
+                        Haz clic para activar el sonido
+                    </span>
+                </div>
+            )}
+
+            {/* ── Botón: Saltar animación ───────────────────────────────────── */}
+            <button
+                onClick={goToMenu}
+                onMouseEnter={handleSkipEnter}
+                onMouseLeave={() => setSkipHover(false)}
                 style={{
-                    position: 'absolute',
+                    position: 'fixed',
                     zIndex: 5000,
                     width: '16%',
                     top: '88%',
-                    right: '81%',
-                    cursor: 'pointer'
+                    left: '3%',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: HAND,
                 }}
             >
                 <img
-                    src={skipHover 
-                        ? "/OVAs/Matematicas/Adicion-Sustraccion/images/buttons/btn_skip_hover.png"
-                        : "/OVAs/Matematicas/Adicion-Sustraccion/images/buttons/btn_skip.png"
+                    src={skipHover
+                        ? '/OVAs/Matematicas/Adicion-Sustraccion/images/buttons/btn_skip_hover.png'
+                        : '/OVAs/Matematicas/Adicion-Sustraccion/images/buttons/btn_skip.png'
                     }
                     alt="Saltar animación"
-                    style={{
-                        width: '100%',
-                        cursor: 'pointer'
-                    }}
-                    onMouseEnter={handleSkipMouseOver}
-                    onMouseLeave={handleSkipMouseOut}
+                    style={{ width: '100%', display: 'block' }}
                 />
-            </Link>
-
-            <Link
-                href="/inicio"
-                style={{
-                    position: 'absolute',
-                    zIndex: 5000,
-                    width: '14%',
-                    top: '2%',
-                    left: '1%',
-                    cursor: 'pointer'
-                }}
-                onMouseEnter={handleIntroMouseOver}
-                onMouseLeave={handleIntroMouseOut}
-            />
-
-            <div id="Stage" className="EDGE-16317474" style={{ position: 'relative', zIndex: 1 }}></div>
+            </button>
         </>
     );
 };

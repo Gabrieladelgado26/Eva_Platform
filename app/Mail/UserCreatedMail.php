@@ -12,14 +12,10 @@ class UserCreatedMail extends Mailable implements ShouldQueue
 {
     use SerializesModels;
 
-    public $user;
-    public $plainPassword;
-
-    public function __construct($user, $plainPassword)
-    {
-        $this->user = $user;
-        $this->plainPassword = $plainPassword;
-    }
+    public function __construct(
+        public $user,
+        public string $plainPassword
+    ) {}
 
     public function envelope(): Envelope
     {

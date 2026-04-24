@@ -2,27 +2,32 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Mail\Mailable as MailableContract;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserEmailUpdatedMail extends Mailable implements MailableContract
+class UserEmailUpdatedMail extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
-    public $user;
-    public $newEmail;
+    public function __construct(
+        public $user,
+        public string $oldEmail
+    ) {}
 
-    public function __construct($user, string $newEmail)
+    public function envelope(): Envelope
     {
-        $this->user = $user;
-        $this->newEmail = $newEmail;
+        return new Envelope(
+            subject: 'Tu dirección de correo ha sido actualizada',
+        );
     }
 
-    public function build()
+    public function content(): Content
     {
-        return $this->subject('Your email address has been updated')
-                    ->view('emails.user_updated');
+        return new Content(
+            view: 'emails.user_updated',
+        );
     }
 }
