@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Language" content="es" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="robots" content="index,follow" />
+
+    <title>Evaluemos El Cuento</title>
+    <meta name="title" content="Evaluemos El Cuento" />
+    <meta name="description" content="Evaluación sobre el tema El Cuento" />
+
+    <!-- Bootstrap -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+    <link href="./index_files/prettify.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styleevaluemos.css" media="screen" />
+</head>
+<body>
+
+    <div class="tab-content" style="width: 97%">
+
+        <!-- PANTALLA INTRO -->
+        <div class="tab-pane" id="tab0" style="display:table">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="introduccion" src="img/intro.png">
+                <img class="siguiente2" src="img/siguiente.png" onClick="cambiar0()">
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 1 -->
+        <div class="tab-pane" id="tab1" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/dp00.png">
+                <img class="siguiente2" src="img/siguiente.png" onClick="cambiar1()">
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 2 -->
+        <div class="tab-pane" id="tab2" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/dp01.png">
+                <img class="siguiente2" src="img/siguiente.png" onClick="cambiar2()">
+            </div>
+        </div>
+
+        <!-- PREGUNTA 1 (tab3) -->
+        <div class="tab-pane" id="tab3" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="cara" src="img/juli.png">
+                <div class="parrafo" id="parrafo1"></div>
+                <div class="divmarca" style="display:none">
+                    <img class="marca" src="img/marca.png">
+                </div>
+                <div class="divgrande">
+                    <div class="divimagen" id="imagen1"></div>
+                    <div class="divpregunta">
+                        <div class="opcion opcion0" id="res0_1"></div>
+                        <div class="opcion opcion1" id="res1_1"></div>
+                        <div class="opcion opcion2" id="res2_1"></div>
+                        <div class="opcion opcion3" id="res3_1"></div>
+                    </div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="siguiente()">
+            </div>
+        </div>
+
+        <!-- PREGUNTA 2 (tab4) -->
+        <div class="tab-pane" id="tab4" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="cara" src="img/juli.png">
+                <div class="parrafo" id="parrafo2"></div>
+                <div class="divmarca" style="display:none">
+                    <img class="marca" src="img/marca.png">
+                </div>
+                <div class="divgrande">
+                    <div class="divimagen" id="imagen2"></div>
+                    <div class="divpregunta">
+                        <div class="opcion opcion0" id="res0_2"></div>
+                        <div class="opcion opcion1" id="res1_2"></div>
+                        <div class="opcion opcion2" id="res2_2"></div>
+                        <div class="opcion opcion3" id="res3_2"></div>
+                    </div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="siguiente()">
+            </div>
+        </div>
+
+        <!-- PREGUNTA 3 (tab5) -->
+        <div class="tab-pane" id="tab5" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="cara" src="img/juli.png">
+                <div class="parrafo" id="parrafo3"></div>
+                <div class="divmarca" style="display:none">
+                    <img class="marca" src="img/marca.png">
+                </div>
+                <div class="divgrande">
+                    <div class="divimagen" id="imagen3"></div>
+                    <div class="divpregunta">
+                        <div class="opcion opcion0" id="res0_3"></div>
+                        <div class="opcion opcion1" id="res1_3"></div>
+                        <div class="opcion opcion2" id="res2_3"></div>
+                        <div class="opcion opcion3" id="res3_3"></div>
+                    </div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="siguiente()">
+            </div>
+        </div>
+
+        <!-- PREGUNTA 4 (tab6) -->
+        <div class="tab-pane" id="tab6" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="cara" src="img/juli.png">
+                <div class="parrafo" id="parrafo4"></div>
+                <div class="divmarca" style="display:none">
+                    <img class="marca" src="img/marca.png">
+                </div>
+                <div class="divgrande">
+                    <div class="divimagen" id="imagen4"></div>
+                    <div class="divpregunta">
+                        <div class="opcion opcion0" id="res0_4"></div>
+                        <div class="opcion opcion1" id="res1_4"></div>
+                        <div class="opcion opcion2" id="res2_4"></div>
+                        <div class="opcion opcion3" id="res3_4"></div>
+                    </div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="siguiente()">
+            </div>
+        </div>
+
+        <!-- PREGUNTA 5 (tab7) -->
+        <div class="tab-pane" id="tab7" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="cara" src="img/juli.png">
+                <div class="parrafo" id="parrafo5"></div>
+                <div class="divmarca" style="display:none">
+                    <img class="marca" src="img/marca.png">
+                </div>
+                <div class="divgrande">
+                    <div class="divimagen" id="imagen5"></div>
+                    <div class="divpregunta">
+                        <div class="opcion opcion0" id="res0_5"></div>
+                        <div class="opcion opcion1" id="res1_5"></div>
+                        <div class="opcion opcion2" id="res2_5"></div>
+                        <div class="opcion opcion3" id="res3_5"></div>
+                    </div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="siguiente()">
+            </div>
+        </div>
+
+        <!-- PANTALLA INICIO RETROALIMENTACION -->
+        <div class="tab-pane" id="tabinicioretro" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoevaluaciones.png">
+                <img class="retro" src="img/retro.png">
+                <div class="divintroduccion">¡Descubre cuántos puntos obtuviste! Te explicaremos cómo te fue en el reto.</div>
+            </div>
+            <img class="verresultados" src="img/btnresul.png" onClick="retroalimentacion('intro')">
+        </div>
+
+        <!-- RETROALIMENTACION -->
+        <div class="tab-pane" id="tabretro1" style="display:none">
+            <div class="">
+                <img class="Skin2" src="img/fondoretro.png">
+                <div class="divgranderetoalimentacion">
+                    <div class="divdibujosretro">
+                        <div style="display:none" id="b1"><img class="imagenretro" src="img/bien.png"></div>
+                        <div style="display:none" id="m1"><img class="imagenretro" src="img/mal.png"></div>
+                    </div>
+                    <div class="divtextoretro"></div>
+                </div>
+                <img class="siguiente2" src="img/siguiente.png" onClick="retroalimentacion('adelante')">
+                <img id="atras" class="anterior" src="img/atras.png" onClick="retroalimentacion('atras')" style="display:none">
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div class="tab-pane" id="tabresultados" style="display:none">
+            <div class="">
+                <img class="skinevaluacion" src="img/hoja.png">
+                <img class="tituloevaluacion" src="img/titulo.png">
+                <div class="resultado" id="buenas"></div>
+                <div class="divgranderespuestas"></div>
+                <img id="ganaste" style="position:absolute; display:none" class="ganaste" src="img/ganaste.png">
+                <img id="perdiste" style="position:absolute; display:none" class="perdiste" src="img/perdiste.gif" onClick="recargar()">
+            </div>
+        </div>
+
+    </div><!-- fin tab-content -->
+
+    <script src="./index_files/jquery-latest.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+    <script src="./index_files/jquery.bootstrap.wizard.js"></script>
+    <script src="./index_files/prettify.js"></script>
+    <script src="./index_files/evaluemosMethod.js"></script>
+    <script src="/js/eva-session.js"></script>
+
+</body>
+</html>

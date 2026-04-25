@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Evaluation;
+use App\Services\HashidService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -39,11 +40,14 @@ class CourseStudentController extends Controller
     {
         abort_if($course->teacher_id !== Auth::id(), 403);
 
-        // Vincular existente
+        // Vincular existente — decodificar el hash del student_id
         if ($request->filled('student_id')) {
+            $studentIntId = app(HashidService::class)->decode((string) $request->student_id);
+            abort_if(!$studentIntId, 422, 'Estudiante no válido.');
+
             $student = User::whereHas('role', fn($r) => $r->where('slug', 'student'))
                 ->where('is_active', true)
-                ->findOrFail($request->student_id);
+                ->findOrFail($studentIntId);
 
             $course->students()->syncWithoutDetaching([$student->id]);
 
@@ -145,7 +149,7 @@ class CourseStudentController extends Controller
 
         return Inertia::render('Teacher/Students/Edit', [
             'student' => [
-                'id'            => $user->id,
+                'id'            => $user->getRouteKey(),
                 'name'          => $user->name,
                 'username'      => $user->username,
                 'is_active'     => $user->is_active,
@@ -269,7 +273,7 @@ class CourseStudentController extends Controller
 
         $students = $query->orderBy('name')->paginate(20)->withQueryString()->through(function ($student) {
             return [
-                'id'            => $student->id,
+                'id'            => $student->getRouteKey(),
                 'name'          => $student->name,
                 'username'      => $student->username,
                 'email'         => $student->email,
@@ -341,7 +345,7 @@ class CourseStudentController extends Controller
         $user->update(['pin' => Hash::make($generatedPin)]);
 
         return redirect()
-            ->route('teacher.students.edit', $user->id)
+            ->route('teacher.students.edit', $user->getRouteKey())
             ->with('credentials', [
                 'username' => $user->username,
                 'pin'      => $generatedPin,

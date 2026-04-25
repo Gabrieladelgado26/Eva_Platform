@@ -108,7 +108,7 @@ class UserController extends Controller
             ->paginate(10)
             ->through(function ($user) {
                 return [
-                    'id' => $user->id,
+                    'id' => $user->getRouteKey(),
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role ? [
@@ -164,10 +164,10 @@ public function students(Request $request)
         ->paginate(10)
         ->through(function ($user) {
             return [
-                'id' => $user->id,
+                'id' => $user->getRouteKey(),
                 'name' => $user->name,
                 'username' => $user->username,
-                'avatar' => $user->avatar,  // ← AÑADIR ESTA LÍNEA
+                'avatar' => $user->avatar,
                 'role' => $user->role ? [
                     'name' => $user->role->name,
                     'slug' => $user->role->slug,

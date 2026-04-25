@@ -19,7 +19,10 @@ class EvaluationController extends Controller
 
     /**
      * Guardar resultado de una evaluación HTML
-     * Llamado por fetch() desde el HTML del OVA
+     * Llamado por fetch() desde el HTML del OVA (eva-session.js)
+     *
+     * Estudiante → guarda en BD, devuelve card con intento/restantes
+     * Docente / Admin → devuelve card de vista previa sin guardar en BD
      */
     public function store(Request $request)
     {
@@ -32,6 +35,34 @@ class EvaluationController extends Controller
         ]);
 
         $user = Auth::user();
+        $user->load('role');
+        $roleSlug = $user->role?->slug ?? 'student';
+
+        // ── Docente / Admin: vista previa, sin guardar ────────────────────────
+        if (in_array($roleSlug, ['teacher', 'admin'])) {
+            $score = (int) $request->score;
+            $total = (int) $request->total;
+            $pct   = $total > 0 ? (int) round(($score / $total) * 100) : 0;
+
+            return response()->json([
+                'success'          => true,
+                'preview'          => true,
+                'message'          => 'Vista previa — el resultado no se guarda.',
+                'is_last_attempt'  => false,
+                'attempts_left'    => self::MAX_ATTEMPTS,
+                'max_attempts'     => self::MAX_ATTEMPTS,
+                'evaluation'       => [
+                    'id'             => null,
+                    'score'          => $score,
+                    'total'          => $total,
+                    'percentage'     => $pct,
+                    'attempt'        => 1,
+                    'evaluation_key' => $request->evaluation_key,
+                ],
+            ]);
+        }
+
+        // ── Estudiante: flujo normal ──────────────────────────────────────────
 
         // Si no viene course_id, buscar el curso activo del estudiante
         $courseId = $request->course_id;
@@ -42,7 +73,7 @@ class EvaluationController extends Controller
             $courseId = $course?->id;
         }
 
-        // Si no viene ova_id, buscar por evaluation_key en el nombre del campo url
+        // Si no viene ova_id, buscar el OVA activo del curso
         $ovaId = $request->ova_id;
         if (!$ovaId && $courseId) {
             $ova = Ova::whereHas('courses', fn($q) => $q->where('courses.id', $courseId))
@@ -68,11 +99,11 @@ class EvaluationController extends Controller
         // ── Bloquear si ya alcanzó el límite ──────────────────────────────────
         if ($attemptCount >= self::MAX_ATTEMPTS) {
             return response()->json([
-                'success'      => false,
+                'success'       => false,
                 'limit_reached' => true,
-                'message'      => 'Has alcanzado el límite de ' . self::MAX_ATTEMPTS . ' intentos para esta evaluación.',
-                'attempts'     => $attemptCount,
-                'max_attempts' => self::MAX_ATTEMPTS,
+                'message'       => 'Has alcanzado el límite de ' . self::MAX_ATTEMPTS . ' intentos para esta evaluación.',
+                'attempts'      => $attemptCount,
+                'max_attempts'  => self::MAX_ATTEMPTS,
             ], 403);
         }
 
@@ -92,12 +123,12 @@ class EvaluationController extends Controller
         $isLastAttempt = $attempt >= self::MAX_ATTEMPTS;
 
         return response()->json([
-            'success'        => true,
-            'message'        => 'Evaluación guardada correctamente.',
+            'success'         => true,
+            'message'         => 'Evaluación guardada correctamente.',
             'is_last_attempt' => $isLastAttempt,
-            'attempts_left'  => self::MAX_ATTEMPTS - $attempt,
-            'max_attempts'   => self::MAX_ATTEMPTS,
-            'evaluation'     => [
+            'attempts_left'   => self::MAX_ATTEMPTS - $attempt,
+            'max_attempts'    => self::MAX_ATTEMPTS,
+            'evaluation'      => [
                 'id'             => $evaluation->id,
                 'score'          => $evaluation->score,
                 'total'          => $evaluation->total,

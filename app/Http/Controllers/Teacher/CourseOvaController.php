@@ -252,7 +252,7 @@ class CourseOvaController extends Controller
             ->map(function ($student) {
                 $progress = $student->ovaProgress->first();
                 return [
-                    'id'                 => $student->id,
+                    'id'                 => $student->getRouteKey(),
                     'name'               => $student->name,
                     'username'           => $student->username,
                     'completed'          => $progress ? $progress->completed          : false,

@@ -1,0 +1,64 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 98%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+/*DISEÑO MENU PRINCIPAL*/
+.completarigualdad
+{
+    
+    width: 96%;
+    top: 1.5%;
+    left: 1.5%;   
+}
+
+
+.encontrarmedida
+{
+     width: 99%;
+    top: -2%;
+    left: 0%;
+}
+
+
+.iconojugar
+{
+    width: 60%;
+    left: 19%;
+    top: 26%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+
+.titulo
+{
+     width: 22%;
+    top: 4%;
+    left: 40%;
+    z-index: 1;
+
+}

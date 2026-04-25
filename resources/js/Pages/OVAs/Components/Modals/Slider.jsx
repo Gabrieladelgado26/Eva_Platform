@@ -33,7 +33,7 @@ export default function ModalSlider({ open, onClose }) {
               alt="Cerrar" draggable={false} onClick={onClose} />
             <div className="divmodalSlider">
               <div className="container-fluid">
-                <iframe id="contentslider" src={src} allowTransparency="true"
+                <iframe id="contentslider" src={src} allowtransparency="true"
                   style={{ width: "100%", height: "93%", border: "none", background: "transparent" }}
                   title="Slider" />
               </div>

@@ -1,0 +1,326 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 41%;
+    top: 12.5%;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+
+
+.guia
+{
+   position: absolute;
+    right: 25%;
+    width: 57%;
+    bottom: 21%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+/*DIA POSITIVA 1*/
+
+
+.fondo1
+{
+    position: absolute;
+    right: 25%;
+    width: 64%;
+    bottom: 4%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.beto
+{
+    position: absolute;
+    left: 18%;
+    width: 11%;
+    bottom: 9%;
+    display: none;
+    animation: 2s fadeInLeft;
+}
+
+.cuento
+{
+    position: absolute;
+    right: 32%;
+    width: 22%;
+    bottom: 16%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+
+/*DIA POSITIVA 2*/
+
+.fondo2
+{
+    position: absolute;
+    display: none;
+}
+
+.fondo2
+{    
+    left: 8.5%;
+    width: 76%;
+    top: 6%;
+    animation: 2s zoomIn;
+}
+
+.animal1, .animal2, .animal3, .hada1, .hada2
+{
+    position: absolute;
+    display: none;
+}
+
+.animal1
+{
+    right: 31%;
+    width: 20%;
+    bottom: 14%;
+     animation: 2s flipInY;
+}
+
+
+.animal2
+{
+    right: 19%;
+    width: 10%;
+    bottom: 15%;
+     animation: 2s fadeIn;
+}
+
+.animal3
+{
+    right: 18%;
+    width: 8%;
+    bottom: 35%;
+     animation: 2s bounceIn;
+}
+
+.hada1
+{
+    left: 12%;
+    width: 14%;
+    top: 15%;
+    animation: 2s fadeIn;
+}
+
+.hada2
+{
+    left: 27%;
+    width: 13%;
+    bottom: 20%;
+    animation: 2s fadeIn;
+}
+
+/*DIA POSITIVA 3*/
+
+.fondo3
+{
+    position: absolute;
+    left: 8.5%;
+    width: 76%;
+    top: 6%;
+    animation: 2s zoomIn;
+}
+
+.carnaval, .carnaval2
+{
+    position: absolute;
+    display: none;
+    animation: 2s fadeIn;
+}
+
+.carnaval2
+{
+    right: 45%;
+    width: 13%;
+    bottom: 19%;
+}
+
+.carnaval
+{
+    right: 19%;
+    width: 33%;
+    bottom: 23%;
+}
+
+.formavestir1, .formavestir2, .formavestir3
+{
+    position: absolute;
+    width: 14%;
+    display: none;
+    animation: 2s flipInX;
+}
+
+.formavestir1
+{
+    left: 13%;
+    top: 12%;
+}
+
+.formavestir2
+{
+    left: 27%;
+    top: 30%;
+}
+
+.formavestir3
+{
+    left: 13%;
+    bottom: 22%;
+}
+
+/*DIA POSITIVA 4*/
+
+.fondo4
+{
+    position: absolute;
+    left: 8.5%;
+    width: 76%;
+    top: 6%;
+    animation: 2s zoomIn;
+}
+
+.egipcios1
+{
+    position: absolute;
+    width: 17%;
+    left: 11%;
+    bottom: 16%;
+    display: none;
+    animation: 2s fadeInLeft;
+}
+
+.egipcios2
+{
+    position: absolute;
+    right: 20%;
+    width: 37%;
+    top: 18%;
+    display: none;
+    animation: 2s zoomIn;
+}

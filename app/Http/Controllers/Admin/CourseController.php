@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\User;
-use App\Models\Role; 
+use App\Models\Role;
+use App\Services\HashidService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,10 @@ class CourseController extends Controller
         }
 
         if ($request->filled('teacher_id')) {
-            $query->where('teacher_id', $request->teacher_id);
+            $decodedTeacherId = app(HashidService::class)->decode($request->teacher_id);
+            if ($decodedTeacherId) {
+                $query->where('teacher_id', $decodedTeacherId);
+            }
         }
 
         if ($request->filled('status')) {
@@ -50,7 +54,7 @@ class CourseController extends Controller
                 'is_active'      => (bool)$c->is_active,
                 'students_count' => $c->students_count,
                 'teacher'        => [
-                    'id'   => $c->teacher?->id,
+                    'id'   => $c->teacher?->getRouteKey(),
                     'name' => $c->teacher?->name ?? 'Sin docente',
                 ],
                 'created_at'     => $c->created_at->format('d/m/Y'),
@@ -100,11 +104,14 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+        // Decodificar el hash del teacher_id que viene del frontend
+        $teacherId = app(HashidService::class)->decode((string) $request->teacher_id);
+        abort_if(!$teacherId, 422, 'Docente no válido.');
+
         $request->validate([
             'grade'       => 'required|string|max:100',
             'section'     => 'required|string|max:100',
             'school_year' => 'required|string|max:20',
-            'teacher_id'  => 'required|exists:users,id',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -112,7 +119,7 @@ class CourseController extends Controller
             'grade'       => $request->grade,
             'section'     => $request->section,
             'school_year' => $request->school_year,
-            'teacher_id'  => $request->teacher_id,
+            'teacher_id'  => $teacherId,
             'description' => $request->description,
             'is_active'   => true,
         ]);
@@ -143,7 +150,7 @@ class CourseController extends Controller
                 'is_active'      => (bool)$course->is_active,
                 'students_count' => $course->students()->count(),
                 'teacher'        => [
-                    'id'   => $course->teacher?->id,
+                    'id'   => $course->teacher?->getRouteKey(),
                     'name' => $course->teacher?->name ?? 'Sin docente',
                 ],
             ],
@@ -156,11 +163,14 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
+        // Decodificar el hash del teacher_id que viene del frontend
+        $teacherId = app(HashidService::class)->decode((string) $request->teacher_id);
+        abort_if(!$teacherId, 422, 'Docente no válido.');
+
         $request->validate([
             'grade'       => 'required|string|max:100',
             'section'     => 'required|string|max:100',
             'school_year' => 'required|string|max:20',
-            'teacher_id'  => 'required|exists:users,id',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -168,7 +178,7 @@ class CourseController extends Controller
             'grade'       => $request->grade,
             'section'     => $request->section,
             'school_year' => $request->school_year,
-            'teacher_id'  => $request->teacher_id,
+            'teacher_id'  => $teacherId,
             'description' => $request->description,
         ]);
 
@@ -232,11 +242,14 @@ class CourseController extends Controller
      */
     public function storeStudent(Request $request, Course $course)
     {
-        // Si es estudiante existente
+        // Si es estudiante existente — decodificar el hash del student_id
         if ($request->filled('student_id')) {
+            $studentIntId = app(HashidService::class)->decode((string) $request->student_id);
+            abort_if(!$studentIntId, 422, 'Estudiante no válido.');
+
             $student = User::whereHas('role', fn($r) => $r->where('slug', 'student'))
                 ->where('is_active', true)
-                ->findOrFail($request->student_id);
+                ->findOrFail($studentIntId);
 
             $course->students()->syncWithoutDetaching([$student->id]);
 

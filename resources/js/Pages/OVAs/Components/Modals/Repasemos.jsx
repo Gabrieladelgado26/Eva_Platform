@@ -36,7 +36,7 @@ export default function ModalRepasemos({ open, onClose, src: externalSrc }) {
               alt="Cerrar" draggable={false} onClick={onClose} />
             <div className="divmodalRepasemos">
               <div className="container-fluid">
-                <iframe id="contentframeRepasemos" src={frameSrc} allowTransparency="true"
+                <iframe id="contentframeRepasemos" src={frameSrc} allowtransparency="true"
                   style={{ width: "100%", height: "93%", border: "none", background: "transparent" }}
                   title="Repasemos" />
               </div>

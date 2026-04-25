@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, ShieldCheck, ArrowRight, Users, Building2, Award } from 'lucide-react';
-import { useState } from 'react';
+import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, ShieldCheck, ArrowRight, Users, Building2, Award, CheckCircle, XCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -13,9 +13,38 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
+    const [passwordTouched, setPasswordTouched] = useState(false);
+
+    // Validación de requisitos de contraseña
+    const passwordRequirements = useMemo(() => ({
+        minLength: data.password.length >= 8,
+        hasUpperCase: /[A-Z]/.test(data.password),
+        hasLowerCase: /[a-z]/.test(data.password),
+        hasNumber: /[0-9]/.test(data.password),
+        hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(data.password),
+        noSpaces: !/\s/.test(data.password),
+    }), [data.password]);
+
+    // Contraseña completamente válida
+    const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
+    // Fortaleza de la contraseña
+    const passwordStrength = useMemo(() => {
+        const passedRequirements = Object.values(passwordRequirements).filter(Boolean).length;
+        if (passedRequirements <= 2) return { level: 'Débil', color: '#EE4266', width: '33%' };
+        if (passedRequirements <= 4) return { level: 'Media', color: '#FFD23F', width: '66%' };
+        if (passedRequirements <= 5) return { level: 'Fuerte', color: '#3BCEAC', width: '85%' };
+        return { level: 'Muy Fuerte', color: '#0EAD69', width: '100%' };
+    }, [passwordRequirements]);
 
     const submit = (e) => {
         e.preventDefault();
+        
+        // Validación adicional del lado del cliente antes de enviar
+        if (!isPasswordValid) {
+            return; // No se envía si no cumple todos los requisitos
+        }
+        
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
@@ -26,6 +55,18 @@ export default function Register() {
         boxShadow: focusedField === name ? '0 0 0 3px rgba(84,13,110,0.12)' : 'none',
         transition: 'all 0.2s',
     });
+
+    // Estilo condicional para el campo de contraseña
+    const passwordFieldStyle = (name) => {
+        if (name === 'password' && passwordTouched) {
+            return {
+                ...fieldStyle(name),
+                borderColor: isPasswordValid ? '#0EAD69' : errors[name] ? '#EE4266' : '#E5E7EB',
+                boxShadow: isPasswordValid ? '0 0 0 3px rgba(14,173,105,0.12)' : fieldStyle(name).boxShadow,
+            };
+        }
+        return fieldStyle(name);
+    };
 
     return (
         <>
@@ -273,12 +314,18 @@ export default function Register() {
                                                 value={data.password}
                                                 autoComplete="new-password"
                                                 required
-                                                placeholder="Mínimo 8 caracteres"
-                                                onChange={(e) => setData('password', e.target.value)}
-                                                onFocus={() => setFocusedField('password')}
+                                                placeholder="Mínimo 8 caracteres con mayúsculas, números y símbolos"
+                                                onChange={(e) => {
+                                                    setData('password', e.target.value);
+                                                    setPasswordTouched(true);
+                                                }}
+                                                onFocus={() => {
+                                                    setFocusedField('password');
+                                                    setPasswordTouched(true);
+                                                }}
                                                 onBlur={() => setFocusedField(null)}
                                                 className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border-2 rounded-lg outline-none placeholder-gray-400 text-gray-900"
-                                                style={fieldStyle('password')}
+                                                style={passwordFieldStyle('password')}
                                             />
                                             <button
                                                 type="button"
@@ -291,6 +338,59 @@ export default function Register() {
                                                 }
                                             </button>
                                         </div>
+                                        
+                                        {/* Indicador de fortaleza */}
+                                        {data.password && (
+                                            <div className="mt-2 space-y-2">
+                                                {/* Barra de fortaleza */}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full rounded-full transition-all duration-300"
+                                                            style={{
+                                                                width: passwordStrength.width,
+                                                                backgroundColor: passwordStrength.color,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <span
+                                                        className="text-xs font-semibold"
+                                                        style={{ color: passwordStrength.color }}
+                                                    >
+                                                        {passwordStrength.level}
+                                                    </span>
+                                                </div>
+                                                
+                                                {/* Lista de requisitos */}
+                                                <div className="grid grid-cols-1 gap-1">
+                                                    <RequirementItem
+                                                        met={passwordRequirements.minLength}
+                                                        text="Mínimo 8 caracteres"
+                                                    />
+                                                    <RequirementItem
+                                                        met={passwordRequirements.hasUpperCase}
+                                                        text="Al menos una mayúscula (A-Z)"
+                                                    />
+                                                    <RequirementItem
+                                                        met={passwordRequirements.hasLowerCase}
+                                                        text="Al menos una minúscula (a-z)"
+                                                    />
+                                                    <RequirementItem
+                                                        met={passwordRequirements.hasNumber}
+                                                        text="Al menos un número (0-9)"
+                                                    />
+                                                    <RequirementItem
+                                                        met={passwordRequirements.hasSpecialChar}
+                                                        text="Al menos un carácter especial (!@#$%^&*)"
+                                                    />
+                                                    <RequirementItem
+                                                        met={passwordRequirements.noSpaces}
+                                                        text="Sin espacios en blanco"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                        
                                         {errors.password && (
                                             <p className="mt-1.5 text-xs font-medium flex items-center gap-1" style={{ color: '#EE4266' }}>
                                                 <span className="inline-block w-1 h-1 rounded-full bg-current" />
@@ -337,21 +437,21 @@ export default function Register() {
                                                 }
                                             </button>
                                         </div>
-                                        {/* Indicador de coincidencia */}
-                                        {data.password_confirmation && data.password && (
-                                            <p
-                                                className="mt-1.5 text-xs font-medium flex items-center gap-1"
-                                                style={{
-                                                    color: data.password === data.password_confirmation
-                                                        ? '#0EAD69'
-                                                        : '#EE4266',
-                                                }}
-                                            >
-                                                <span className="inline-block w-1 h-1 rounded-full bg-current" />
-                                                {data.password === data.password_confirmation
-                                                    ? 'Las contraseñas coinciden'
-                                                    : 'Las contraseñas no coinciden'}
-                                            </p>
+                                        {/* Indicador de coincidencia mejorado */}
+                                        {data.password_confirmation && (
+                                            <div className="mt-1.5">
+                                                {data.password === data.password_confirmation ? (
+                                                    <p className="text-xs font-medium flex items-center gap-1" style={{ color: '#0EAD69' }}>
+                                                        <CheckCircle className="w-3.5 h-3.5" />
+                                                        Las contraseñas coinciden
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs font-medium flex items-center gap-1" style={{ color: '#EE4266' }}>
+                                                        <XCircle className="w-3.5 h-3.5" />
+                                                        Las contraseñas no coinciden
+                                                    </p>
+                                                )}
+                                            </div>
                                         )}
                                         {errors.password_confirmation && (
                                             <p className="mt-1.5 text-xs font-medium flex items-center gap-1" style={{ color: '#EE4266' }}>
@@ -364,11 +464,11 @@ export default function Register() {
                                     {/* Botón de registro */}
                                     <button
                                         type="submit"
-                                        disabled={processing}
+                                        disabled={processing || !isPasswordValid || data.password !== data.password_confirmation}
                                         className="w-full flex items-center justify-center gap-2 py-3 px-6 text-white font-bold rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-                                        style={{ backgroundColor: '#540D6E' }}
-                                        onMouseEnter={(e) => !processing && (e.currentTarget.style.backgroundColor = '#6B1689')}
-                                        onMouseLeave={(e) => !processing && (e.currentTarget.style.backgroundColor = '#540D6E')}
+                                        style={{ backgroundColor: isPasswordValid ? '#540D6E' : '#9CA3AF' }}
+                                        onMouseEnter={(e) => !processing && isPasswordValid && (e.currentTarget.style.backgroundColor = '#6B1689')}
+                                        onMouseLeave={(e) => !processing && isPasswordValid && (e.currentTarget.style.backgroundColor = '#540D6E')}
                                     >
                                         {processing ? (
                                             <>
@@ -431,5 +531,24 @@ export default function Register() {
                 }
             `}</style>
         </>
+    );
+}
+
+// Componente para cada requisito de contraseña
+function RequirementItem({ met, text }) {
+    return (
+        <div className="flex items-center gap-1.5">
+            {met ? (
+                <CheckCircle className="w-3.5 h-3.5 text-[#0EAD69] flex-shrink-0" />
+            ) : (
+                <XCircle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+            )}
+            <span
+                className="text-xs"
+                style={{ color: met ? '#0EAD69' : '#9CA3AF' }}
+            >
+                {text}
+            </span>
+        </div>
     );
 }

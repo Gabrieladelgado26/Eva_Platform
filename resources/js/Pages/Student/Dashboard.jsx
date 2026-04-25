@@ -4,7 +4,7 @@ import {
     BookOpen, Layers, ChevronRight, GraduationCap,
     Clock, X, ChevronLeft, PlayCircle, Lock, Search, Filter,
     RotateCcw, ChevronDown, Calculator, BookMarked, 
-    FlaskConical, Globe, Languages, LayoutGrid, List,
+    FlaskConical, Globe, Languages, LayoutGrid, List, Palette,
     CheckCircle, Sparkles, User, ChevronsLeft, ChevronsRight, Star, Compass
 } from "lucide-react";
 import AppSidebar, { useSidebarState } from "@/Components/AppSidebar";
@@ -492,12 +492,11 @@ function AvatarPickerModal({ onClose, onSuccess }) {
     const [selected, setSelected] = useState(null);
     const [saving, setSaving] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
-    const [hoveredAvatar, setHoveredAvatar] = useState(null);
+    const [step, setStep] = useState(1);
 
     const handleSave = () => {
         if (!selected || saving) return;
         setSaving(true);
-
         router.post(
             route('student.avatar.store'),
             { avatar: selected },
@@ -509,143 +508,331 @@ function AvatarPickerModal({ onClose, onSuccess }) {
                         onClose();
                         if (onSuccess) onSuccess();
                         window.location.reload();
-                    }, 1500);
+                    }, 1800);
                 },
                 onFinish: () => setSaving(false),
             }
         );
     };
 
+    const selectedAvatar = AVATARS.find(a => a.id === selected);
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            
-            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-lg w-full overflow-hidden animate-slide-up">
-                {/* Barra superior con gradiente */}
-                <div className="h-1.5" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F)" }} />
-                
-                {/* Header - Icono y texto en la misma fila */}
-                <div className="px-6 pt-6 pb-4 border-b border-gray-100">
-                    <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-xl shadow-md" style={{ backgroundColor: "#F3E8FF" }}>
-                            <User className="w-7 h-7" style={{ color: "#540D6E" }} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Overlay sin onClick — no se puede cerrar haciendo clic afuera */}
+            <div
+                className="absolute inset-0"
+                style={{ background: "rgba(84, 13, 110, 0.18)", backdropFilter: "blur(6px)" }}
+            />
+
+            <div
+                className="relative w-full"
+                style={{
+                    maxWidth: "500px",
+                    borderRadius: "28px",
+                    background: "#FFFFFF",
+                    border: "1.5px solid rgba(84, 13, 110, 0.12)",
+                    boxShadow: "0 24px 60px rgba(84,13,110,0.18), 0 8px 24px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    animation: "avatarModalIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both",
+                }}
+            >
+                {/* Franja superior con los colores de la plataforma */}
+                <div style={{
+                    height: "5px",
+                    background: "linear-gradient(90deg, #540D6E 0%, #EE4266 45%, #FFD23F 100%)",
+                }}/>
+
+                {/* ─── PASO 1: Bienvenida ─── */}
+                {step === 1 && (
+                    <div style={{ padding: "44px 40px 40px", textAlign: "center", animation: "fadeSlideIn 0.35s ease both" }}>
+
+                        {/* Ícono central */}
+                        <div style={{ position: "relative", display: "inline-flex", marginBottom: "28px" }}>
+                            {/* Anillo exterior decorativo */}
+                            <div style={{
+                                position: "absolute", inset: "-14px",
+                                borderRadius: "50%",
+                                border: "1.5px dashed rgba(84,13,110,0.2)",
+                                animation: "spinSlow 18s linear infinite",
+                            }}/>
+                            <div style={{
+                                width: "80px", height: "80px", borderRadius: "50%",
+                                background: "linear-gradient(135deg, #F3E8FF, #EDE0F7)",
+                                border: "2px solid rgba(84,13,110,0.15)",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: "0 8px 24px rgba(84,13,110,0.15)",
+                            }}>
+                                <Palette style={{ width: "36px", height: "36px", color: "#540D6E" }} />
+                            </div>
                         </div>
-                        <div className="flex-1">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-1" style={{ color: "#540D6E" }}>
-                                Elige tu avatar
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                                Selecciona el personaje que te representará
+
+                        <h2 style={{
+                            fontSize: "28px", fontWeight: 800, margin: "0 0 10px",
+                            fontFamily: "'Chewy', cursive",
+                            color: "#540D6E",
+                            letterSpacing: "0.5px",
+                        }}>
+                            Elige tu personaje
+                        </h2>
+                        <p style={{
+                            color: "#6B7280", fontSize: "15px", lineHeight: 1.65,
+                            margin: "0 0 32px", maxWidth: "320px",
+                            marginLeft: "auto", marginRight: "auto",
+                            fontFamily: "'Quicksand', sans-serif",
+                        }}>
+                            Selecciona el personaje que te acompañará en tu aventura de aprendizaje.
+                        </p>
+
+                        {/* Previa de avatares */}
+                        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "36px" }}>
+                            {AVATARS.map((av, i) => (
+                                <div
+                                    key={av.id}
+                                    style={{
+                                        width: "40px", height: "40px", borderRadius: "50%",
+                                        background: `${av.color}18`,
+                                        border: `2px solid ${av.color}40`,
+                                        overflow: "hidden",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        animation: `popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i * 60}ms both`,
+                                        boxShadow: `0 4px 10px ${av.color}25`,
+                                        transition: "transform 0.2s",
+                                    }}
+                                >
+                                    <img
+                                        src={`/avatars/${av.id}.png`}
+                                        alt=""
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        onError={e => { e.currentTarget.style.display = "none"; }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => setStep(2)}
+                            style={{
+                                width: "100%", padding: "15px 24px",
+                                borderRadius: "16px", border: "none", cursor: "pointer",
+                                background: "linear-gradient(135deg, #540D6E 0%, #8B1FA8 100%)",
+                                color: "#fff", fontSize: "16px", fontWeight: 700,
+                                fontFamily: "'Quicksand', sans-serif",
+                                boxShadow: "0 8px 24px rgba(84,13,110,0.35)",
+                                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                                transition: "all 0.25s ease",
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(84,13,110,0.45)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(84,13,110,0.35)"; }}
+                        >
+                            Ver personajes
+                            <ChevronRight style={{ width: "16px", height: "16px" }} />
+                        </button>
+
+                        <p style={{
+                            marginTop: "16px", marginBottom: 0,
+                            fontSize: "12px", color: "#9CA3AF",
+                            fontFamily: "'Quicksand', sans-serif",
+                        }}>
+                            Podrás cambiar tu personaje en cualquier momento
+                        </p>
+                    </div>
+                )}
+
+                {/* ─── PASO 2: Selección ─── */}
+                {step === 2 && (
+                    <div style={{ animation: "fadeSlideIn 0.35s ease both" }}>
+
+                        {/* Header */}
+                        <div style={{
+                            padding: "24px 32px 20px",
+                            borderBottom: "1px solid rgba(84,13,110,0.08)",
+                            display: "flex", alignItems: "center", gap: "12px",
+                        }}>
+                            <button
+                                onClick={() => setStep(1)}
+                                style={{
+                                    width: "34px", height: "34px", borderRadius: "10px",
+                                    background: "rgba(84,13,110,0.06)",
+                                    border: "1px solid rgba(84,13,110,0.12)",
+                                    cursor: "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    transition: "all 0.2s", flexShrink: 0, color: "#540D6E",
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = "rgba(84,13,110,0.12)"}
+                                onMouseLeave={e => e.currentTarget.style.background = "rgba(84,13,110,0.06)"}
+                            >
+                                <ChevronLeft style={{ width: "16px", height: "16px" }} />
+                            </button>
+                            <div>
+                                <h3 style={{
+                                    fontSize: "20px", fontWeight: 800, margin: 0,
+                                    fontFamily: "'Chewy', cursive", color: "#540D6E",
+                                    letterSpacing: "0.3px",
+                                }}>
+                                    Tu personaje
+                                </h3>
+                            </div>
+                        </div>
+
+                        {/* Grid de avatares */}
+                        <div style={{
+                            padding: "20px 24px",
+                            display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px",
+                        }}>
+                            {AVATARS.map((av, i) => {
+                                const isSelected = selected === av.id;
+                                return (
+                                    <button
+                                        key={av.id}
+                                        onClick={() => setSelected(av.id)}
+                                        style={{
+                                            borderRadius: "18px", border: "none", cursor: "pointer",
+                                            padding: "16px 8px 14px",
+                                            background: isSelected ? `${av.color}10` : "#FAFAFA",
+                                            outline: isSelected ? `2px solid ${av.color}` : "1.5px solid #F0F0F0",
+                                            display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
+                                            transition: "all 0.25s cubic-bezier(0.34,1.2,0.64,1)",
+                                            transform: isSelected ? "scale(1.04)" : "scale(1)",
+                                            boxShadow: isSelected ? `0 6px 20px ${av.color}30` : "none",
+                                            animation: `popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i * 50}ms both`,
+                                        }}
+                                        onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.background = `${av.color}08`; e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.outline = `1.5px solid ${av.color}40`; } }}
+                                        onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = "#FAFAFA"; e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.outline = "1.5px solid #F0F0F0"; } }}
+                                    >
+                                        {/* Imagen del avatar */}
+                                        <div style={{
+                                            width: "68px", height: "68px", borderRadius: "50%",
+                                            overflow: "hidden", position: "relative",
+                                            background: `${av.color}18`,
+                                            border: `2.5px solid ${isSelected ? av.color : av.color + "30"}`,
+                                            boxShadow: isSelected ? `0 0 0 4px ${av.color}15` : "none",
+                                            transition: "all 0.25s ease",
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                        }}>
+                                            <img
+                                                src={`/avatars/${av.id}.png`}
+                                                alt={av.label}
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                onError={e => { e.currentTarget.style.display = "none"; }}
+                                            />
+                                            {isSelected && (
+                                                <div style={{
+                                                    position: "absolute", bottom: "-1px", right: "-1px",
+                                                    width: "22px", height: "22px", borderRadius: "50%",
+                                                    background: av.color,
+                                                    border: "2px solid #fff",
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                }}>
+                                                    <CheckCircle style={{ width: "11px", height: "11px", color: "#fff" }} />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <span style={{
+                                            fontSize: "13px", fontWeight: 700,
+                                            color: isSelected ? av.color : "#6B7280",
+                                            fontFamily: "'Quicksand', sans-serif",
+                                            transition: "color 0.2s",
+                                        }}>
+                                            {av.label}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Botón confirmar */}
+                        <div style={{ padding: "4px 24px 28px" }}>
+                            {confirmed ? (
+                                <div style={{
+                                    width: "100%", padding: "15px",
+                                    borderRadius: "16px",
+                                    background: "linear-gradient(135deg, #0EAD69, #3BCEAC)",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
+                                    boxShadow: "0 8px 24px rgba(14,173,105,0.3)",
+                                    animation: "fadeSlideIn 0.3s ease both",
+                                }}>
+                                    <CheckCircle style={{ width: "18px", height: "18px", color: "#fff" }} />
+                                    <span style={{ color: "#fff", fontWeight: 700, fontSize: "15px", fontFamily: "'Quicksand', sans-serif" }}>
+                                        Listo, que empiece la aventura
+                                    </span>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleSave}
+                                    disabled={!selected || saving}
+                                    style={{
+                                        width: "100%", padding: "15px 24px",
+                                        borderRadius: "16px", border: "none",
+                                        cursor: selected ? "pointer" : "not-allowed",
+                                        background: selected
+                                            ? `linear-gradient(135deg, ${selectedAvatar?.color}, ${selectedAvatar?.color}cc)`
+                                            : "#F3F4F6",
+                                        color: selected ? "#fff" : "#9CA3AF",
+                                        fontSize: "15px", fontWeight: 700,
+                                        fontFamily: "'Quicksand', sans-serif",
+                                        boxShadow: selected ? `0 8px 24px ${selectedAvatar?.color}40` : "none",
+                                        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                                        transition: "all 0.3s cubic-bezier(0.34,1.2,0.64,1)",
+                                        transform: selected ? "scale(1)" : "scale(0.98)",
+                                    }}
+                                    onMouseEnter={e => { if (selected) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 12px 32px ${selectedAvatar?.color}50`; } }}
+                                    onMouseLeave={e => { if (selected) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 8px 24px ${selectedAvatar?.color}40`; } }}
+                                >
+                                    {saving ? (
+                                        <>
+                                            <svg style={{ width: "16px", height: "16px", animation: "spin 1s linear infinite" }} viewBox="0 0 24 24" fill="none">
+                                                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.35)" strokeWidth="3" />
+                                                <path d="M4 12a8 8 0 018-8" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+                                            </svg>
+                                            Guardando...
+                                        </>
+                                    ) : selected ? (
+                                        <>
+                                            <Star style={{ width: "16px", height: "16px" }} />
+                                            Comenzar con {selectedAvatar?.label}
+                                        </>
+                                    ) : (
+                                        "Selecciona un personaje para continuar"
+                                    )}
+                                </button>
+                            )}
+
+                            <p style={{
+                                textAlign: "center", fontSize: "12px", color: "#898989",
+                                marginTop: "12px", marginBottom: 0,
+                                fontFamily: "'Quicksand', sans-serif",
+                            }}>
+                                Puedes cambiar tu avatar desde la configuración en cualquier momento
                             </p>
                         </div>
                     </div>
-                </div>
-
-                {/* Grid de avatares */}
-                <div className="p-6">
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                        {AVATARS.map(av => {
-                            const isSelected = selected === av.id;
-                            const isHovered = hoveredAvatar === av.id;
-                            
-                            return (
-                                <button
-                                    key={av.id}
-                                    onClick={() => setSelected(av.id)}
-                                    onMouseEnter={() => setHoveredAvatar(av.id)}
-                                    onMouseLeave={() => setHoveredAvatar(null)}
-                                    className="relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 group"
-                                    style={{
-                                        borderColor: isSelected ? av.color : "#E5E7EB",
-                                        backgroundColor: isSelected ? `${av.color}08` : "white",
-                                        transform: isSelected ? "scale(1.02)" : "scale(1)",
-                                        boxShadow: isSelected ? `0 8px 25px ${av.color}25` : "0 2px 8px rgba(0,0,0,0.05)"
-                                    }}
-                                >
-                                    {isSelected && (
-                                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-10"
-                                            style={{ backgroundColor: "#540D6E", border: "2px solid white" }}>
-                                            <CheckCircle className="w-3.5 h-3.5 text-white" />
-                                        </div>
-                                    )}
-
-                                    {/* Avatar circular */}
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
-                                        style={{ 
-                                            background: isSelected || isHovered
-                                                ? `linear-gradient(135deg, ${av.color}, ${av.color}dd)` 
-                                                : "#F3F4F6"
-                                        }}>
-                                        <img
-                                            src={`/avatars/${av.id}.png`}
-                                            alt={av.label}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                e.currentTarget.style.display = "none";
-                                                e.currentTarget.parentElement.innerHTML = `<span style="font-size:2.5rem">${av.emoji}</span>`;
-                                            }}
-                                        />
-                                    </div>
-
-                                    <span className="text-sm font-semibold mt-1" style={{ color: isSelected ? av.color : "#4B5563" }}>
-                                        {av.label}
-                                    </span>
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {confirmed ? (
-                        <div className="w-full relative overflow-hidden rounded-xl">
-                            <div 
-                                className="flex items-center justify-center gap-3 py-4 px-6 text-white font-bold shadow-lg"
-                                style={{ 
-                                    background: "linear-gradient(135deg, #540D6E, #EE4266)",
-                                }}
-                            >
-                                <div className="absolute inset-0 bg-white/10"></div>
-                                <span className="relative z-10 text-lg">Bienvenido a tu aventura</span>
-                            </div>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleSave}
-                            disabled={!selected || saving}
-                            className="w-full py-3.5 rounded-xl text-base font-bold text-white transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
-                            style={{ 
-                                background: selected 
-                                    ? `linear-gradient(135deg, ${AVATARS.find(a => a.id === selected)?.color || '#540D6E'}, ${AVATARS.find(a => a.id === selected)?.color || '#EE4266'}dd)` 
-                                    : "linear-gradient(135deg, #9CA3AF, #6B7280)"
-                            }}
-                        >
-                            {/* Efecto de brillo al hover */}
-                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                {saving ? (
-                                    <>
-                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Guardando...
-                                    </>
-                                ) : (
-                                    selected 
-                                        ? `¡Elegir a ${AVATARS.find(a => a.id === selected)?.label}!` 
-                                        : "Selecciona un personaje"
-                                )}
-                            </span>
-                        </button>
-                    )}
-                </div>
-                
-                {/* Footer decorativo */}
-                <div className="px-6 pb-4">
-                    <p className="text-xs text-center text-gray-400">
-                        Puedes cambiar tu avatar cuando quieras desde la configuración
-                    </p>
-                </div>
+                )}
             </div>
+
+            <style>{`
+                @keyframes avatarModalIn {
+                    from { opacity: 0; transform: scale(0.88) translateY(20px); }
+                    to   { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                @keyframes fadeSlideIn {
+                    from { opacity: 0; transform: translateX(10px); }
+                    to   { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes popIn {
+                    from { opacity: 0; transform: scale(0.7); }
+                    to   { opacity: 1; transform: scale(1); }
+                }
+                @keyframes spinSlow {
+                    from { transform: rotate(0deg); }
+                    to   { transform: rotate(360deg); }
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to   { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 }

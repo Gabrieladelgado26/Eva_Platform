@@ -45,65 +45,110 @@ Route::middleware(['web', 'auth'])
 
 /*
 |--------------------------------------------------------------------------
-| OVA Routes — Estructura semántica: /ovas/{area}/{tematica}/{subtema}
+| OVA Routes — Matemáticas / Adición-Sustracción
+| Requiere autenticación (auth). No restringe rol: estudiantes,
+| docentes y admins pueden acceder.
 |--------------------------------------------------------------------------
 */
-Route::prefix('ovas/matematicas/adicion-sustraccion')->name('ova.')->group(function () {
+Route::middleware(['web', 'auth'])
+    ->prefix('ovas/matematicas/adicion-sustraccion')
+    ->name('ova.')
+    ->group(function () {
 
-    // Redirect /index → /inicio for compatibility
-    Route::redirect('/index', '/ovas/matematicas/adicion-sustraccion/inicio', 301);
+        // Compatibilidad legado
+        Route::redirect('/index', '/ovas/matematicas/adicion-sustraccion/inicio', 301);
 
-    Route::get('/inicio', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Index')
-            ->rootView('ova');
-    })->name('index');
+        Route::get('/inicio', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Index')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('index');
 
-    Route::get('/menu', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Menu')
-            ->rootView('ova');
-    })->name('menu');
+        Route::get('/menu', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Menu')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('menu');
 
-    Route::get('/slider', function () {
-        return Inertia::render('OVAs/Components/Slider')
-            ->rootView('slider');
-    })->name('slider');
+        Route::get('/slider', function () {
+            return Inertia::render('OVAs/Components/Slider')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.slider');
+        })->name('slider');
 
-    // ── Adición ──
-    Route::get('/adicion-sus-propiedades', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Propiedades')
-            ->rootView('ova');
-    })->name('adicionpropiedades');
+        // ── Adición ──
+        Route::get('/adicion-sus-propiedades', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Propiedades')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('adicionpropiedades');
 
-    Route::get('/adicion-dos-cifras', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Dos_Cifras')
-            ->rootView('ova');
-    })->name('adiciondoscifras');
+        Route::get('/adicion-dos-cifras', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Dos_Cifras')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('adiciondoscifras');
 
-    Route::get('/adicion-tres-cifras', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Tres_Cifras')
-            ->rootView('ova');
-    })->name('adiciontrescifras');
+        Route::get('/adicion-tres-cifras', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Tres_Cifras')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('adiciontrescifras');
 
-    Route::get('/adicion-hasta-19', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Hasta_19')
-            ->rootView('ova');
-    })->name('adicionhasta19');
+        Route::get('/adicion-hasta-19', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Adicion/Adicion_Hasta_19')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('adicionhasta19');
 
-    // ── Sustracción ──
-    Route::get('/sustraccion-dos-cifras', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Dos_Cifras')
-            ->rootView('ova');
-    })->name('sustracciondoscifras');
+        // ── Sustracción ──
+        Route::get('/sustraccion-dos-cifras', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Dos_Cifras')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('sustracciondoscifras');
 
-    Route::get('/sustraccion-tres-cifras', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Tres_Cifras')
-            ->rootView('ova');
-    })->name('sustracciontrescifras');
+        Route::get('/sustraccion-tres-cifras', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Tres_Cifras')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('sustracciontrescifras');
 
-    Route::get('/sustraccion-hasta-19', function () {
-        return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Hasta_19')
-            ->rootView('ova');
-    })->name('sustraccionhasta19');
+        Route::get('/sustraccion-hasta-19', function () {
+            return Inertia::render('OVAs/Matematicas/Adicion-Sustraccion/Sustraccion/Sustraccion_Hasta_19')
+                ->rootView('OVAs.Matematicas.Adicion-Sustraccion.ova');
+        })->name('sustraccionhasta19');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| OVA Routes — Español / El Cuento
+| Requiere autenticación (auth).
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth'])
+    ->prefix('ovas/espanol/cuento')
+    ->name('ova.espanol.cuento.')
+    ->group(function () {
+
+        Route::get('/inicio', function () {
+            return Inertia::render('OVAs/Espanol/Cuento/Index')
+                ->rootView('OVAs.Espanol.Cuento.ova');
+        })->name('index');
+
+        Route::get('/menu', function () {
+            return Inertia::render('OVAs/Espanol/Cuento/Menu')
+                ->rootView('OVAs.Espanol.Cuento.ova');
+        })->name('menu');
+
+        Route::get('/slider', function () {
+            return Inertia::render('OVAs/Espanol/Cuento/Components/Slider')
+                ->rootView('OVAs.Espanol.Cuento.slider');
+        })->name('slider');
+
+        Route::get('/cuento', function () {
+            return Inertia::render('OVAs/Espanol/Cuento/Cuento/Cuento')
+                ->rootView('OVAs.Espanol.Cuento.ova');
+        })->name('cuento');
+    });
+
+// Redirecciones legado blade → nueva SPA
+Route::prefix('espanol/cuento')->group(function () {
+    Route::redirect('/index',      '/ovas/espanol/cuento/inicio', 301);
+    Route::redirect('/mprincovas', '/ovas/espanol/cuento/menu',   301);
+    Route::redirect('/slider',     '/ovas/espanol/cuento/slider', 301);
+    Route::redirect('/elcuento',   '/ovas/espanol/cuento/cuento', 301);
 });
 
 /*

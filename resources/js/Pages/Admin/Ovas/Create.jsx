@@ -23,6 +23,8 @@ const AREAS = [
 const OVA_RECURSOS = [
     // Matemáticas — Adición y Sustracción
     { label: "Matemáticas · Adición y Sustracción",     path: "/ovas/matematicas/adicion-sustraccion/inicio" },
+    // Español — El Cuento
+    { label: "Español · El Cuento",     path: "/ovas/espanol/cuento/inicio" },
 ];
 
 export default function Create() {

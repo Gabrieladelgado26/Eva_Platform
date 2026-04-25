@@ -10,10 +10,10 @@
         <!-- Fuente Chewy (OVA) -->
         <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
 
-        <!-- Estilos OVA -->
-        <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/bootstrap.css">
-        <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/stylemedicion.css">
-        <link rel="stylesheet" href="/OVAs/Matematicas/Adicion-Sustraccion/css/slider.css">
+        <!-- Estilos OVA Español – El Cuento -->
+        <link rel="stylesheet" href="/OVAs/Espanol/Cuento/css/bootstrap.css">
+        <link rel="stylesheet" href="/OVAs/Espanol/Cuento/css/stylegeneral.css">
+        <link rel="stylesheet" href="/OVAs/Espanol/Cuento/css/slider.css">
 
         <!-- Scripts Inertia -->
         @routes

@@ -4,8 +4,9 @@
  * y envía resultados de evaluación al servidor.
  *
  * Límite: máximo 3 intentos por evaluación / estudiante.
- * Al guardar exitosamente → recarga la página (preserva sesión).
- * Al alcanzar el límite → muestra card de bloqueo, sin recargar.
+ * Al guardar exitosamente → muestra card de resultado.
+ * Al alcanzar el límite → muestra card de bloqueo.
+ * Docentes/admin → vista previa (no se persiste en BD).
  */
 (function () {
 
@@ -57,11 +58,11 @@
 
     // ── Mensaje según el porcentaje ───────────────────────────────────────────
     function getMotivationalMessage(pct) {
-        if (pct >= 90) return '¡Excelente trabajo! Sigue así';
+        if (pct >= 90) return 'Excelente trabajo! Sigue asi';
         if (pct >= 80) return 'Muy bien, vas por buen camino';
-        if (pct >= 70) return 'Bien, puedes mejorar aún más';
+        if (pct >= 70) return 'Bien, puedes mejorar aun mas';
         if (pct >= 60) return 'Has aprobado, pero sigue practicando';
-        return 'No te desanimes, ¡inténtalo de nuevo!';
+        return 'No te desanimes, intentalo de nuevo!';
     }
 
     // ── Tarjeta de resultado exitoso ──────────────────────────────────────────
@@ -77,7 +78,7 @@
 
         const attemptsBlock = last
             ? `<div style="background: rgba(84, 13, 110, 0.1); border-radius: 16px; padding: 14px 18px; text-align: center;">
-                <span style="font-family: ${FONT_TEXT}; font-size: 15px; color: #540D6E; font-weight: 600;">No quedan más intentos disponibles</span>
+                <span style="font-family: ${FONT_TEXT}; font-size: 15px; color: #540D6E; font-weight: 600;">No quedan mas intentos disponibles</span>
                </div>`
             : `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(84, 13, 110, 0.08); border-radius: 16px; padding: 14px 18px;">
                 <span style="font-family: ${FONT_TEXT}; font-size: 15px; color: #540D6E; font-weight: 600;">Intentos restantes</span>
@@ -136,7 +137,59 @@
         </div>`;
     }
 
-    // ── Tarjeta de límite de intentos ─────────────────────────────────────────
+    // ── Tarjeta de vista previa (docente/admin) ───────────────────────────────
+    function buildPreviewCard(extra) {
+        const pct = extra.percentage;
+        const score = extra.score;
+        const total = extra.total;
+        const mensaje = getMotivationalMessage(pct);
+
+        return `
+        <div style="
+            background: white;
+            border-radius: 51px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: evaCardIn 0.4s ease;
+        ">
+            <div style="height: 8px; background: linear-gradient(135deg, #6B7280, #9CA3AF);"></div>
+            <div style="padding: 32px 28px;">
+                <div style="text-align: center;">
+                    <div style="font-family: ${FONT_TITLE}; font-size: 28px; color: #374151; margin-bottom: 8px;">Resultado (Vista previa)</div>
+                    <div style="font-family: ${FONT_TEXT}; font-size: 14px; color: #6B7280; margin-bottom: 26px;">Modo docente / administrador</div>
+                    
+                    <div style="font-family: ${FONT_TITLE}; font-size: 80px; color: #374151; margin-bottom: 16px;">
+                        ${score}<span style="font-size: 36px; color: #9CA3AF;">/${total}</span>
+                    </div>
+                    
+                    <div style="font-family: ${FONT_TEXT}; font-size: 18px; color: #EE4266; font-weight: 600; margin-bottom: 24px;">
+                        ${pct}%
+                    </div>
+                </div>
+                <div style="background: rgba(107, 114, 128, 0.1); border-radius: 16px; padding: 14px 18px; margin-bottom: 24px; text-align: center;">
+                    <span style="font-family: ${FONT_TEXT}; font-size: 14px; color: #6B7280;">Este resultado no se guardara en la base de datos</span>
+                </div>
+                <button class="eva-continue-btn" style="
+                    width: 100%;
+                    padding: 16px;
+                    background: #374151;
+                    border: none;
+                    border-radius: 51px;
+                    font-family: ${FONT_TITLE};
+                    font-size: 20px;
+                    color: white;
+                    cursor: pointer;
+                    transition: transform 0.2s ease;
+                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    Cerrar
+                </button>
+            </div>
+        </div>`;
+    }
+
+    // ── Tarjeta de limite de intentos ─────────────────────────────────────────
     function buildBlockedCard(extra, ms) {
         const max = extra.maxAttempts || 3;
         const score = extra.score;
@@ -157,15 +210,15 @@
                 <div style="width: 80px; height: 80px; background: ${GRADIENT}; border-radius: 40px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
                     <span style="font-family: ${FONT_TITLE}; font-size: 36px; color: white;">!</span>
                 </div>
-                <div style="font-family: ${FONT_TITLE}; font-size: 26px; color: #540D6E; margin-bottom: 16px;">Límite alcanzado</div>
+                <div style="font-family: ${FONT_TITLE}; font-size: 26px; color: #540D6E; margin-bottom: 16px;">Limite alcanzado</div>
                 <div style="font-family: ${FONT_TEXT}; font-size: 15px; color: #6B7280; line-height: 1.6; margin-bottom: 20px;">
                     Has completado los <strong>${max} intentos</strong> disponibles.
                 </div>
                 <div style="background: rgba(84, 13, 110, 0.08); border-radius: 16px; padding: 14px; margin-bottom: 20px;">
-                    <span style="font-family: ${FONT_TEXT}; font-size: 14px; color: #540D6E;">La calificación obtenida (${score}/${total}) no será guardada</span>
+                    <span style="font-family: ${FONT_TEXT}; font-size: 14px; color: #540D6E;">La calificacion obtenida (${score}/${total}) no sera guardada</span>
                 </div>
                 <div style="background: rgba(84, 13, 110, 0.06); border-radius: 16px; padding: 12px; margin-bottom: 24px;">
-                    <span style="font-family: ${FONT_TEXT}; font-size: 13px; color: #6B7280;">Consulta con tu docente para más información</span>
+                    <span style="font-family: ${FONT_TEXT}; font-size: 13px; color: #6B7280;">Consulta con tu docente para mas informacion</span>
                 </div>
                 ${ms > 0 ? `
                 <div style="margin-bottom: 20px;">
@@ -191,7 +244,7 @@
         </div>`;
     }
 
-    // ── Tarjeta genérica para errores ─────────────────────────────────────────
+    // ── Tarjeta generica para errores ─────────────────────────────────────────
     function buildSimpleCard(type, title, lines, ms) {
         const palettes = {
             error: { gradient: GRADIENT, icon: '!' },
@@ -234,7 +287,7 @@
         </div>`;
     }
 
-    // ── Mostrar modal (sin fondo) ─────────────────────────────────────────────
+    // ── Mostrar modal ─────────────────────────────────────────────────────────
     function showToast(type, title, lines, duration, extra) {
         const prev = document.getElementById('eva-toast');
         if (prev) prev.remove();
@@ -244,7 +297,7 @@
         // Bloquear scroll del body
         document.body.style.overflow = 'hidden';
 
-        // Overlay transparente
+        // Overlay con fondo semi-transparente
         const overlay = document.createElement('div');
         overlay.id = 'eva-toast';
         overlay.style.cssText = `
@@ -261,14 +314,17 @@
             justify-content: center !important;
             padding: 20px !important;
             background: transparent !important;
+            backdrop-filter: blur(4px) !important;
             animation: evaBackdropIn 0.3s ease !important;
             margin: 0 !important;
             box-sizing: border-box !important;
         `;
 
-        // Seleccionar card según tipo
+        // Seleccionar card segun tipo
         if (type === 'success' && extra && extra.percentage !== undefined) {
             overlay.innerHTML = buildSuccessCard(extra, ms);
+        } else if (type === 'preview' && extra) {
+            overlay.innerHTML = buildPreviewCard(extra);
         } else if (type === 'blocked' && extra) {
             overlay.innerHTML = buildBlockedCard(extra, ms);
         } else {
@@ -280,11 +336,11 @@
             if (e.target === overlay) dismissToast(overlay);
         });
 
-        // Botón cerrar
+        // Boton cerrar
         const closeBtn = overlay.querySelector('.eva-close-btn');
         if (closeBtn) closeBtn.addEventListener('click', function () { dismissToast(overlay); });
 
-        // Botón continuar
+        // Boton continuar
         const contBtn = overlay.querySelector('.eva-continue-btn');
         if (contBtn) {
             contBtn.addEventListener('click', function () {
@@ -385,6 +441,18 @@
 
                     if (ok && data.success) {
                         const ev = data.evaluation;
+                        
+                        // Vista previa para docentes/admin
+                        if (data.preview) {
+                            console.log('[EVA] Vista previa (docente/admin):', ev);
+                            showToast('preview', '', [], 0, {
+                                score: ev.score,
+                                total: ev.total,
+                                percentage: ev.percentage,
+                            });
+                            return;
+                        }
+                        
                         console.log('[EVA] Evaluacion guardada:', ev);
                         showToast('success', '', [], 6000, {
                             score: ev.score,

@@ -31,6 +31,8 @@ class OvaController extends Controller
     private const OVA_PATHS_VALIDOS = [
         // Matemáticas — Adición y Sustracción
         '/ovas/matematicas/adicion-sustraccion/inicio',
+        // Español — El Cuento
+        '/ovas/espanol/cuento/inicio',
     ];
 
     public function index(Request $request)
