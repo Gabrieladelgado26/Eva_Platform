@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('ovas', function (Blueprint $table) {
             $table->id();
 
-            $table->string('title');
+            $table->string('area');
             $table->string('tematica');
 
             $table->text('description')->nullable();
