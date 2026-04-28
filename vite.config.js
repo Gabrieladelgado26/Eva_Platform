@@ -7,18 +7,28 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/js/app.jsx',
-                'resources/js/ova.jsx',   // entry point sin Tailwind para las OVAs
+                'resources/js/ova.jsx',
             ],
             refresh: true,
         }),
         react(),
     ],
-    server: {
-        // Ignorar archivos de Edge Animate en watch para evitar recargas innecesarias
-        watch: {
-            ignored: ['**/public/OVAs/Matematicas/Adicion-Sustraccion/js/jquery-1.10.2.min.js', '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/edge.6.0.0.min.js', '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/Menuprincipalovas5_edge.js']
+    build: {
+        rollupOptions: {
+            input: {
+                app: 'resources/js/app.jsx',
+                ova: 'resources/js/ova.jsx',
+            }
         }
     },
-    // Asegurar que los assets estáticos se sirvan correctamente
+    server: {
+        watch: {
+            ignored: [
+                '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/jquery-1.10.2.min.js',
+                '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/edge.6.0.0.min.js',
+                '**/public/OVAs/Matematicas/Adicion-Sustraccion/js/Menuprincipalovas5_edge.js'
+            ]
+        }
+    },
     publicDir: 'public',
 });
