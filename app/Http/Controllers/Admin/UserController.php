@@ -481,13 +481,17 @@ public function students(Request $request)
         $year = Carbon::now()->year;
 
         // Usuarios registrados por mes (año actual)
-        $byMonth = User::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        $monthExpr = DB::connection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER) as month"
+            : "MONTH(created_at) as month";
+
+        $byMonth = User::selectRaw("{$monthExpr}, COUNT(*) as total")
             ->whereYear('created_at', $year)
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();
 
-        $activeByMonth = User::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        $activeByMonth = User::selectRaw("{$monthExpr}, COUNT(*) as total")
             ->whereYear('created_at', $year)
             ->where('is_active', true)
             ->groupBy('month')
@@ -657,16 +661,21 @@ public function students(Request $request)
             return 0;
         }
 
-        $query = DB::table('evaluations')
-            ->selectRaw('COUNT(DISTINCT CONCAT(user_id, "-", ova_id)) as count');
+        // Contar pares (user_id, ova_id) únicos — usando subquery para compatibilidad SQLite/MySQL
+        $pairsQuery = DB::table('evaluations')
+            ->select('user_id', 'ova_id')
+            ->distinct();
 
         if ($areaFilter) {
-            $query->whereIn('ova_id', function ($subquery) use ($areaFilter) {
+            $pairsQuery->whereIn('ova_id', function ($subquery) use ($areaFilter) {
                 $subquery->select('id')
                     ->from('ovas')
                     ->where('area', $areaFilter);
             });
         }
+
+        $query = DB::table($pairsQuery, 'pairs')
+            ->selectRaw('COUNT(*) as count');
 
         return (int) ($query->first()?->count ?? 0);
     }
@@ -724,8 +733,12 @@ public function students(Request $request)
         $hoursData = [];
 
         // Get evaluations grouped by hour
+        $hourExpr = DB::connection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%H', created_at) AS INTEGER) as hour"
+            : "HOUR(created_at) as hour";
+
         $query = DB::table('evaluations')
-            ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+            ->selectRaw("{$hourExpr}, COUNT(*) as count")
             ->groupBy('hour');
 
         if ($areaFilter) {

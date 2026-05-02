@@ -502,13 +502,13 @@ function AvatarPickerModal({ onClose, onSuccess }) {
             { avatar: selected },
             {
                 preserveScroll: true,
+                preserveState: false,
                 onSuccess: () => {
                     setConfirmed(true);
                     setTimeout(() => {
                         onClose();
                         if (onSuccess) onSuccess();
-                        window.location.reload();
-                    }, 1800);
+                    }, 1200);
                 },
                 onFinish: () => setSaving(false),
             }

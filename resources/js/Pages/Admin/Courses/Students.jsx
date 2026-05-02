@@ -4,7 +4,7 @@ import {
     ArrowLeft, Users, Search, X, UserPlus, UserX, Upload,
     ListPlus, Copy, Check, AlertCircle, Loader2, Calendar,
     GraduationCap, Trash2, FileSpreadsheet, Printer, Eye, CheckCircle,
-    Filter, RotateCcw
+    Filter, RotateCcw, Download, ChevronDown, FileText
 } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -27,16 +27,14 @@ const escapeCSV = (value) => {
 };
 
 const getCsrfToken = () => {
-    const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (meta) return meta;
-    const cookie = document.cookie
-        .split('; ')
-        .find(r => r.startsWith('XSRF-TOKEN='))
-        ?.split('=').slice(1).join('=');
-    if (cookie) {
-        try { return decodeURIComponent(cookie); } catch { return cookie; }
+    // Cookie is freshest — Laravel updates XSRF-TOKEN on every response
+    const xsrf = document.cookie.split('; ').find(r => r.startsWith('XSRF-TOKEN='));
+    if (xsrf) {
+        try { return decodeURIComponent(xsrf.split('=')[1]); }
+        catch  { return xsrf.split('=')[1]; }
     }
-    return '';
+    // Fallback: meta tag
+    return document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 };
 
 // ─── TOAST NOTIFICATION ───────────────────────────────────────────────────────
@@ -343,10 +341,22 @@ function CredentialsListModal({ credentials, course, onClose }) {
     const [copied, setCopied] = useState({});
     const [copiedAll, setCopiedAll] = useState(false);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
+    const [showDownloadOptions, setShowDownloadOptions] = useState(false);
+    const downloadRef = useRef(null);
 
     const safe = (credentials || []).filter(
         c => c && typeof c === "object" && c.name && c.username && c.pin
     );
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (downloadRef.current && !downloadRef.current.contains(e.target)) {
+                setShowDownloadOptions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const copyOne = (cred, idx) => {
         navigator.clipboard.writeText(`Usuario: ${cred.username}\nPIN: ${cred.pin}`);
@@ -370,10 +380,12 @@ function CredentialsListModal({ credentials, course, onClose }) {
         a.download = `credenciales_${Date.now()}.csv`;
         a.click();
         URL.revokeObjectURL(a.href);
+        setShowDownloadOptions(false);
     };
 
     const downloadPDF = async () => {
         if (downloadingPdf) return;
+        setShowDownloadOptions(false);
         setDownloadingPdf(true);
         try {
             const response = await fetch(`/admin/courses/${course.id}/students/bulk`, {
@@ -387,13 +399,13 @@ function CredentialsListModal({ credentials, course, onClose }) {
             });
             if (!response.ok) throw new Error(`Error ${response.status}`);
             const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+            const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
             const a = document.createElement("a");
-            a.href = blobUrl;
+            a.href = url;
             a.download = "credenciales.pdf";
             document.body.appendChild(a);
             a.click();
-            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
         } catch (err) {
             alert("No se pudo descargar el PDF: " + err.message);
         } finally {
@@ -423,19 +435,45 @@ function CredentialsListModal({ credentials, course, onClose }) {
                     </button>
                 </div>
                 <div className="px-6 pt-4 pb-2 flex gap-2 justify-end">
-                    <button onClick={copyAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
+                    <button onClick={copyAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
                         {copiedAll ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar todo
                     </button>
-                    <button onClick={downloadCSV} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
-                        <FileSpreadsheet className="w-3.5 h-3.5" /> CSV
-                    </button>
-                    <button onClick={downloadPDF} disabled={downloadingPdf}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg disabled:opacity-60"
-                        style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
-                        {downloadingPdf
-                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
-                            : <><Printer className="w-3.5 h-3.5" /> PDF</>}
-                    </button>
+                    <div className="relative" ref={downloadRef}>
+                        <button
+                            onClick={() => setShowDownloadOptions(v => !v)}
+                            disabled={downloadingPdf}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm disabled:opacity-60"
+                            style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
+                            {downloadingPdf
+                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                                : <><Download className="w-3.5 h-3.5" /> Descargar <ChevronDown className={`w-3 h-3 transition-transform ${showDownloadOptions ? "rotate-180" : ""}`} /></>}
+                        </button>
+                        {showDownloadOptions && !downloadingPdf && (
+                            <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50"
+                                style={{ animation: "modalIn 0.15s ease-out" }}>
+                                <button onClick={downloadCSV}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors">
+                                    <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#E8F5F0" }}>
+                                        <FileSpreadsheet className="w-4 h-4" style={{ color: "#0EAD69" }} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-slate-900 text-xs">CSV</p>
+                                        <p className="text-xs text-slate-500">Hoja de cálculo</p>
+                                    </div>
+                                </button>
+                                <button onClick={downloadPDF}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors">
+                                    <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
+                                        <FileText className="w-4 h-4" style={{ color: "#EE4266" }} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-slate-900 text-xs">PDF</p>
+                                        <p className="text-xs text-slate-500">Documento PDF</p>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="px-6 pb-4 overflow-y-auto" style={{ maxHeight: "calc(85vh - 200px)" }}>
                     <div className="border border-slate-200 rounded-xl overflow-hidden">

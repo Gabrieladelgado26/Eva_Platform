@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 
 const BASE = '/OVAs/Espanol/Cuento';
-const HAND = `url('OVAs/Shared/hand.cur'), pointer`;
+const HAND = "url('/OVAs/Shared/hand.cur'), pointer";
 
 const IMG = {
     iconLicense:     `${BASE}/images/branding/icon_license.png`,

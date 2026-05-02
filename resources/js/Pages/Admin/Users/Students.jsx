@@ -5,8 +5,18 @@ import {
     UserPlus, Edit2, Trash2, User, Shield, Users, Search, Filter, X,
     RotateCcw, AlertCircle, CheckCircle, EyeOff, Power, GraduationCap, BookOpen,
     ChevronLeft, ChevronRight, Eye, Copy, Check,
-    UsersRound, ChevronsLeft, ChevronsRight, ChevronDown
+    UsersRound, ChevronsLeft, ChevronsRight, ChevronDown,
+    FileSpreadsheet, Printer, KeyRound
 } from "lucide-react";
+
+// ─── Utilidades ───────────────────────────────────────────────────────────────
+const escapeCSV = (value) => {
+    if (typeof value !== "string") return String(value ?? "");
+    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+        return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+};
 
 // ─── Componente Toast con barra de progreso ───────────────────────────────────
 function Toast({ message, type = 'success', onClose, duration = 4000 }) {
@@ -754,55 +764,65 @@ export default function Students({ users = [], stats = {} }) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCredentialsModal(false)} />
                     <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full overflow-hidden">
-                        <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
+                        <div className="h-1.5" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
                         <div className="p-6">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                                    <GraduationCap className="w-8 h-8" style={{ color: "#540D6E" }} />
+                            {/* Header */}
+                            <div className="flex items-start gap-4 mb-5">
+                                <div className="p-3 rounded-xl shadow-md border border-gray-100 flex-shrink-0" style={{ backgroundColor: "#F3E8FF" }}>
+                                    <KeyRound className="w-7 h-7" style={{ color: "#540D6E" }} />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Credenciales de Acceso</h2>
-                                    <p className="text-sm text-gray-600">Guarda estas credenciales para el inicio de sesión del estudiante</p>
+                                <div className="flex-1">
+                                    <h2 className="text-xl font-bold text-gray-900">Credenciales de Acceso</h2>
+                                    <p className="text-sm text-gray-500 mt-0.5">Guarda estas credenciales para el inicio de sesión del estudiante</p>
                                 </div>
+                                <button onClick={() => setShowCredentialsModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors mt-0.5">
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
+
+                            {/* Usuario */}
                             <div className="mb-4">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Usuario</label>
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">Usuario</label>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <User className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800">{credentials.username}</span>
+                                    <div className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
+                                        <User className="w-4 h-4 flex-shrink-0" style={{ color: "#540D6E" }} />
+                                        <span className="text-gray-800 font-semibold">{credentials.username}</span>
                                     </div>
                                     <button onClick={() => copyToClipboard(credentials.username, 'username')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
+                                        className="p-2.5 rounded-lg transition-all border-2 hover:shadow-md flex-shrink-0"
                                         style={{ borderColor: copied.username ? "#0EAD69" : "#540D6E", backgroundColor: copied.username ? "#E8F5F0" : "white" }}>
-                                        {copied.username ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
+                                        {copied.username ? <Check className="w-4 h-4" style={{ color: "#0EAD69" }} /> : <Copy className="w-4 h-4" style={{ color: "#540D6E" }} />}
                                     </button>
                                 </div>
                                 {copied.username && <p className="text-xs text-green-600 mt-1">✓ Usuario copiado</p>}
                             </div>
-                            <div className="mb-6">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">PIN de Acceso</label>
+
+                            {/* PIN */}
+                            <div className="mb-5">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">PIN de Acceso</label>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                        <Shield className="w-4 h-4 text-gray-400" />
-                                        <span className="text-gray-800 text-lg tracking-wider font-bold">{credentials.pin}</span>
+                                    <div className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono flex items-center gap-2">
+                                        <Shield className="w-4 h-4 flex-shrink-0" style={{ color: "#540D6E" }} />
+                                        <span className="text-gray-800 text-lg tracking-widest font-bold">{credentials.pin}</span>
                                     </div>
                                     <button onClick={() => copyToClipboard(credentials.pin, 'pin')}
-                                        className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
+                                        className="p-2.5 rounded-lg transition-all border-2 hover:shadow-md flex-shrink-0"
                                         style={{ borderColor: copied.pin ? "#0EAD69" : "#540D6E", backgroundColor: copied.pin ? "#E8F5F0" : "white" }}>
-                                        {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
+                                        {copied.pin ? <Check className="w-4 h-4" style={{ color: "#0EAD69" }} /> : <Copy className="w-4 h-4" style={{ color: "#540D6E" }} />}
                                     </button>
                                 </div>
                                 {copied.pin && <p className="text-xs text-green-600 mt-1">✓ PIN copiado</p>}
                             </div>
-                            <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
-                                <p className="text-xs text-gray-700 flex items-start gap-2">
-                                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
-                                    <span>Estas credenciales son únicas, asegúrate de compartirlas de forma segura con el estudiante.</span>
-                                </p>
+
+                            {/* Aviso */}
+                            <div className="flex items-start gap-2.5 p-3.5 rounded-lg mb-5" style={{ backgroundColor: "#F3E8FF", borderLeft: "3px solid #540D6E" }}>
+                                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
+                                <p className="text-xs text-gray-700">Estas credenciales son únicas, asegúrate de compartirlas de forma segura con el estudiante.</p>
                             </div>
+
+                            {/* Botón cerrar */}
                             <button onClick={() => setShowCredentialsModal(false)}
-                                className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                                className="w-full py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                                 style={{ backgroundColor: "#540D6E" }}
                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>

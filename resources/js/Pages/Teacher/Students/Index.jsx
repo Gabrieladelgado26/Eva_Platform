@@ -3,12 +3,17 @@ import { Head, Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect, useRef } from "react";
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 import {
-    User, Search, X, RotateCcw, Eye, 
+    User, Search, X, RotateCcw, Eye,
     GraduationCap, CheckCircle, UsersRound, BookOpen,
     ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight,
     UserPlus, Edit2, Power, AlertCircle, Check, Filter,
-    EyeOff, KeyRound, Copy
+    EyeOff, KeyRound, Copy, Shield, FileSpreadsheet, Printer
 } from "lucide-react";
+
+const escapeCSV = (v) => {
+    const s = String(v ?? "");
+    return (s.includes(",") || s.includes('"') || s.includes("\n")) ? `"${s.replace(/"/g,'""')}"` : s;
+};
 
 // ─── Componente Toast con barra de progreso ───────────────────────────────────
 function Toast({ message, type = 'success', onClose, duration = 4000 }) {
@@ -208,73 +213,122 @@ function CredentialsModal({ credentials, onClose }) {
             await navigator.clipboard.writeText(text);
             setCopied(prev => ({ ...prev, [field]: true }));
             setTimeout(() => setCopied(prev => ({ ...prev, [field]: false })), 2000);
-        } catch (err) {
-            console.error("Error al copiar:", err);
-        }
+        } catch (err) { console.error("Error al copiar:", err); }
+    };
+
+    const handleCSV = () => {
+        const csv = ["Usuario,PIN", [credentials.username, credentials.pin].map(escapeCSV).join(",")].join("\n");
+        const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `credencial_${credentials.username}.csv`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    };
+
+    const handlePDF = () => {
+        const date = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"/><title>Credencial</title>
+        <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:40px;color:#1e1e2e}
+        .bar{height:6px;background:linear-gradient(to right,#540D6E,#EE4266);border-radius:3px;margin-bottom:28px}
+        h1{font-size:20px;font-weight:700;color:#540D6E;margin-bottom:4px}.sub{font-size:13px;color:#6B7280;margin-bottom:24px}
+        .card{border:1.5px solid #E5E7EB;border-radius:12px;padding:20px;margin-bottom:16px}
+        .label{font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+        .value{font-family:'Courier New',monospace;font-size:18px;font-weight:700;color:#540D6E;letter-spacing:.06em}
+        .note{font-size:12px;color:#6B7280;border-top:1px solid #E5E7EB;padding-top:16px;margin-top:16px}
+        .date{font-size:11px;color:#9CA3AF;margin-top:4px}@media print{body{padding:24px}}</style></head><body>
+        <div class="bar"></div>
+        <h1>Credenciales de Acceso</h1><div class="sub">Sistema de Gestión Académica EVA</div>
+        <div class="card"><div class="label">Usuario</div><div class="value">${credentials.username}</div></div>
+        <div class="card"><div class="label">PIN de Acceso</div><div class="value">${credentials.pin}</div></div>
+        <div class="note">Estas credenciales son únicas e intransferibles. Compártalas de forma segura con el estudiante.
+        <div class="date">Generado el ${date}</div></div>
+        <script>window.onload=function(){window.print()};<\/script></body></html>`;
+        const win = window.open('', '_blank', 'width=700,height=600');
+        if (win) { win.document.write(html); win.document.close(); }
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full animate-slide-up overflow-hidden">
-                <div className="h-1" style={{ background: "linear-gradient(to right, #540D6E, #EE4266)" }} />
-                
-                <div className="p-6">
-                    <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                        <X className="w-5 h-5" />
-                    </button>
+                <div className="h-1.5" style={{ background: "linear-gradient(to right, #540D6E, #EE4266, #FFD23F)" }} />
 
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 rounded-xl bg-white shadow-md border border-gray-200">
-                            <KeyRound className="w-8 h-8" style={{ color: "#540D6E" }} />
+                <div className="p-6">
+                    {/* Header */}
+                    <div className="flex items-start gap-4 mb-5">
+                        <div className="p-3 rounded-xl shadow-md border border-gray-100 flex-shrink-0" style={{ backgroundColor: "#F3E8FF" }}>
+                            <KeyRound className="w-7 h-7" style={{ color: "#540D6E" }} />
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">Credenciales de Acceso</h2>
-                            <p className="text-sm text-gray-600">Guarda estas credenciales para el estudiante</p>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold text-gray-900">Credenciales de Acceso</h2>
+                            <p className="text-sm text-gray-500 mt-0.5">Guarda estas credenciales para el estudiante</p>
                         </div>
+                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors mt-0.5">
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
 
+                    {/* Usuario */}
                     <div className="mb-4">
-                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Usuario</label>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">Usuario</label>
                         <div className="flex items-center gap-2">
-                            <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                <User className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-800">{credentials.username}</span>
+                            <div className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
+                                <User className="w-4 h-4 flex-shrink-0" style={{ color: "#540D6E" }} />
+                                <span className="text-gray-800 font-semibold">{credentials.username}</span>
                             </div>
                             <button onClick={() => copyToClipboard(credentials.username, 'username')}
-                                className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
+                                className="p-2.5 rounded-lg transition-all border-2 hover:shadow-md flex-shrink-0"
                                 style={{ borderColor: copied.username ? "#0EAD69" : "#540D6E", backgroundColor: copied.username ? "#E8F5F0" : "white" }}>
-                                {copied.username ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
+                                {copied.username ? <Check className="w-4 h-4" style={{ color: "#0EAD69" }} /> : <Copy className="w-4 h-4" style={{ color: "#540D6E" }} />}
                             </button>
                         </div>
                         {copied.username && <p className="text-xs text-green-600 mt-1">✓ Usuario copiado</p>}
                     </div>
 
-                    <div className="mb-6">
-                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">PIN de Acceso</label>
+                    {/* PIN */}
+                    <div className="mb-5">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">PIN de Acceso</label>
                         <div className="flex items-center gap-2">
-                            <div className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm flex items-center gap-2">
-                                <KeyRound className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-800 text-lg tracking-wider font-bold">{credentials.pin}</span>
+                            <div className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono flex items-center gap-2">
+                                <Shield className="w-4 h-4 flex-shrink-0" style={{ color: "#540D6E" }} />
+                                <span className="text-gray-800 text-lg tracking-widest font-bold">{credentials.pin}</span>
                             </div>
                             <button onClick={() => copyToClipboard(credentials.pin, 'pin')}
-                                className="p-3 rounded-lg transition-all border-2 hover:shadow-md"
+                                className="p-2.5 rounded-lg transition-all border-2 hover:shadow-md flex-shrink-0"
                                 style={{ borderColor: copied.pin ? "#0EAD69" : "#540D6E", backgroundColor: copied.pin ? "#E8F5F0" : "white" }}>
-                                {copied.pin ? <Check className="w-5 h-5" style={{ color: "#0EAD69" }} /> : <Copy className="w-5 h-5" style={{ color: "#540D6E" }} />}
+                                {copied.pin ? <Check className="w-4 h-4" style={{ color: "#0EAD69" }} /> : <Copy className="w-4 h-4" style={{ color: "#540D6E" }} />}
                             </button>
                         </div>
                         {copied.pin && <p className="text-xs text-green-600 mt-1">✓ PIN copiado</p>}
                     </div>
 
-                    <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: "#F3E8FF", borderLeft: "4px solid #540D6E" }}>
-                        <p className="text-xs text-gray-700 flex items-start gap-2">
-                            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
-                            <span>Estas credenciales son únicas. Compártelas de forma segura con el estudiante.</span>
-                        </p>
+                    {/* Aviso */}
+                    <div className="flex items-start gap-2.5 p-3.5 rounded-lg mb-5" style={{ backgroundColor: "#F3E8FF", borderLeft: "3px solid #540D6E" }}>
+                        <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#540D6E" }} />
+                        <p className="text-xs text-gray-700">Estas credenciales son únicas. Compártelas de forma segura con el estudiante.</p>
+                    </div>
+
+                    {/* Exportar */}
+                    <div className="flex gap-2 mb-3">
+                        <button onClick={handleCSV}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold rounded-lg border transition-all hover:shadow-sm"
+                            style={{ borderColor: "#540D6E20", backgroundColor: "#F3E8FF", color: "#540D6E" }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDD9FF"}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F3E8FF"}>
+                            <FileSpreadsheet className="w-4 h-4" /> CSV
+                        </button>
+                        <button onClick={handlePDF}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold rounded-lg border transition-all hover:shadow-sm"
+                            style={{ borderColor: "#540D6E20", backgroundColor: "#F3E8FF", color: "#540D6E" }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDD9FF"}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F3E8FF"}>
+                            <Printer className="w-4 h-4" /> PDF
+                        </button>
                     </div>
 
                     <button onClick={onClose}
-                        className="w-full py-3 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                        className="w-full py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                         style={{ backgroundColor: "#540D6E" }}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}>

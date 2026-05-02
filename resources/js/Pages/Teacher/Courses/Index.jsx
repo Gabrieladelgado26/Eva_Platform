@@ -121,10 +121,9 @@ function CredentialsListModal({ credentials, course, onClose }) {
         c => c && typeof c === "object" && c.name && c.username && c.pin
     );
 
-    // Cerrar el dropdown al hacer clic fuera
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (downloadRef.current && !downloadRef.current.contains(event.target)) {
+        const handleClickOutside = (e) => {
+            if (downloadRef.current && !downloadRef.current.contains(e.target)) {
                 setShowDownloadOptions(false);
             }
         };
@@ -146,6 +145,7 @@ function CredentialsListModal({ credentials, course, onClose }) {
     };
 
     const downloadCSV = () => {
+        setShowDownloadOptions(false);
         const rows = [["Nombre", "Usuario", "PIN"], ...safe.map(c => [c.name, c.username, c.pin])];
         const csv = rows.map(r => r.map(escapeCSV).join(",")).join("\n");
         const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -154,13 +154,11 @@ function CredentialsListModal({ credentials, course, onClose }) {
         a.download = `credenciales_${Date.now()}.csv`;
         a.click();
         URL.revokeObjectURL(a.href);
-        setShowDownloadOptions(false);
     };
 
     const downloadPDF = async () => {
         if (downloadingPdf) return;
         setDownloadingPdf(true);
-        setShowDownloadOptions(false);
         try {
             const response = await fetch(`/teacher/courses/${course.id}/students/bulk`, {
                 method: "POST",
@@ -173,13 +171,13 @@ function CredentialsListModal({ credentials, course, onClose }) {
             });
             if (!response.ok) throw new Error(`Error ${response.status}`);
             const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+            const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
             const a = document.createElement("a");
-            a.href = blobUrl;
+            a.href = url;
             a.download = "credenciales.pdf";
             document.body.appendChild(a);
             a.click();
-            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
         } catch (err) {
             alert("No se pudo descargar el PDF: " + err.message);
         } finally {
@@ -212,53 +210,37 @@ function CredentialsListModal({ credentials, course, onClose }) {
                     <button onClick={copyAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm" style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
                         {copiedAll ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar todo
                     </button>
-                    
-                    {/* Botón de Descargar con dropdown */}
                     <div className="relative" ref={downloadRef}>
-                        <button 
-                            onClick={() => setShowDownloadOptions(!showDownloadOptions)}
+                        <button
+                            onClick={() => setShowDownloadOptions(v => !v)}
                             disabled={downloadingPdf}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:shadow-sm disabled:opacity-60"
-                            style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}
-                        >
-                            {downloadingPdf ? (
-                                <>
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...
-                                </>
-                            ) : (
-                                <>
-                                    <Download className="w-3.5 h-3.5" /> Descargar
-                                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDownloadOptions ? 'rotate-180' : ''}`} />
-                                </>
-                            )}
+                            style={{ backgroundColor: "#F3E8FF", color: "#540D6E" }}>
+                            {downloadingPdf
+                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                                : <><Download className="w-3.5 h-3.5" /> Descargar <ChevronDown className={`w-3 h-3 transition-transform ${showDownloadOptions ? "rotate-180" : ""}`} /></>}
                         </button>
-                        
-                        {/* Dropdown menu */}
                         {showDownloadOptions && !downloadingPdf && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50 animate-fade-in"
+                            <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50"
                                 style={{ animation: "modalIn 0.15s ease-out" }}>
-                                <button
-                                    onClick={downloadCSV}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors"
-                                >
+                                <button onClick={downloadCSV}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors">
                                     <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#E8F5F0" }}>
                                         <FileSpreadsheet className="w-4 h-4" style={{ color: "#0EAD69" }} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="font-medium text-slate-900">CSV</p>
+                                        <p className="font-semibold text-slate-900 text-xs">CSV</p>
                                         <p className="text-xs text-slate-500">Hoja de cálculo</p>
                                     </div>
                                 </button>
-                                <button
-                                    onClick={downloadPDF}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors"
-                                >
+                                <button onClick={downloadPDF}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-purple-50 transition-colors">
                                     <div className="p-1.5 rounded-lg" style={{ backgroundColor: "#FEE2E2" }}>
                                         <FileText className="w-4 h-4" style={{ color: "#EE4266" }} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="font-medium text-slate-900">PDF</p>
-                                        <p className="text-xs text-slate-500">Documento pdf</p>
+                                        <p className="font-semibold text-slate-900 text-xs">PDF</p>
+                                        <p className="text-xs text-slate-500">Documento PDF</p>
                                     </div>
                                 </button>
                             </div>

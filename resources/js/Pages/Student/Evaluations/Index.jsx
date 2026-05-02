@@ -66,68 +66,26 @@ function getScoreStyle(pct) {
 // ─── Componente CalificacionBadge ─────────────────────────────────────────────
 function CalificacionBadge({ percentage }) {
     const style = getScoreStyle(percentage);
-    
-    // Configuración de insignias según rango
-    const getBadge = (pct) => {
-        if (pct >= 90) return {
-            icon: Trophy,
-            label: 'Oro',
-            gradient: 'from-yellow-400 via-amber-500 to-yellow-600',
-            shadow: 'shadow-yellow-200',
-            glow: 'shadow-yellow-300/50',
-        };
-        if (pct >= 80) return {
-            icon: Award,
-            label: 'Plata',
-            gradient: 'from-gray-300 via-slate-400 to-gray-500',
-            shadow: 'shadow-slate-200',
-            glow: 'shadow-slate-300/50',
-        };
-        if (pct >= 70) return {
-            icon: Star,
-            label: 'Bronce',
-            gradient: 'from-orange-400 via-amber-600 to-orange-700',
-            shadow: 'shadow-orange-200',
-            glow: 'shadow-orange-300/50',
-        };
-        if (pct >= 60) return {
-            icon: Target,
-            label: 'Esfuerzo',
-            gradient: 'from-emerald-400 via-green-500 to-emerald-600',
-            shadow: 'shadow-emerald-200',
-            glow: 'shadow-emerald-300/50',
-        };
-        return {
-            icon: AlertCircle,
-            label: '',
-            gradient: 'from-red-300 via-red-400 to-red-500',
-            shadow: 'shadow-red-200',
-            glow: 'shadow-red-300/50',
-        };
-    };
-
-    const badge = getBadge(percentage);
-    const BadgeIcon = badge.icon;
+    const IconComponent = style.icon;
     
     return (
-        <div className="flex flex-col items-center gap-1.5">
-            {/* Insignia/Trofeo */}
-            <div className={`relative w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br ${badge.gradient} ${badge.shadow} ${badge.glow} transform transition-all duration-300 hover:scale-110 hover:rotate-3`}>
-                <div className="absolute inset-0 rounded-full bg-white/20 animate-pulse"></div>
-                <BadgeIcon className="w-7 h-7 text-white drop-shadow-lg relative z-10" />
-                {/* Brillo decorativo */}
-                <div className="absolute top-1 left-2 w-2 h-2 bg-white/60 rounded-full blur-[1px]"></div>
-            </div>
-            {/* Etiqueta debajo de la insignia */}
-            {badge.label && (
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm"
-                    style={{ color: style.color }}>
-                    {badge.label}
+        <div className="flex flex-col items-center gap-2">
+            {/* Badge con porcentaje e icono */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: style.bg }}>
+                <IconComponent className="w-3.5 h-3.5" style={{ color: style.color }} />
+                <span className="text-xs font-bold" style={{ color: style.color }}>
+                    {percentage}%
                 </span>
-            )}
-            {/* Porcentaje pequeño debajo */}
-            <span className="text-xs font-bold" style={{ color: style.color }}>
-                {percentage}%
+            </div>
+            {/* Mensaje motivacional resaltado */}
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full transition-all duration-300 hover:scale-105"
+                style={{ 
+                    backgroundColor: `${style.color}15`,
+                    color: style.color,
+                    border: `1px solid ${style.color}30`
+                }}>
+                {style.label}
             </span>
         </div>
     );
@@ -457,14 +415,14 @@ export default function StudentEvaluations({ evaluations = [] }) {
                                                                 <Sticker percentage={pct} />
                                                             </td>
 
-                                                            {/* Puntaje */}
+                                                            {/* Calificación */}
                                                             <td className="px-6 py-4 text-center">
                                                                 <div className="inline-flex flex-col items-center gap-1">
                                                                     <div className="flex items-baseline gap-1">
-                                                                        <span className="text-2xl font-black" style={{ color: scoreStyle.color, fontFamily: "'Chewy', cursive" }}>
+                                                                        <span className="text-3xl font-black" style={{ color: scoreStyle.color, fontFamily: "'Chewy', cursive" }}>
                                                                             {ev.score}
                                                                         </span>
-                                                                        <span className="text-sm text-gray-400">/ {ev.total}</span>
+                                                                        <span className="text-xl text-gray-400" style={{ fontFamily: "'Chewy', cursive" }}>/ {ev.total}</span>
                                                                     </div>
                                                                     <div className="w-24">
                                                                         <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -480,7 +438,7 @@ export default function StudentEvaluations({ evaluations = [] }) {
                                                                 </div>
                                                             </td>
 
-                                                            {/* Calificación - Reemplaza el td actual de Calificación */}
+                                                            {/* Puntaje */}
                                                             <td className="px-6 py-3 text-center">
                                                                 <CalificacionBadge percentage={pct} />
                                                             </td>

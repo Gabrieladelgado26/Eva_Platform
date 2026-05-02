@@ -47,9 +47,9 @@ class AvatarController extends Controller
 
         $avatarName = $avatarNames[$request->avatar] ?? 'tu nuevo avatar';
 
-        // Redirigir de vuelta a la misma página (avatar.index) con mensaje de éxito
+        // Redirigir de vuelta a donde vino (dashboard o avatar index)
         return redirect()
-            ->route('student.avatar.index')
+            ->back()
             ->with('success', '¡Fantástico! Ahora ' . $avatarName . ' te acompañará en tu aventura');
     }
 }

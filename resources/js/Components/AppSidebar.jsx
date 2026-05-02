@@ -8,6 +8,63 @@ import {
 import NavMain from '@/Components/NavMain';
 import NavUser from '@/Components/NavUser';         
 
+// Componente para efecto typewriter con reinicio
+function TypewriterText({ text, speed = 100, pauseDuration = 3000 }) {
+    const [displayedText, setDisplayedText] = useState('');
+    const [showCursor, setShowCursor] = useState(true);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        let timeout;
+        
+        if (!isDeleting && displayedText.length < text.length) {
+            // Escribiendo
+            timeout = setTimeout(() => {
+                setDisplayedText(text.slice(0, displayedText.length + 1));
+            }, speed);
+        } else if (!isDeleting && displayedText.length === text.length) {
+            // Pausa al terminar de escribir
+            timeout = setTimeout(() => {
+                setIsDeleting(true);
+            }, pauseDuration);
+        } else if (isDeleting && displayedText.length > 0) {
+            // Borrando
+            timeout = setTimeout(() => {
+                setDisplayedText(text.slice(0, displayedText.length - 1));
+            }, speed / 2);
+        } else if (isDeleting && displayedText.length === 0) {
+            // Reiniciar
+            setIsDeleting(false);
+        }
+
+        return () => clearTimeout(timeout);
+    }, [displayedText, isDeleting, text, speed, pauseDuration]);
+
+    // Parpadeo del cursor
+    useEffect(() => {
+        const cursorInterval = setInterval(() => {
+            setShowCursor(prev => !prev);
+        }, 530);
+        return () => clearInterval(cursorInterval);
+    }, []);
+
+    // Reiniciar cuando cambia el texto
+    useEffect(() => {
+        setDisplayedText('');
+        setIsDeleting(false);
+    }, [text]);
+
+    return (
+        <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase ml-10">
+            {displayedText}
+            <span 
+                className={`inline-block w-[1px] h-3 ml-0.5 align-text-top transition-opacity duration-100 ${showCursor ? 'opacity-100' : 'opacity-0'}`}
+                style={{ backgroundColor: "#9CA3AF" }}
+            />
+        </p>
+    );
+}
+
 function buildNavGroups(role, currentRoute) {
     const is = (...names) => names.includes(currentRoute);
 
@@ -244,20 +301,23 @@ export default function AppSidebar({ currentRoute = '' }) {
 
                     {/* Header */}
                     <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <div className={`flex items-center gap-2 ${collapsed ? "lg:justify-center w-full" : ""}`}>
-                            <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: "#540D6E20" }}>
-                                <GraduationCap className="w-6 h-6" style={{ color: "#540D6E" }} />
-                            </div>
-                            {!collapsed && (
-                                <div>
-                                    <span className="font-bold text-lg text-gray-900 leading-none">EVA Platform</span>
-                                    <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
+                        {!collapsed && (
+                            <div className="flex-1 flex flex-col gap-1.5">
+                                <div className="flex">
+                                    <img 
+                                        src="/assets/images/logos/logo-evaplatform.png" 
+                                        alt="EVA" 
+                                        className="w-[180px] h-auto object-contain transition-all duration-300"
+                                    />
                                 </div>
-                            )}
-                        </div>
+                                <TypewriterText text={subtitle} />
+                            </div>
+                        )}
+                        
+                        {/* Botón de colapsar */}
                         <button
                             onClick={() => setCollapsed(!collapsed)}
-                            className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-100 flex-shrink-0"
+                            className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 flex-shrink-0 transition-colors"
                         >
                             {collapsed
                                 ? <ChevronRight className="w-4 h-4 text-gray-600" />

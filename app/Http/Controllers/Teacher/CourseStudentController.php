@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\CredentialsPdfGenerator;
 use Inertia\Inertia;
 
 class CourseStudentController extends Controller
@@ -176,23 +176,29 @@ class CourseStudentController extends Controller
 
         // Modo descarga PDF (llamado desde fetch, no desde Inertia)
         if ($request->input('generate_pdf')) {
-            $students = collect($request->input('students'))->map(function ($s) {
-                return [
-                    'name' => mb_convert_encoding($s['name'], 'UTF-8', 'UTF-8'),
-                    'username' => $s['username'],
-                    'pin' => $s['pin'],
-                ];
-            })->toArray();
+            $students = collect($request->input('students'))->map(fn($s) => [
+                'name'     => $s['name']     ?? '',
+                'username' => $s['username'] ?? '',
+                'pin'      => (string) ($s['pin'] ?? ''),
+            ])->toArray();
 
-            $pdf = Pdf::loadView('pdf.credentials', [
-                'students' => $students,
-                'course'   => $course,
-                'date'     => now()->format('d/m/Y'),
-            ])->setOptions([
-                'defaultFont' => 'DejaVu Sans'
+            $courseName = collect([
+                $course->grade   ? ucfirst($course->grade) : null,
+                $course->section ? 'Sección ' . $course->section : null,
+            ])->filter()->implode(' — ');
+
+            $pdf = (new CredentialsPdfGenerator())->generate(
+                $students,
+                $courseName,
+                now()->locale('es')->format('d/m/Y'),
+                public_path('assets/images/logos/logo-slogan.png')
+            );
+
+            return response($pdf, 200, [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="credenciales.pdf"',
+                'Content-Length'      => strlen($pdf),
             ]);
-
-            return $pdf->download('credenciales.pdf');
         }
 
         // Modo creación de estudiantes
@@ -324,7 +330,16 @@ class CourseStudentController extends Controller
             ]);
 
         return Inertia::render('Teacher/Students/Show', [
-            'student'     => $user->only(['id', 'name', 'username', 'email', 'is_active', 'pin', 'avatar', 'created_at']),
+            'student'     => [
+                'id'         => $user->getRouteKey(),
+                'name'       => $user->name,
+                'username'   => $user->username,
+                'email'      => $user->email,
+                'is_active'  => $user->is_active,
+                'pin'        => $user->pin,
+                'avatar'     => $user->avatar,
+                'created_at' => $user->created_at,
+            ],
             'courses'     => $courses,
             'evaluations' => $evaluations,
         ]);

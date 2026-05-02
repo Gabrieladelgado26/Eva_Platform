@@ -17,6 +17,24 @@
             <file>tests/Feature/RoleAccessControlTest.php</file>
             <file>tests/Feature/AuthenticationTest.php</file>
         </testsuite>
+        <testsuite name="Iteración 2 – Gestión Académica Básica">
+            <file>tests/Feature/CourseManagementTest.php</file>
+        </testsuite>
+        <testsuite name="Iteración 3 – Gestión de Estudiantes en Cursos">
+            <file>tests/Feature/StudentEnrollmentTest.php</file>
+        </testsuite>
+        <testsuite name="Iteración 4 – Gestión de OVAs y Contenido Educativo">
+            <file>tests/Feature/OvaManagementTest.php</file>
+        </testsuite>
+        <testsuite name="Iteración 5 – Asignación y Uso Didáctico de OVAs en Cursos">
+            <file>tests/Feature/CourseOvaAssignmentTest.php</file>
+        </testsuite>
+        <testsuite name="Iteración 6 – Evaluación y Seguimiento Académico">
+            <file>tests/Feature/StudentAcademicExperienceTest.php</file>
+        </testsuite>
+        <testsuite name="Iteración 7 – Reportes y Analítica">
+            <file>tests/Feature/ReportsAndAnalyticsTest.php</file>
+        </testsuite>
     </testsuites>
 
     <source>

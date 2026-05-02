@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Role;
+use App\Services\CredentialsPdfGenerator;
 use App\Services\HashidService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -295,21 +296,29 @@ class CourseController extends Controller
     {
         // Si es solicitud de PDF
         if ($request->input('generate_pdf')) {
-            $students = collect($request->input('students'))->map(function ($s) {
-                return [
-                    'name' => mb_convert_encoding($s['name'], 'UTF-8', 'UTF-8'),
-                    'username' => $s['username'],
-                    'pin' => $s['pin'],
-                ];
-            })->toArray();
+            $students = collect($request->input('students'))->map(fn($s) => [
+                'name'     => $s['name']     ?? '',
+                'username' => $s['username'] ?? '',
+                'pin'      => (string) ($s['pin'] ?? ''),
+            ])->toArray();
 
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.credentials', [
-                'students' => $students,
-                'course'   => $course,
-                'date'     => now()->format('d/m/Y'),
-            ])->setOptions(['defaultFont' => 'DejaVu Sans']);
+            $courseName = collect([
+                $course->grade   ? ucfirst($course->grade) : null,
+                $course->section ? 'Sección ' . $course->section : null,
+            ])->filter()->implode(' — ');
 
-            return $pdf->download('credenciales.pdf');
+            $pdf = (new CredentialsPdfGenerator())->generate(
+                $students,
+                $courseName,
+                now()->format('d/m/Y'),
+                public_path('assets/images/logos/logo-slogan.png')
+            );
+
+            return response($pdf, 200, [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="credenciales.pdf"',
+                'Content-Length'      => strlen($pdf),
+            ]);
         }
 
         // Creación de estudiantes

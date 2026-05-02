@@ -1,11 +1,31 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
     "paths": {
-      "@/*": ["resources/js/*"],
-      "ziggy-js": ["./vendor/tightenco/ziggy"]
+      "@/*": ["./resources/js/*"],
+      "ziggy-js": ["./vendor/tightenco/ziggy/dist/index.es.js"]
     },
-    "ignoreDeprecations": "6.0"
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noEmit": true,
+    "ignoreDeprecations": "5.0"
   },
-  "exclude": ["node_modules", "public"]
+  "include": [
+    "resources/js/**/*.jsx",
+    "resources/js/**/*.js",
+    "resources/js/**/*.tsx",
+    "resources/js/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "public",
+    "vendor",
+    "storage"
+  ]
 }

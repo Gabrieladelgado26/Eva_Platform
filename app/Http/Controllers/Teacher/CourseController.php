@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class CourseController extends Controller
 {
@@ -435,22 +436,52 @@ class CourseController extends Controller
         abort_if(!$user, 403);
         abort_unless($user->role->slug === 'teacher', 403);
 
-        // LOG 1: Usuario actual
-        \Log::info('=== TEACHER ANALYTICS DEBUG ===');
-        \Log::info('User ID: ' . $user->id);
-        \Log::info('User Name: ' . $user->name);
+        Log::info('=== TEACHER ANALYTICS DEBUG ===');
+        Log::info('User ID: ' . $user->id);
+        Log::info('User Name: ' . $user->name);
 
         try {
-            // Get teacher's course IDs
-            $courseIds = $user->courses()->pluck('id')->toArray();
+            // Obtener el curso seleccionado del request
+            $selectedCourse = request('course', '');
 
-            // LOG 2: Cursos del docente
-            \Log::info('Teacher Course IDs: ', $courseIds);
-            \Log::info('Number of courses: ' . count($courseIds));
+            // Obtener cursos disponibles para el filtro
+            $availableCourses = $user->courses()
+                ->select('id', 'grade', 'section')
+                ->orderBy('grade')
+                ->orderBy('section')
+                ->get()
+                ->map(function ($course) {
+                    $gradeNames = [
+                        'primero' => 'Primero',
+                        'segundo' => 'Segundo',
+                        'tercero' => 'Tercero',
+                        'cuarto' => 'Cuarto',
+                        'quinto' => 'Quinto',
+                    ];
+                    return [
+                        'id' => $course->id,
+                        'name' => ($gradeNames[$course->grade] ?? $course->grade) . ' ' . $course->section,
+                    ];
+                });
 
-            // Si no hay cursos, mostrar todo en cero
+            // Obtener IDs de cursos según el filtro
+            if ($selectedCourse && is_numeric($selectedCourse)) {
+                // Verificar que el curso pertenezca al profesor
+                $course = $user->courses()->where('id', $selectedCourse)->first();
+                if ($course) {
+                    $courseIds = [$course->id];
+                } else {
+                    $courseIds = $user->courses()->pluck('id')->toArray();
+                }
+            } else {
+                $courseIds = $user->courses()->pluck('id')->toArray();
+            }
+
+            Log::info('Teacher Course IDs: ', $courseIds);
+            Log::info('Number of courses: ' . count($courseIds));
+
             if (empty($courseIds)) {
-                \Log::info('No courses found for teacher');
+                Log::info('No courses found for teacher');
                 return Inertia::render('Teacher/Analytics', [
                     'auth' => ['user' => $user],
                     'stats' => [
@@ -459,139 +490,130 @@ class CourseController extends Controller
                         'totalStudents' => 0,
                         'totalOVAs' => 0,
                         'completedActivities' => 0,
+                        'startedActivities' => 0,
                         'avgScore' => 0,
                         'avgProgress' => 0,
                     ],
                     'monthlyActivity' => [],
                     'peakHours' => [],
-                    'ovaPerformanceByArea' => []
+                    'ovaPerformanceByArea' => [],
+                    'allAreas' => ['Matemáticas', 'Español', 'Ciencias Naturales', 'Ciencias Sociales', 'Inglés'],
+                    'availableCourses' => $availableCourses,
+                    'selectedCourse' => $selectedCourse,
                 ]);
             }
 
-            // Stats
             $totalCourses = count($courseIds);
             $activeCourses = $user->courses()->where('is_active', true)->count();
 
-            // Total distinct students across all teacher's courses
             $totalStudents = DB::table('course_student')
                 ->whereIn('course_id', $courseIds)
                 ->distinct('user_id')
                 ->count('user_id');
 
-            // LOG 3: Total estudiantes
-            \Log::info('Total Students: ' . $totalStudents);
-
-            // Total unique OVAs assigned to teacher's courses
             $totalOVAs = DB::table('course_ova')
                 ->whereIn('course_id', $courseIds)
                 ->distinct('ova_id')
                 ->count('ova_id');
 
-            // LOG 4: Total OVAs
-            \Log::info('Total OVAs: ' . $totalOVAs);
-
-            // Completed activities: Count of evaluations in teacher's courses
+            // Evaluaciones completadas (todos los intentos)
             $completedActivities = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
                 ->count();
 
-            // LOG 5: Evaluaciones completadas
-            \Log::info('Completed Activities (raw count): ' . $completedActivities);
-
-            // También mostrar las evaluaciones para depuración
-            $sampleEvaluations = DB::table('evaluations')
+            // OVAs iniciadas: estudiantes que al menos han hecho 1 intento en algún OVA
+            $startedActivities = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
-                ->select('id', 'user_id', 'course_id', 'ova_id', 'score', 'total')
-                ->limit(5)
-                ->get();
-            \Log::info('Sample Evaluations: ', $sampleEvaluations->toArray());
+                ->distinct('user_id')
+                ->count('user_id');
 
-            // Average score: AVG((score/total)*100)
+            // Average score
             $avgScoreResult = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
                 ->selectRaw('AVG(CASE WHEN total > 0 THEN (score/total)*100 ELSE 0 END) as avg_score')
                 ->first();
             $avgScore = $avgScoreResult ? (int)round($avgScoreResult->avg_score ?? 0) : 0;
 
-            // LOG 6: Promedio de notas
-            \Log::info('Average Score: ' . $avgScore);
-
-            // Average progress: (completedActivities) / (totalStudents × totalOVAs) × 100
-            $denominator = $totalStudents * $totalOVAs;
-            $avgProgress = $denominator > 0
-                ? min(100, max(0, (int)round(($completedActivities / $denominator) * 100)))
+            // CORREGIDO: Progreso = (estudiantes que han hecho al menos 1 evaluación) / (total estudiantes) × 100
+            $avgProgress = $totalStudents > 0
+                ? (int)round(($startedActivities / $totalStudents) * 100)
                 : 0;
 
-            // LOG 7: Progreso general
-            \Log::info('Denominator (students * OVAs): ' . $denominator);
-            \Log::info('Average Progress: ' . $avgProgress . '%');
+            Log::info('Total Students: ' . $totalStudents);
+            Log::info('Started Activities (unique students): ' . $startedActivities);
+            Log::info('Completed Activities: ' . $completedActivities);
+            Log::info('Average Score: ' . $avgScore);
+            Log::info('Average Progress: ' . $avgProgress . '%');
 
-            // Monthly activity (last 6 months)
-            $monthlyActivity = DB::table('evaluations')
+            // Monthly activity: 4 meses atrás, mes actual, 1 mes adelante
+            $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+            $yearExpr  = $isSqlite ? "CAST(strftime('%Y', created_at) AS INTEGER)" : 'YEAR(created_at)';
+            $monthExpr = $isSqlite ? "CAST(strftime('%m', created_at) AS INTEGER)" : 'MONTH(created_at)';
+
+            // Evaluaciones completadas por mes
+            $evaluationsByMonth = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
-                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count')
-                ->groupByRaw('YEAR(created_at), MONTH(created_at)')
-                ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
-                ->limit(6)
+                ->selectRaw("{$yearExpr} as year, {$monthExpr} as month, COUNT(*) as count")
+                ->groupByRaw("{$yearExpr}, {$monthExpr}")
                 ->get()
-                ->map(function ($row) {
-                    $monthNames = [
-                        '',
-                        'Ene',
-                        'Feb',
-                        'Mar',
-                        'Abr',
-                        'May',
-                        'Jun',
-                        'Jul',
-                        'Ago',
-                        'Sep',
-                        'Oct',
-                        'Nov',
-                        'Dic'
-                    ];
-                    return [
-                        'month' => $monthNames[$row->month] ?? 'Mes',
-                        'count' => $row->count
-                    ];
-                })
-                ->reverse()
-                ->values()
-                ->toArray();
+                ->keyBy(function ($row) {
+                    return $row->year . '-' . str_pad($row->month, 2, '0', STR_PAD_LEFT);
+                });
 
-            // LOG 8: Actividad mensual
-            \Log::info('Monthly Activity: ', $monthlyActivity);
+            // Generar rango: 4 meses atrás, mes actual, 1 mes adelante
+            $monthNames = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            $monthlyActivity = [];
+            $now = now();
 
-            // OVA performance by area (solo evaluaciones con attempt = 1 para evitar duplicados)
-            $ovaPerformanceByArea = DB::table('evaluations')
+            for ($i = -4; $i <= 1; $i++) {
+                $date = $now->copy()->addMonths($i);
+                $year = (int)$date->format('Y');
+                $month = (int)$date->format('m');
+                $key = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT);
+
+                $evaluation = $evaluationsByMonth->get($key);
+
+                $monthlyActivity[] = [
+                    'month' => $monthNames[$month] . ' ' . $date->format('y'),
+                    'count' => $evaluation ? (int)$evaluation->count : 0,
+                ];
+            }
+
+            Log::info('Monthly Activity (4 back, current, 1 forward): ', $monthlyActivity);
+
+            // OVA performance by area (solo attempt = 1)
+            $ovaPerformanceRaw = DB::table('evaluations')
                 ->join('ovas', 'evaluations.ova_id', '=', 'ovas.id')
                 ->whereIn('evaluations.course_id', $courseIds)
                 ->where('evaluations.attempt', 1)
-                ->selectRaw('ovas.area, AVG(CASE WHEN evaluations.total > 0 THEN (evaluations.score/evaluations.total)*100 ELSE 0 END) as avg, COUNT(*) as count')
+                ->selectRaw("ovas.area, AVG(CASE WHEN evaluations.total > 0 THEN (evaluations.score/evaluations.total)*100 ELSE 0 END) as avg, COUNT(*) as count")
                 ->groupBy('ovas.area')
-                ->orderByRaw('avg DESC')
                 ->get()
-                ->map(function ($row) {
-                    return [
-                        'area' => $row->area,
-                        'avg' => (int)round($row->avg ?? 0),
-                        'count' => $row->count
-                    ];
-                })
-                ->toArray();
+                ->keyBy('area');
 
-            // LOG 9: Rendimiento por área
-            \Log::info('OVA Performance by Area: ', $ovaPerformanceByArea);
+            // COMPLETAR LAS 5 ÁREAS (aunque no tengan datos)
+            $allAreas = ['Matemáticas', 'Español', 'Ciencias Naturales', 'Ciencias Sociales', 'Inglés'];
+            $ovaPerformanceByArea = [];
+            foreach ($allAreas as $area) {
+                $data = $ovaPerformanceRaw->get($area);
+                $ovaPerformanceByArea[] = [
+                    'area' => $area,
+                    'avg' => $data ? (int)round($data->avg ?? 0) : 0,
+                    'count' => $data ? (int)$data->count : 0,
+                ];
+            }
 
-            // Peak hours: group by hour block
+            Log::info('OVA Performance by Area: ', $ovaPerformanceByArea);
+
+            // Peak hours
+            $hourExpr = $isSqlite
+                ? "CAST(strftime('%H', created_at) AS INTEGER)"
+                : 'HOUR(created_at)';
             $peakHoursRaw = DB::table('evaluations')
                 ->whereIn('course_id', $courseIds)
-                ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
-                ->groupByRaw('HOUR(created_at)')
+                ->selectRaw("{$hourExpr} as hour, COUNT(*) as count")
+                ->groupByRaw($hourExpr)
                 ->get();
-
-            // LOG 10: Horas pico raw
-            \Log::info('Peak Hours Raw: ', $peakHoursRaw->toArray());
 
             $peakHoursMap = [];
             foreach ($peakHoursRaw as $row) {
@@ -617,7 +639,6 @@ class CourseController extends Controller
                 $peakHours[] = ['label' => $label, 'count' => $count];
             }
 
-            // Calculate percentages for peak hours
             $totalEvals = array_sum(array_column($peakHours, 'count'));
             $peakHours = array_map(function ($item) use ($totalEvals) {
                 return [
@@ -627,14 +648,10 @@ class CourseController extends Controller
                 ];
             }, $peakHours);
 
-            // Sort by defined order
             $peakOrder = ['Madrugada', 'Mañana', 'Tarde', 'Noche'];
             usort($peakHours, function ($a, $b) use ($peakOrder) {
                 return array_search($a['label'], $peakOrder) - array_search($b['label'], $peakOrder);
             });
-
-            // LOG 11: Horas pico final
-            \Log::info('Peak Hours Final: ', $peakHours);
 
             $stats = [
                 'totalCourses' => $totalCourses,
@@ -642,25 +659,47 @@ class CourseController extends Controller
                 'totalStudents' => $totalStudents,
                 'totalOVAs' => $totalOVAs,
                 'completedActivities' => $completedActivities,
+                'startedActivities' => $startedActivities,
                 'avgScore' => $avgScore,
                 'avgProgress' => $avgProgress,
             ];
 
-            // LOG 12: Estadísticas finales
-            \Log::info('Final Stats: ', $stats);
+            Log::info('Final Stats: ', $stats);
 
             return Inertia::render('Teacher/Analytics', [
                 'auth' => ['user' => $user],
                 'stats' => $stats,
                 'monthlyActivity' => $monthlyActivity,
                 'peakHours' => $peakHours,
-                'ovaPerformanceByArea' => $ovaPerformanceByArea
+                'ovaPerformanceByArea' => $ovaPerformanceByArea,
+                'allAreas' => $allAreas,
+                'availableCourses' => $availableCourses,
+                'selectedCourse' => $selectedCourse,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error in teacher analytics: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
+            Log::error('Error in teacher analytics: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
 
-            // If evaluations table doesn't exist or error occurs, return empty defaults
+            // Obtener cursos disponibles incluso en caso de error
+            $availableCourses = $user->courses()
+                ->select('id', 'grade', 'section')
+                ->orderBy('grade')
+                ->orderBy('section')
+                ->get()
+                ->map(function ($course) {
+                    $gradeNames = [
+                        'primero' => '1°',
+                        'segundo' => '2°',
+                        'tercero' => '3°',
+                        'cuarto' => '4°',
+                        'quinto' => '5°',
+                    ];
+                    return [
+                        'id' => $course->id,
+                        'name' => ($gradeNames[$course->grade] ?? $course->grade) . ' - ' . $course->section,
+                    ];
+                });
+
             return Inertia::render('Teacher/Analytics', [
                 'auth' => ['user' => $user],
                 'stats' => [
@@ -669,12 +708,16 @@ class CourseController extends Controller
                     'totalStudents' => 0,
                     'totalOVAs' => 0,
                     'completedActivities' => 0,
+                    'startedActivities' => 0,
                     'avgScore' => 0,
                     'avgProgress' => 0,
                 ],
                 'monthlyActivity' => [],
                 'peakHours' => [],
-                'ovaPerformanceByArea' => []
+                'ovaPerformanceByArea' => [],
+                'allAreas' => ['Matemáticas', 'Español', 'Ciencias Naturales', 'Ciencias Sociales', 'Inglés'],
+                'availableCourses' => $availableCourses,
+                'selectedCourse' => request('course', ''),
             ]);
         }
     }
