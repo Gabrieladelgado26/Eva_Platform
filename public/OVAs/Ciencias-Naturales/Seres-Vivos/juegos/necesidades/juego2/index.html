@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+	<head>
+	    <title>Juego de tablas de frecuencia</title>
+	 	<meta name="title" content="Juego de tabla de frecuencia" />
+		<meta name="description" content="Juego sobre el tema de tabla de frecuencia"/>
+	    <!-- Bootstrap -->
+	    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link href="./index_files/prettify.css" rel="stylesheet">		
+		
+		<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="stylejuego2.css" media="screen" />
+		
+		
+		<!--indexa en la bd del buscador-->
+		<meta name="robots" content="index,follow" />
+		<!--ajusta a las dimensiones donde se vea-->
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+	</head>
+						<div id="todosonido"></div>
+						<div id="todosonido2"></div>
+						<div class="tab-content" style="width: 97%" >
+
+						<img id="mensaje" class="respuesta" src="" style="display:none"/>					     				     
+					     <a id="redir" href=""><img id="mensaje2" class="respuestafin"  style="display:none"/></a>	
+
+							    <div class="tab-pane active" id="tab1">
+								    <div class="Skin2">					      			      	
+									    <img class="Skin2" src="img/fondo.png">
+									    <img class="sonidointro sonido_click" data-sonido="sonidos/intro.mp3" src="img/sonido.png">
+									     <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+									    <div id="parrafointro" class="parrafointro I18N">juego2necesidad1</div>
+									     <img class="intro" src="img/intro.png"> 
+											<a href="#tab2" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img class="divbotones cambiarImagen" src="img/continuar.png" onclick="inicioJuego()"></a>	
+									</div>
+								</div>
+
+							    <div class="tab-pane" id="tab2">
+								    <div class="Skin2">						      			      	
+								      	<img class="Skin2" src="img/fondo.png">
+
+									    <div id="numeros">
+									    </div>
+
+									    <div id="general" style="display:none">		
+									    	<input id="vidas" type="hidden">								   
+										    <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+										    <img  id="vida" class="vidas">
+										    <img class="sonido sonido_click" src="img/sonido.png" data-sonido="sonidos/enunciado.mp3">
+										    <div class="parrafo I18N">juego2necesidad2</div>
+										    <div id="complementos">	
+
+										    <!--IMAGENES-->	
+										    <div id="imagen" class="imagen" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+
+										     <!--BOTONES-->	
+										     <div id="botones" class="botones" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+  																					 									  									    	
+										    </div>	
+
+										<a href="#tab3" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/verificar.mp3"><img id="verificar" class="divbotones2 siguiente cambiarImagen" onclick="validar()" style="display:none" src="img/verificar.png"></a>
+									</div>
+								</div>
+					    	</div>
+
+						</div>	
+
+</html>
+	    <script src="./index_files/jquery-latest.js"></script>
+	    <script src="./index_files/bootstrap.min.js"></script>
+		<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+		<script src="./index_files/prettify.js"></script>
+		<script src="./index_files/generalesJuego.js"></script>	
+		<script src="./index_files/juegoMethod.js"></script>
+		
+
+		<!--ARCHIVO PROPERTIES-->
+		<script src="../../../js/I18N/es.js"></script>
+		<script src="../../../js/funcion.js"></script>
+		
+	

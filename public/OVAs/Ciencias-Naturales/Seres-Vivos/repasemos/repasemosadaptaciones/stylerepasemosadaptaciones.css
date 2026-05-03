@@ -1,0 +1,258 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 41%;
+    top: 12.5%;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+.camello
+{
+    position: absolute;
+    right: 24%;
+    width: 20%;
+    bottom: 16%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fondo1
+{
+    position: absolute;
+    right: 26%;
+    width: 58%;
+    bottom: 4%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fondo2, .fondo3
+{
+    position: absolute;
+    right: 18%;
+    width: 70%;
+    bottom: 12%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.grasacamello
+{
+    position: absolute;
+    right: 50%;
+    width: 27%;
+    bottom: 23%;
+    display: none;
+    animation: 2s zoomInDown;
+}
+
+.guia
+{
+    position: absolute;
+    right: 31%;
+    width: 45%;
+    bottom: 30%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+.jeffer
+{
+    position: absolute;
+    right: 68.4%;
+    width: 8%;
+    bottom: 6%;
+    display: none;
+    animation: 2s pulse;
+}
+
+.iglu
+{
+    position: absolute;
+    right: 70%;
+    width: 16%;
+    bottom: 52%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.jefferpolo
+{
+    position: absolute;
+    right: 50.8%;
+    width: 36.7%;
+    bottom: 13%;
+    display: none;
+    animation: 5s bounceInLeft;
+}
+
+.jefferplaya
+{
+    position: absolute;
+    right: 18.6%;
+    width: 35.3%;
+    bottom: 13%;
+    display: none;
+    animation: 5s bounceInRight;
+}
+
+.oso
+{
+    position: absolute;
+    right: 31%;
+    width: 16%;
+    bottom: 28%;
+    display: none;
+    animation: 2s bounceInDown;
+}
+
+.oso1
+{
+    position: absolute;
+    right: 47%;
+    width: 16%;
+    bottom: 13%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.pescado
+{
+    position: absolute;
+    right: 20%;
+    width: 16%;
+    bottom: 52%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.tienda
+{
+    position: absolute;
+    right: 46%;
+    width: 14%;
+    bottom: 15%;
+    display: none;
+    animation: 2s zoomInDown;
+}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+	<head>
+	    <title>Juego de tablas de frecuencia</title>
+	 	<meta name="title" content="Juego de tabla de frecuencia" />
+		<meta name="description" content="Juego sobre el tema de tabla de frecuencia"/>
+	    <!-- Bootstrap -->
+	    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link href="./index_files/prettify.css" rel="stylesheet">		
+		
+		<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="stylejuego2.css" media="screen" />
+		
+		
+		<!--indexa en la bd del buscador-->
+		<meta name="robots" content="index,follow" />
+		<!--ajusta a las dimensiones donde se vea-->
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+	</head>
+						<div id="todosonido"></div>
+						<div id="todosonido2"></div>
+						<div class="tab-content" style="width: 97%" >
+
+						<img id="mensaje" class="respuesta" src="" style="display:none"/>					     				     
+					     <a id="redir" href=""><img id="mensaje2" class="respuestafin"  style="display:none"/></a>	
+
+							    <div class="tab-pane active" id="tab1">
+								    <div class="Skin2">					      			      	
+									    <img class="Skin2" src="img/fondo.png">
+									    <img class="sonidointro sonido_click" data-sonido="sonidos/intro.mp3" src="img/sonido.png">
+									     <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+									    <div id="parrafointro" class="parrafointro I18N">juego2seresvi1</div>
+									    <img class="intro" src="img/intro.png">   
+											<a href="#tab2" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img class="divbotones cambiarImagen" src="img/continuar.png" onclick="inicioJuego()"></a>	
+									</div>
+								</div>
+
+							    <div class="tab-pane" id="tab2">
+								    <div class="Skin2">						      			      	
+								      	<img class="Skin2" src="img/fondo.png">
+
+									    <div id="numeros">
+									    </div>
+
+									    <div id="general" style="display:none">
+										    <img id="vida" class="vidas" >
+										    <input id="vidas" type="hidden">
+										    <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+										    <img class="sonido sonido_click" src="img/sonido.png" data-sonido="sonidos/enunciado.mp3">
+										    <div class="parrafo I18N">juego2seresvi2</div>
+										    <div id="complementos">	
+											    <div id="niv1" style="display:none">
+												    <img class="tituloseres" src="img/titulovivos.png" onmouseover="reproducionSonido('sonidos/titulovivos.mp3');">
+
+												    <!--ESCENARIO 1 SERES VIVOS-->	
+												    <img class="fondo" src="img/fondo1.png">
+												    <img id="1-3" class="asiento" src="img/12.png" onclick="seleccionar(3)" onmouseover="reproducionSonido('sonidos/12.mp3');">
+												    <img id="1-1" class="gato" src="img/7.png" onclick="seleccionar(1)" onmouseover="reproducionSonido('sonidos/7.mp3');">
+												    <img id="1-0" class="cuadro" src="img/14.png" onclick="seleccionar(0)" onmouseover="reproducionSonido('sonidos/14.mp3');">
+												    <img id="1-2" class="mosca" src="img/mosca.png" onclick="seleccionar(2)" onmouseover="reproducionSonido('sonidos/mosca.mp3');">	
+											 	</div>	
+
+											 	<div id="niv2" style="display:none">
+											 		<img class="tituloseres" src="img/tituloinertes.png" onmouseover="reproducionSonido('sonidos/tituloinertes.mp3');">
+
+												    <!--ESCENARIO 2 SERES INERTES-->	
+												    <img class="fondo" src="img/fondo2.png">
+												    <img id="2-0" class="pecera" src="img/5.png" onclick="seleccionar(0)" onmouseover="reproducionSonido('sonidos/5.mp3');">
+												    <img id="2-2" class="lampara" src="img/6.png" onclick="seleccionar(2)" onmouseover="reproducionSonido('sonidos/6.mp3');">
+												    <img id="2-1" class="juguetes" src="img/13.png" onclick="seleccionar(1)" onmouseover="reproducionSonido('sonidos/13.mp3');">
+												    <img id="2-3" class="planta" src="img/1.png" onclick="seleccionar(3)" onmouseover="reproducionSonido('sonidos/1.mp3');">
+											 	</div>	
+
+											 	<div id="niv3" style="display:none">
+											 		<img class="tituloseres" src="img/titulovivos.png" onmouseover="reproducionSonido('sonidos/titulovivos.mp3');">
+
+												    <!--ESCENARIO 3 SERES VIVOS-->	
+												    <img class="fondo" src="img/fondo3.png">
+												    <img id="3-1" class="cactus" src="img/3.png" onclick="seleccionar(1)" onmouseover="reproducionSonido('sonidos/3.mp3');">
+												    <img id="3-2" class="plantaestudio" src="img/1.png" onclick="seleccionar(2)" onmouseover="reproducionSonido('sonidos/1.mp3');">
+												    <img id="3-3" class="maletin" src="img/2.png" onclick="seleccionar(3)" onmouseover="reproducionSonido('sonidos/2.mp3');">
+												    <img id="3-0" class="reloj" src="img/4.png" onclick="seleccionar(0)" onmouseover="reproducionSonido('sonidos/4.mp3');">
+											 	</div>
+
+											 	<div id="niv4" style="display:none">
+											 		 <img class="tituloseres" src="img/tituloinertes.png" onmouseover="reproducionSonido('sonidos/tituloinertes.mp3');">
+
+												    <!--ESCENARIO 4  SERES INERTES-->	
+												    <img class="fondo" src="img/fondo4.png">
+												    <img id="4-1" class="silla" src="img/9.png" onclick="seleccionar(1)" onmouseover="reproducionSonido('sonidos/9.mp3');">
+												    <img id="4-2" class="hamburguesa" src="img/15.png" onclick="seleccionar(2)" onmouseover="reproducionSonido('sonidos/15.mp3');">
+												    <img id="4-0" class="loro" src="img/10.png" onclick="seleccionar(0)" onmouseover="reproducionSonido('sonidos/10.mp3');">
+												    <img id="4-3" class="raton" src="img/raton.png" onclick="seleccionar(3)" onmouseover="reproducionSonido('sonidos/raton.mp3');">
+											 	</div>
+
+											 	<div id="niv5" style="display:none">
+											 		<img class="tituloseres" src="img/titulovivos.png" onmouseover="reproducionSonido('sonidos/titulovivos.mp3');">
+										    
+												    <!--ESCENARIO 5 SERES VIVOS-->	
+												    <img class="fondo" src="img/fondo5.png">
+												    <img id="5-1" class="perro" src="img/11.png" onclick="seleccionar(1)" onmouseover="reproducionSonido('sonidos/11.mp3');">
+												    <img id="5-3" class="gaseosa" src="img/gaseosa.png" onclick="seleccionar(3)" onmouseover="reproducionSonido('sonidos/gaseosa.mp3');">
+												    <img id="5-0" class="reloj" src="img/4.png" onclick="seleccionar(0)" onmouseover="reproducionSonido('sonidos/4.mp3');">
+												    <img id="5-2" class="plantanevera" src="img/3.png" onclick="seleccionar(2)" onmouseover="reproducionSonido('sonidos/3.mp3');">
+											 	</div>		    	
+										    </div>	
+
+										<img class="divbotones2 cambiarImagen" src="img/verificar.png" onclick="verificar()" style="display:none" data-sonido="sonidos/verificar.mp3"></a>
+									</div>
+								</div>
+					    	</div>
+					    						    	
+						</div>	
+
+</html>
+	    <script src="./index_files/jquery-latest.js"></script>
+	    <script src="./index_files/bootstrap.min.js"></script>
+		<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+		<script src="./index_files/prettify.js"></script>
+		<script src="./index_files/generalesJuego.js"></script>	
+		<script src="./index_files/juegoMethod.js"></script>
+		
+
+		<!--ARCHIVO PROPERTIES-->
+		<script src="../../../js/I18N/es.js"></script>
+		<script src="../../../js/funcion.js"></script>
+		
+	

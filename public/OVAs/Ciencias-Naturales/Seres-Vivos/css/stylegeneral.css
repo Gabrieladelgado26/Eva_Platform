@@ -1,0 +1,743 @@
+
+@CHARSET "UTF-8";
+/*
+over-ride "Weak" message, show font in dark grey
+*/
+body
+{
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin-bottom: 56%;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../fonts/Roboto-Regular.ttf);
+}
+
+
+form[role=login] {
+  color: #5d5d5d;
+  background: #f2f2f2;
+  padding: 26px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+  form[role=login] img {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 35px;
+  }
+  form[role=login] input,
+  form[role=login] button {
+    font-size: 18px;
+    margin: 16px 0;
+  }
+  form[role=login] > div {
+    text-align: center;
+  }
+
+
+.form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    @include box-sizing(border-box);
+
+    &:focus {
+      z-index: 2;
+    }
+  }
+
+
+.form-links {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 50px;
+}
+
+.form-links a {
+    color: #fff;
+  }
+
+.login-form {
+  margin-top: 60px;
+}
+
+
+.progress-bar {
+    color: #333;
+} 
+
+* {
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: none;
+}
+
+ 
+
+  /*DISEÑO DE VISTA MENU PLANTILLA*/
+ 
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: auto;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+}
+
+#skin {
+    display: block;
+    float: left;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    /* background-image: url(../img/skn_paramo_1.jpg); */
+    background-color: #6c7c7c;
+    background-size: cover;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+}
+
+#contentslider
+{
+     border: none;
+    padding: 0;
+    left: 21%;
+    margin: 0;
+    height: 87%;
+    width: 67%;
+    top: 4%;
+    position: absolute;
+}
+
+
+#contentframe
+{
+  border: none;
+    padding: 0;
+    margin: 0;
+    height: 120%;
+    width: 95%;
+    left: 2%;
+    position: absolute;
+    top: 3%;
+   }
+
+
+
+
+#contentframeRepasemos
+{
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 93%;
+  width: 100%;
+}
+
+
+#contentframeEvaluemos
+{
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 93%;
+  width: 100%;
+}
+
+.titulocontenido
+{
+    left: 5%;
+    width: 23%;
+    z-index: 3;
+}
+
+
+.tubo
+{
+    width: 35%;
+    top: 8.2%;
+    left: 26%;
+}
+
+.hierva
+{
+    position: absolute;
+    width: 68%;
+    bottom: 2%;
+    z-index: 5 !important;
+}
+
+.planta
+{
+    position: absolute;
+    width: 15%;
+    bottom: 5%;
+    z-index: 3;
+}
+
+.arbol
+{
+    position: absolute;
+    width: 47%;
+    right: 0%;
+
+}
+
+.rama
+{
+    right: 6%;
+    top: 14%;
+    z-index: 5;
+    width: 9%;
+}
+
+ /* FIN DISEÑO DE VISTA MENU*/
+
+
+
+/* INICIO DISEÑO DE ELEMENTOS VISTA MENU */
+
+.jabali
+{
+    width: 33%;
+    bottom: 5%;
+    left: 0%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+
+
+}
+
+.pili
+{
+    width: 17%;
+    left: 31%;
+    bottom: 6%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+    z-index: 3;
+}
+
+
+.mono
+{
+    right: 12%;
+    width: 20.5%;
+    top: 5%;
+    z-index: 3;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+}
+
+.perro
+{
+    right: 37%;
+    width: 17.4%;
+    z-index: 4;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+    bottom: 4%;
+}
+
+/* FIN DISEÑO DE ELEMENTOS VISTA MENU */
+
+
+
+
+/* MENU LATERAL*/
+
+.info
+{
+    top: 340;
+    left: 407;
+    width: 150;
+    display: none;
+    
+    
+}
+
+.inicio
+
+{
+    top: 3%;
+    left: 29%;
+    width: 6.3%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+
+.tutorial
+
+{
+    top: 3%;
+    left: 39%;
+    width: 6%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+.profe
+
+{
+    top: 3%;
+    left: 48%;
+    width: 6%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+
+/* FIN MENU LATERAL*/
+
+
+
+/*INICIO DISEÑO TOOLTIPS*/
+
+
+
+.aprendemas
+{
+    top: 25%;
+    right: 1%;
+    width: 21%;
+    display: none;
+    z-index: 1;
+  
+}
+.conoce
+{
+    top: 50%;
+    width: 21%;
+    right: 38%;
+    display: none;   
+}
+
+.evaluemos
+{
+   right: 20%;
+    top: 67%;
+    width: 21%;
+    display: none;
+}
+
+.repasemos
+
+{
+    left: 3%;
+    bottom: 44%;
+    width: 18%;
+    display: none;
+}
+
+
+
+/*FIN DISEÑO TOOLTIPS*/
+
+
+/*DISEÑO MODALES*/
+
+.divmodal
+{
+
+     position: absolute !important;
+    top: 6% !important;
+    width: 90% !important;
+    border-radius: 5px !important;
+    left: 5% !important;
+    height: 95%;
+    overflow-x: hidden;
+    overflow-y: hidden;  
+}
+
+
+.divmodaljuego2
+{
+     position: absolute !important;
+    width: 108% !important;
+    border-radius: 5px !important;
+    height: 95%;
+    right: -1%;
+  
+}
+
+
+.divmodalRepasemos
+{
+   position: absolute !important;
+    top: 8% !important;
+    width: 97% !important;
+    border-radius: 5px !important;
+    left: 7% !important;
+    height: 95%;
+     overflow-x: hidden;
+    overflow-y: hidden;
+    }
+
+.divmodalevaluemos
+{
+    position: absolute !important;
+    top: 7% !important;
+    width: 97% !important;
+    border-radius: 5px !important;
+    left: 7% !important;
+    height: 95%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.iconoadelante
+{
+   position: absolute;
+    bottom: 8%;
+    z-index: 1;
+    right: 10%;
+    width: 5%;
+}
+
+.iconoatrasconoce
+{
+  position: absolute;
+    bottom: 1%;
+    z-index: 1;
+    right: 3%;
+    width: 6%;
+}
+
+.iconoayuda
+{
+    position: absolute;
+    top: 48%;
+    left: 2%;
+    width: 4%;
+}
+
+.iconocerrar
+{
+   cursor:url(../../../Shared/hand.cur) , auto!important;
+  position: absolute;
+    top: 7%;
+    right: 4%;
+    width: 4%;
+    z-index: 10000;
+}
+
+
+
+.iconosonido
+{
+    position: absolute;
+    top: 37%;
+    left: 2%;
+    width: 4%;
+}
+
+
+.modalImagen
+{
+    width: 100% !important;
+}
+
+
+.videomodal
+{
+    z-index: 1;
+    left: 6%;
+    width: 85%;
+    float: left;
+    padding: 1%;
+    margin-left: 8%;
+}
+
+
+ /*FIN DISEÑO MODALES*/
+
+
+
+ /* INICIO DISEÑO DE ESTRELLAS*/
+
+
+
+.gifconoce
+{
+
+    width: 8%;
+    right: 51%;
+    top: 26%;
+    z-index: 5;
+}
+
+
+.gifaprendemas
+{
+    width: 8%;
+    top: 3%;
+    z-index: 5;
+    right: 9%;
+}
+
+.gifrepasemos
+{
+    width: 9%;
+    left: 14%;
+    z-index: 5;
+    top: 31%;
+}
+
+
+.gifevaluemos
+{
+    width: 8%;
+    right: 37%;
+    bottom: 26%;
+    z-index: 5;
+}
+
+
+/*MENU*/
+
+
+.divmenu
+{
+    position: absolute;
+    width: 19%;
+    right:17%;
+    top: -4%;
+}
+
+.divmenusoloimagen
+{
+    position: absolute;
+    width: 19%;
+    left: 5%;
+    top: 26%;
+    margin-top: 2%;
+}
+
+
+.divmenusoloimagen img
+{
+  width: 118% !important;
+  float: left;
+  position: relative;
+   
+}
+.divmenu img
+{
+  width: 100% !important;
+  float: left;
+  position: relative;
+   
+}
+
+
+.letrero1, .letrero2, .letrero3, .letrero4, .letrero5
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+   animation: 2s fadeInDown ease !important;
+  
+}
+
+.letrero1
+{
+  z-index: 7 !important;
+  
+}
+
+
+.letrero2
+{
+    z-index: 6 !important;
+   
+}
+
+
+
+.letrero3
+{
+    z-index: 5 !important;
+   
+}
+.letrero4
+{
+    z-index: 4 !important;
+     
+}
+
+.letrero5
+{
+  z-index: 3 !important;
+  
+}
+
+
+
+.saltaranimacion
+{
+ 
+    z-index: 5;
+    bottom: 3%;
+    width: 17%;
+    left: 3%;
+}
+
+.saltaranimacion:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+}
+
+.licencia, .lecenciaconsultorio
+{
+    width: 6%;    
+    z-index: 5;
+}
+
+.licencia
+{
+  bottom: 5.7%;
+  right: 1%;
+}
+
+.licenciamenu
+{
+    bottom: 0.7%;
+    right: 1%;
+    position: absolute;
+    z-index: 1;
+    width: 6%;
+}
+
+.lecenciaconsultorio
+{
+   
+    bottom: 1.7%;
+    right: 1%;
+   
+}
+
+
+.modal-content
+{
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: 0px !important;
+}
+
+.divmodalConoce
+{
+   position: absolute !important;
+    top: 11% !important;
+    width: 107% !important;
+    border-radius: 5px !important;
+    left: 7% !important;
+    height: 95%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+
+ .iconoyoutube
+{
+    position: absolute;
+    right: 22%;
+    width: 14%;
+    bottom: 20.6%;
+    z-index: 2;
+}
+
+.sonidoslider
+{
+    width: 7% !important;
+    position: fixed;
+    top: 9px;
+    cursor:url(../../../Shared/hand.cur) , auto!important;
+    animation: 1s milatido infinite;
+}
+
+
+  @keyframes milatido {
+    from { transform: none; }
+    50% { transform: scale(1.2); }
+    to { transform: none; }
+  }
+
+
+.verintro
+{
+
+    position: absolute !important;
+    width: 14% !important;
+    top: 2% !important;
+    right: 2% !important;
+}
+
+.verintro:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+.iconoregresar
+{
+    cursor: url(../images/hand.cur) , auto!important;
+    position: absolute;
+    top: 16%;
+    right: 4%;
+    width: 4%;
+    z-index: 10000;
+}
+
+
+.video
+   {
+    width: 100%;
+   }
+
+.irmenu
+{
+    position: absolute;
+    z-index: 5;
+    width: 17%;
+    left: 2%;
+    top: 6%;
+    display: none !important;
+    animation: 2s bounceIn ease;
+}
+
+.irmenu:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+  animation: 2s tada;
+}
+
+.btnpausaplay {
+    top: 3%;
+    left: 58%;
+    width: 6%;
+    cursor: url(../../../Shared/hand.cur) , auto!important;
+  }

@@ -355,7 +355,7 @@ export default function StudentEvaluations({ evaluations = [] }) {
                             </div>
                         </div>
 
-                        {/* Tabla mejorada con columna Sticker */}
+                        {/* Tabla mejorada */}
                         <div className={`bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-gray-200 transition-all duration-500 ${visible ? 'opacity-100' : 'opacity-0'}`}>
                             {paginatedEvaluations.length > 0 ? (
                                 <>
@@ -364,6 +364,7 @@ export default function StudentEvaluations({ evaluations = [] }) {
                                             <thead className="bg-gray-50/80 border-b border-gray-200">
                                                 <tr>
                                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">Recurso Educativo</th>
+                                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">Evaluación</th>
                                                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wide">Sticker</th>
                                                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wide">Calificación</th>
                                                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wide">Puntaje</th>
@@ -410,7 +411,18 @@ export default function StudentEvaluations({ evaluations = [] }) {
                                                                 </div>
                                                             </td>
 
-                                                            {/* Sticker - Nueva columna */}
+                                                            {/* Clave Evaluación */}
+                                                            <td className="px-6 py-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200">
+                                                                        <code className="text-xs font-mono font-semibold" style={{ color: '#540D6E' }}>
+                                                                            {ev.evaluation_key || 'N/A'}
+                                                                        </code>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+                                                            {/* Sticker */}
                                                             <td className="px-6 py-3 text-center">
                                                                 <Sticker percentage={pct} />
                                                             </td>

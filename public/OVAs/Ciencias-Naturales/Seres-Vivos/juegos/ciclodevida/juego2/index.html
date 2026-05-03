@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+	<head>
+	    <title>Juego de tablas de frecuencia</title>
+	 	<meta name="title" content="Juego de tabla de frecuencia" />
+		<meta name="description" content="Juego sobre el tema de tabla de frecuencia"/>
+	    <!-- Bootstrap -->
+	    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link href="./index_files/prettify.css" rel="stylesheet">		
+		
+		<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="stylejuego2.css" media="screen" />
+		
+		
+		<!--indexa en la bd del buscador-->
+		<meta name="robots" content="index,follow" />
+		<!--ajusta a las dimensiones donde se vea-->
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+	</head>
+						<div id="todosonido"></div>
+						<div id="todosonido2"></div>
+						<div class="tab-content" style="width: 97%" >
+
+						<img id="mensaje" class="respuesta" src="" style="display:none"/>					     				     
+					     <a id="redir" href=""><img id="mensaje2" class="respuestafin"  style="display:none"/></a>	
+
+					      <div class="tab-pane active" id="tab0">
+								    <div class="Skin2">					      			      	
+									    <img class="Skin2" src="img/fondo.png">
+									    <img class="sonidointro sonido_click" data-sonido="sonidos/intro.mp3" src="img/sonido.png">
+									     <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+									    <div id="parrafointro" class="parrafointro I18N ">juego2ciclo1</div>
+									    <img class="intro" src="img/intro.png">   
+											<a href="#tab1" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img class="divbotones cambiarImagen siguiente" src="img/continuar.png"></a>	
+									</div>
+								</div>
+
+							 <div class="tab-pane" id="tab1">
+								    <div class="Skin2">					      			      	
+									    <img class="Skin2" src="img/fondo.png">
+									    <img class="sonidolectura sonido_click" onclick="playAudio(1)" data-sonido="sonidos/martina.mp3" src="img/lectura.png" style=" display: block;" onmouseover="reproducionSonido('sonidos/leamos.mp3')" >
+									    <img class="titulo" src="img/titulo.png">
+									    	
+									    <!--IMAGENES PARA LA LECTURA-->
+									    	<img class="lectura" src="img/inicio.png">
+									        <img class="lectura1" src="img/1.png">
+										    <img class="lectura2" src="img/2.png">
+										    <img class="lectura3" src="img/3.png">
+										    <img class="lectura4" src="img/4.png">
+										 	<img class="lectura5" src="img/5.png"> 								  
+									  	
+
+										<a href="#tab2" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img class="divbotones cambiarImagen boton" src="img/continuar.png" onclick="inicioJuego()"></a>	
+									</div>
+									</div>
+
+
+
+ 									<div class="tab-pane" id="tab2">
+								    <div class="Skin2">						      			      	
+								      	<img class="Skin2" src="img/fondo.png">
+
+									    <div id="numeros">
+									    </div>
+
+									    <div id="general" style="display:none">
+										    <img id="vida" class="vidas" >
+										    <input id="vidas" type="hidden">
+										    <input id="seleccionado" type="hidden">
+										    <input id="idseleccionado" type="hidden"> 
+										    <img class="titulo sonido_hover"
+										     src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+										    <img class="sonido sonido_click" src="img/sonido.png" 
+										    data-sonido="sonidos/enunciado.mp3">
+										    <div class="parrafo I18N">juego2ciclo2</div>
+										    <div id="complementos">	
+										    
+										    <!--ESCENAS-->
+										    <div id="escenas"></div>
+
+										 	<!--BOTONES-->
+										 	<div id="botones" class="botones" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+										   
+										    </div>
+										 <img id="verificar" class="divbotones2 cambiarImagen" src="img/verificar.png" onclick="verifica()" data-sonido="sonidos/verificar.mp3" style="display:none">
+									</div>
+									</div>
+								</div>
+					    	</div>
+						</div>	
+
+</html>
+	    <script src="./index_files/jquery-latest.js"></script>
+	    <script src="./index_files/bootstrap.min.js"></script>
+		<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+		<script src="./index_files/prettify.js"></script>
+		<script src="./index_files/generalesJuego.js"></script>	
+		<script src="./index_files/juegoMethod.js"></script>
+		
+
+		<!--ARCHIVO PROPERTIES-->
+		<script src="../../../js/I18N/es.js"></script>
+		<script src="../../../js/funcion.js"></script>
+	
+<script>
+
+var var0='',var1='',var2='',var3='',var4='',var5='',var6='',var7='',var8='',var9='',var10='',var11='',var12='',var13='';
+	function playAudio(num){
+	  //pause playing
+
+	  	$(".sonidolectura").attr('style','display:none');
+		$("audio").trigger('pause');
+		//set play time to 0
+		$("audio").prop('currentTime',0);
+		$("#au" + num).trigger('play');
+
+		if (num==1) {
+
+			var0 = setTimeout(function(){$(".lectura").attr('style','display:table !important;')},100);
+			var2 = setTimeout(function(){$(".lectura").attr('style','display:none !important;')},3000);
+
+			var1 = setTimeout(function(){$(".lectura1").attr('style','display:table !important;')},4000);
+			var3 = setTimeout(function(){$(".lectura1").attr('style','display:none !important;')},9000);
+			var4 = setTimeout(function(){$(".lectura2").attr('style','display:table !important;')},9000);
+			var5 = setTimeout(function(){$(".lectura2").attr('style','display:none !important;')},12000);
+			var6 = setTimeout(function(){$(".lectura3").attr('style','display:table !important;')},12000);
+			var7 = setTimeout(function(){$(".lectura3").attr('style','display:none !important;')},16000);
+			var8 = setTimeout(function(){$(".lectura4").attr('style','display:table !important;')},16000);
+			var9 = setTimeout(function(){$(".lectura4").attr('style','display:none !important;')},23000);
+			var10 = setTimeout(function(){$(".lectura5").attr('style','display:table !important;')},23000);
+			var11 = setTimeout(function(){$(".boton").attr('style','display:table !important;')},27000); //27000
+			
+
+			
+		
+		}
+		else
+		{
+			$(".estados").attr('style','display:none');
+			clearTimeout(var1);
+
+		}
+	}	
+
+	</script>

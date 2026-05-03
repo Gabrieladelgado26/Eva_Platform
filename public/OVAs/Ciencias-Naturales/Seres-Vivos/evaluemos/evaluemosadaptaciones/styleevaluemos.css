@@ -1,0 +1,457 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 95%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+
+.skinevaluacion
+{
+    width: 104%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.skinevaluacion img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+
+
+
+/*DISEÑO PLANTILLA*/
+
+.cara
+{
+    width: 12%;
+    position: absolute;
+    right: 13%;
+    z-index: 2;
+    top: 5%;
+
+}
+
+
+
+.divgrande
+{
+    position: absolute !important;
+    top: 30% !important;
+    width: 98%;
+    margin-left: 12px;
+}
+
+.divpregunta
+{
+    width: 54% !important;
+    float: right !important;
+}
+
+.divimagen
+{
+    width: 46% !important;
+    float: left !important;
+}
+
+.divimagen img
+{
+    position: fixed;
+    top: 28%;
+    width: 37%;
+    left: 5%;
+}
+
+
+
+.opcion
+{
+    width: 80%;
+    float: left;
+    margin-top: 17px !important;
+    position: relative;
+    background: white;
+    text-align: center;
+    border-radius: 4px 4px 4px 4px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    padding: 1%;
+}
+
+.opcion span
+{
+    padding-left: 4%;
+}
+
+.opcion:hover
+{
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+    background-color: #FF9100;
+    color: #FFFFFF;
+}
+
+
+
+.parrafo
+{
+     position: absolute;
+    text-align: justify;
+    left: 28%;
+    top: 4%;
+    font-size: 16px;
+    width: 44%;
+    background-color: #FFFFFF;
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+
+
+}
+.anterior
+{
+    position: absolute;
+    width: 7%;
+    left: 3%;
+    bottom: 6%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 10%;
+    bottom: 6%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.resultado
+{
+        top: 67px;
+    position: absolute;
+    left: 68%;
+    font-weight: bold;
+    font-family: Chewy;
+    text-align: center;
+    color: red;
+    font-size: 57px;
+}
+
+
+
+.verresultados
+{
+    position: absolute;
+    width: 15%;
+    right: 14%;
+    bottom: 10%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+
+}
+
+/*RETROALIMENTACION*/
+
+.divgranderetoalimentacion
+{
+    position: absolute;
+    width: 100%;
+    top: 59%;
+}
+
+.divdibujosretro
+{
+    float: left;
+    width: 41%;
+    position: fixed;
+    top: 24.6%;
+    right: 27%;
+}
+
+.divtextoretro
+{
+    position: fixed;
+    float: right;
+    width: 66%;
+    top: 68%;
+    right: 19%;
+    border-radius: 15px 15px 15px 15px;
+    background-color: rgba(255,145,0,0.8);
+    padding: 2%;
+    font-family: Nunito;
+    font-size: 17px;
+    text-align: justify;
+    color: #fff;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(145,136,145,1);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(145,136,145,1);
+    box-shadow: 10px 10px 5px 0px rgba(145,136,145,1);
+}
+
+.divpreguntaretro
+{
+   
+    position: fixed;
+    width: 13%;
+    top: 16%;
+    right: 25%;
+}
+
+
+
+
+
+.correcto
+{
+    position: fixed;
+    font-size: 27px;
+    color: #FFF;
+    font-weight: bold;
+    width: 40%;
+    top: 61%;
+    left: 18%;
+}
+
+.incorrecto
+{
+    position: fixed;
+    left: 14%;
+    font-size: 27px;
+    color: #FFF;
+    font-weight: bold;
+    width: 40%;
+    top: 61%;
+}
+
+
+.divmarca
+{
+    position: absolute;
+    background-color: rgba(255,145,0,0.8);
+    width: 34%;
+    left: 29%;
+    height: 302px;
+    z-index: 5;
+    top: 21%;
+    border-radius: 51px;
+}
+
+.marca
+{
+    position: absolute;
+    left: 18%;
+    width: 63%;
+    top: 6%;
+
+}
+
+.juliretro
+{
+    position: absolute;
+    left: 12%;
+    width: 18%;
+    top: 23%;
+}
+
+.ivybien
+{
+    width: 45%;
+}
+
+
+
+#perdiste:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+
+.letras
+{
+    background-color: #FF9100;
+    padding: 2% !important;
+    position: absolute !important;
+    top: -4px !important;
+    left: -4% !important;
+    font-size: 27px !important;
+    color: white !important;
+    border-radius: 50% !important;
+    font-family: Chewy;
+}
+
+/*EXTRAS*/
+
+.pregunta
+{
+    position: fixed;
+    top: 32% !important;
+    width: 29% !important;
+    left: 9% !important;
+}
+
+.textopregretro
+{
+    position: fixed !important;
+    top: 24% !important;
+    font-family: Chewy !important;
+    font-size: 23px !important;
+    z-index: 5;
+        left: 48px;
+}
+
+.textopregretro1
+{
+    position: fixed !important;
+    top: 57% !important;
+    font-family: Chewy !important;
+    font-size: 23px !important;
+    z-index: 5;
+    left: 48px;
+}
+
+.tituloevaluacion
+{
+    position: absolute;
+    left: 33%;
+    width: 27%;
+    top: 2%;
+}
+
+
+.divgranderespuestas
+{
+    position: absolute !important;
+    top: 27%;
+    width: 84% !important;
+    max-height: 350px;
+
+}
+.divrespuesta
+{
+    width: 89% !important;
+    float: left !important;
+    padding-left: 11% !important;
+    font-size: 15px;
+    padding: 1%;
+    margin-top: 3px !important;
+    font-family: Nunito;
+    display: table;
+}
+
+.divimagenrespuesta
+{
+    float: right !important;
+    top: 0% !important;
+    right: 17% !important;
+    width: 5% !important;
+    margin-top: 0%;
+    padding-top: 9px;
+}
+.pre{
+        width: 93%;
+    float: left;
+}
+
+.introduccion
+{
+    position: absolute;
+    left: 15%;
+    width: 61%;
+    top: 10%;
+}
+
+.retro
+{
+    position: absolute;
+    left: 17%;
+    width: 52%;
+    top: 13%;
+}
+
+.preguntaretro
+{
+    position: fixed !important;
+    top: 3%;
+    width: 30%;
+    left: -6%;
+}
+
+.divpreguntaretro
+{
+   
+    position: fixed;
+    width: 79%;
+    top: 9%;
+    height: 52px;
+    font-size: 14px;
+    right: 14%;
+    border-radius: 8px 8px 8px 8px;
+    padding: 1%;
+    background-color: #F7931E;
+    border: 5px solid white;
+}
+
+.divimagenretro
+{
+    position: fixed;
+    width: 12%;
+    top: 28.5%;
+    right: 32%;
+}
+
+
+
+.imagenpregunta{
+    position: fixed;
+    right: 32%;
+    top: 28%;
+    width: 12%;
+}

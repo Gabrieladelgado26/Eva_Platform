@@ -1,0 +1,265 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;
+    
+}
+
+.divbotones2
+{
+    bottom: 17%;
+    right: 4%;
+    width: 17%;
+}
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+   position: absolute;
+    text-align: justify;
+    left: 40%;
+    top: 4%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 45%;
+    background-color: #FFFFFF;
+    padding: 1.5%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 33%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    font-family: Nunito;
+}
+
+.sonido
+{
+    left: 36%;
+    z-index: 1;
+    width: 5%;
+    top: 10%;
+}
+
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;   
+}
+
+
+.titulo
+{
+    width: 30%;
+    left: 3%;
+    top: 2%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 19%;
+    right: 3%;
+    bottom: 39%;
+    animation: 2s zoomIn ease;
+}
+
+
+.intro
+{
+    position: absolute !important;
+    width: 27%;
+    right: 11%;
+    top: 23%;
+}
+
+.respuesta
+{
+    position: absolute;
+    z-index: 1;
+    top: 35%;
+    left: 27%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 27%;
+}
+
+
+/*efecto de animacion para todos los botones q tenga sonido acciones*/
+.sonido:hover, .sonidointro:hover, .divbotones2:hover, .divbotones:hover, .respuestafin:hover
+{
+     animation: 1s tada ;
+     cursor:url(../../../../../Shared/hand.cur), auto!important;
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+
+#div1 img, #div2 img, #div3 img
+{   
+    width: 42%;
+    left: 33%;
+    bottom: 15%;
+}
+
+#div1, #div2, #div3
+{   
+    width: 232px;
+    height: 219px;
+    position: absolute;   
+    bottom: 29%;
+}
+
+#div1
+{
+    background-image: url("img/1.png");    
+    background-size: cover;
+    left: -4px;
+    position: absolute;
+    border-radius: 5px;
+}
+
+#div2
+{
+    background-image: url("img/2.png");
+    background-size: cover;
+    left: 217px;
+    position: absolute;
+    border-radius: 5px;
+}
+
+#div3
+{
+    background-image: url("img/3.png");
+    background-size: cover;
+    left: 433px;
+    position: absolute;
+    border-radius: 5px;
+}
+
+#fondoopciones
+{
+    background-image: url("img/juego.png");
+    width: 656px;
+    height: 134px;
+    background-size: cover;
+    left: 38px;
+    bottom: 3%;
+    position: absolute;
+    border-radius: 5px;
+
+}
+
+#fondoopciones img
+{
+   width: 15%; 
+}
+
+.imgn1, .imgn2, .imgn3
+{
+   width: 13%;
+   bottom: 4%;    
+}
+
+.imgn1
+{
+    left: 16%;
+}
+
+.imgn2
+{
+    left: 42%;
+}
+
+.imgn3
+{
+    left: 68%;
+}
+
+
+

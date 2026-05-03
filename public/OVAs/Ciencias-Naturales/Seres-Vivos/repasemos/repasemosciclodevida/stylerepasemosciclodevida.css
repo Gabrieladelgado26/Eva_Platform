@@ -1,0 +1,376 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 39.5%;
+    top: 10%;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+.america
+{
+    position: absolute;
+    right: 59%;
+    width: 27%;
+    bottom: 15%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.cabra
+{
+    position: absolute;
+    right: 46%;
+    width: 11%;
+    bottom: 22%;
+    display: none;
+    animation: 2s bounceInRight;
+}
+
+.cactus, .hierva, .hojas
+{
+    position: absolute;
+    width: 10%;   
+    right: 22%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.cactus
+{
+    bottom: 20%;
+}
+
+.cadena
+{
+    position: absolute;
+    right: 60%;
+    width: 25%;
+    bottom: 16%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.calendario
+{
+    position: absolute;
+    right: 41%;
+    width: 10%;
+    bottom: 40%;
+    display: none;
+    animation: 2s bounceInRight;
+}
+
+.cerdo
+{
+    position: absolute;
+    right: 37%;
+    width: 11%;
+    bottom: 15%;
+    display: none;
+    animation: 2s bounceInRight; 
+}
+
+.ciclo
+{
+    position: absolute;
+    right: 67%;
+    width: 11%;
+    bottom: 34%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.cicloplanta
+{
+    position: absolute;
+    right: 66%;
+    width: 13%;
+    bottom: 37%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.elefante
+{
+    position: absolute;
+    width: 10%;
+    right: 21.7%;
+    bottom: 29%;
+    display: none;
+    animation: 3s pulse;
+}
+
+.fondo1
+{
+    position: absolute;
+    right: 35%;
+    width: 58%;
+    bottom: 4.5%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fondo2, .fondo3, .fondo4
+{
+    position: absolute;
+    right: 18%;
+    width: 70%;
+    bottom: 12%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.investigar
+{
+    position: absolute;
+    right: 14%;
+    width: 19%;
+    bottom: 17%;
+    display: none;
+    animation: pulse, swing;
+    animation-duration: 1s;
+    animation-iteration-count: 5;
+}
+
+.libro
+{
+    position: absolute;
+    right: 7%;
+    width: 28%;
+    bottom: 20%;
+    display: none;
+    animation: 2s bounceInRight;
+}
+
+.galapagos
+{
+    position: absolute;
+    right: 71%;
+    width: 14%;
+    bottom: 40%;
+    display: none;
+    animation: tada;
+    animation-duration: 2s;
+}
+
+.guia
+{
+    position: absolute;
+    right: 31%;
+    width: 45%;
+    bottom: 30%;
+    display: none;
+    animation: 2s bounceIn;
+}
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+.hierva
+{
+    bottom: 62%;
+}
+
+.hojas
+{
+    bottom: 41%;
+}
+
+.mariposa
+{
+    position: absolute;
+    width: 13%;
+    right: 21%;
+    bottom: 57%;
+    display: none;
+    animation: 3s pulse;  
+}
+
+.peligro
+{
+    position: absolute;
+    width: 9%;
+    right: 54%;
+    bottom: 64%;
+    display: none;
+    animation: pulse;
+    animation-duration: 1s;
+    animation-iteration-count: 5;  
+}
+
+.raton
+{
+    position: absolute;
+    width: 9%;
+    right: 11%;
+    bottom: 30%;
+    display: none;
+    animation: 3s pulse;   
+}
+
+.sapo
+{
+    position: absolute;
+    width: 10%;
+    right: 56%;
+    bottom: 58%;
+    display: none;
+    animation: 3s bounceInLeft;  
+}
+
+.sapo2
+{
+    position: absolute;
+    width: 10%;
+    right: 36%;
+    bottom: 22%;
+    display: none;
+    animation: 3s bounceInDown;  
+}
+
+.texto1
+{
+    position: absolute;
+    width: 32%;
+    right: 26%;
+    bottom: 22%;
+    display: none;
+    animation: 3s zoomIn;  
+}
+
+.texto2
+{
+    position: absolute;
+    width: 32%;
+    right: 26%;
+    bottom: 22%;
+    display: none;
+    animation: 3s zoomIn;  
+}
+
+.tortuga
+{
+    position: absolute;
+    width: 29%;
+    right: 32%;
+    bottom: 43%;
+    display: none;
+    animation: 3s bounceInRight;  
+}

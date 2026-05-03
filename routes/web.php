@@ -153,6 +153,70 @@ Route::prefix('espanol/cuento')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| OVA Routes — Ciencias Naturales / Seres Vivos
+| Requiere autenticación (auth).
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth'])
+    ->prefix('ovas/ciencias-naturales/seres-vivos')
+    ->name('ova.ciencias.seresvivos.')
+    ->group(function () {
+
+        Route::get('/inicio', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Index')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('index');
+
+        Route::get('/menu', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Menu')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('menu');
+
+        Route::get('/slider', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Components/Slider')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.slider');
+        })->name('slider');
+
+        Route::get('/seresvivoseinertes', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/SeresVivosEInertos')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('seresvivoseinertes');
+
+        Route::get('/seresnaturalesartificiales', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/SeresNaturalesYArtificiales')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('seresnaturalesartificiales');
+
+        Route::get('/ciclodevida', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/CicloDeVida')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('ciclodevida');
+
+        Route::get('/necesidades', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Necesidades')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('necesidades');
+
+        Route::get('/adaptaciones', function () {
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Adaptaciones')
+                ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
+        })->name('adaptaciones');
+    });
+
+// Redirecciones legado → nueva SPA
+Route::prefix('ciencias-naturales/seres-vivos')->group(function () {
+    Route::redirect('/index',                    '/ovas/ciencias-naturales/seres-vivos/inicio',                    301);
+    Route::redirect('/mprincovas',               '/ovas/ciencias-naturales/seres-vivos/menu',                      301);
+    Route::redirect('/slider',                   '/ovas/ciencias-naturales/seres-vivos/slider',                    301);
+    Route::redirect('/seresvivoseinertes',        '/ovas/ciencias-naturales/seres-vivos/seresvivoseinertes',        301);
+    Route::redirect('/seresnaturalesartificiales','/ovas/ciencias-naturales/seres-vivos/seresnaturalesartificiales',301);
+    Route::redirect('/ciclodevida',              '/ovas/ciencias-naturales/seres-vivos/ciclodevida',               301);
+    Route::redirect('/necesidades',              '/ovas/ciencias-naturales/seres-vivos/necesidades',               301);
+    Route::redirect('/adaptaciones',             '/ovas/ciencias-naturales/seres-vivos/adaptaciones',             301);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OVA Routes — Redirecciones legado /ova/* → /ovas/matematicas/adicion-sustraccion/*
 |--------------------------------------------------------------------------
 */

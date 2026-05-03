@@ -1,0 +1,359 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 41%;
+    top: 10%;
+    width: 5%;
+
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+.agua, .beto, .bombilla, .lapiz, .mesa, .mineral, .nevera, .zapato
+{
+    position: absolute;
+    display: none;
+}
+
+.agua
+{
+    right: 56%;
+    width: 8%;
+    bottom: 19%;
+    animation: 2s zoomIn;
+}
+
+.ammonitte, .ammonitte1, .ammonitte2, .ammonitte3, .dinosaurio
+{
+    position: absolute;
+    display: none;
+}
+
+.ammonitte
+{
+    right: 54%;
+    width: 13%;
+    bottom: 37%;
+    animation: 2s zoomIn;
+}
+
+.ammonitte1
+{
+    right: 54%;
+    width: 11%;
+    bottom: 13%;
+    animation: 2s slideInDown;    
+}
+
+.ammonitte2
+{
+    right: 54%;
+    width: 11%;
+    bottom: 13%;
+    animation: 2s jello;    
+}
+
+.ammonitte3
+{
+    right: 54%;
+    width: 11%;
+    bottom: 54%;
+    animation: 2s rotateInDownLeft;    
+}
+
+.artificiales
+{
+    position: absolute;
+    display: none;
+    right: 78%;
+    width: 17%;
+    bottom: 58%;
+    animation: 2s zoomIn;
+}
+
+.beto
+{
+    right: 43%;
+    width: 14%;
+    bottom: 5%;
+    animation: 2s fadeIn;
+}
+
+.bombilla
+{
+    right: 87%;
+    width: 10%;
+    bottom: 38%;
+    animation: 2s zoomIn;
+}
+
+.dinosaurio
+{
+    right: 21%;
+    width: 16%;
+    bottom: 51%;
+    animation: 2s shake;
+}
+
+.fondo1
+{
+    position: absolute;
+    right: 20%;
+    width: 56%;
+    bottom: 4%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fondo2, .fondo3
+{
+    position: absolute;
+    right: 18%;
+    width: 70%;
+    bottom: 12%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fosiles
+{
+    position: absolute;
+    display: none;
+    right: 24%;
+    width: 15%;
+    bottom: 38%;
+    animation: 2s flip;
+}
+
+.fosilanimal, .fosilhuella, .fosilvegetal, .leyendo
+{
+    position: absolute;
+    width: 10%;
+    display: none;
+    animation: 2s bounceInDown;
+}
+
+.fosilanimal
+{
+    bottom: 45%;
+    right: 47%;    
+}
+
+.fosilhuella
+{
+    bottom: 56%;
+    right: 36%;  
+}
+
+.fosilvegetal
+{
+    bottom: 64%;
+    right: 24%;  
+}
+
+.guia
+{
+    position: absolute;
+    right: 31%;
+    width: 45%;
+    bottom: 30%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+.lapiz
+{
+    right: 77%;
+    width: 10%;
+    bottom: 28%;
+    animation: 2s zoomIn;
+}
+
+.leyendo
+{
+    right: 68.5%;
+    width: 9%;
+    bottom: 16%;
+    animation: 2s zoomIn;  
+}
+
+.mesa
+{
+    right: 35%;
+    width: 38%;
+    bottom: 5%;
+    animation: 2s fadeIn;
+}
+
+.mineral
+{
+    right: 40%;
+    width: 10%;
+    bottom: 19%;
+    animation: 2s zoomIn;
+}
+
+.naturales
+{
+    position: absolute;
+    display: none;
+    right: 21%;
+    width: 17%;
+    bottom: 6%;
+    animation: 2s zoomIn;
+}
+
+.nevera
+{
+    right: 87%;
+    width: 10%;
+    bottom: 15%;
+    animation: 2s zoomIn;
+}
+
+.sol
+{
+    position: absolute;
+    right: 21%;
+    width: 25%;
+    bottom: 34%;
+    display: none;
+    animation: 2s bounceIn;   
+}
+
+.viento
+{
+    position: absolute;
+    right: 57.5%;
+    width: 18%;
+    bottom: 41%;
+    display: none;
+    animation: 2s lightSpeedIn;
+}
+
+.zapato
+{
+    right: 77%;
+    width: 10%;
+    bottom: 5%;
+    animation: 2s zoomIn;
+}

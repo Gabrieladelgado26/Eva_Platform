@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://vadimg.com/twitter-bootstrap-wizard-example/examples/basic-formvalidation.html# -->
+<html>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Language" content="es" />
+	<head>
+	    <title>Juego de tablas de frecuencia</title>
+	 	<meta name="title" content="Juego de tabla de frecuencia" />
+		<meta name="description" content="Juego sobre el tema de tabla de frecuencia"/>
+	    <!-- Bootstrap -->
+	    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link href="./index_files/prettify.css" rel="stylesheet">		
+		
+		<link rel="stylesheet" type="text/css" href="animate.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="stylejuego2.css" media="screen" />
+		
+		
+		<!--indexa en la bd del buscador-->
+		<meta name="robots" content="index,follow" />
+		<!--ajusta a las dimensiones donde se vea-->
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+	</head>
+						<div id="todosonido"></div>
+						<div id="todosonido2"></div>
+						<div class="tab-content" style="width: 97%" >
+
+						<img id="mensaje" class="respuesta" src="" style="display:none"/>					     				     
+					     <a id="redir" href=""><img id="mensaje2" class="respuestafin"  style="display:none"/></a>	
+
+							    <div class="tab-pane active" id="tab1">
+								    <div class="Skin2">					      			      	
+									    <img class="Skin2" src="img/fondo.png">
+									    <img class="sonidointro sonido_click" data-sonido="sonidos/intro.mp3" src="img/sonido.png">
+									     <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+									    <div id="parrafointro" class="parrafointro I18N">juego2seresfo1</div>
+									     <img class="piligif" src="img/pili.gif"> 
+											<a href="#tab2" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img class="divbotones cambiarImagen" src="img/continuar.png" onclick="inicioJuego()"></a>	
+									</div>
+								</div>
+
+							    <div class="tab-pane" id="tab2">
+								    <div class="Skin2">						      			      	
+								      	<img class="Skin2" src="img/fondo.png">
+
+									    <div id="numeros">
+									    </div>
+
+									    <div id="general" style="display:none">										   
+										    <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+										    <img class="sonido sonido_click" src="img/sonido.png" data-sonido="sonidos/enunciado.mp3">
+										    <div class="parrafo I18N">juego2seresfo2</div>
+										    <div id="complementos">	
+
+										    <!--ESCENARIO-->	
+										    <img class="desierto" src="img/desierto.png">
+
+										    <!--PIEZAS BAJO  DESIERTO-->
+										    <div id="circulos"></div>
+										    <div id="objetos"></div>
+										     
+										      <!--PIEZAS CAJA-->
+										     <div id="caja", class="caja"></div>
+										     <img id="pieza-1" class="pieza1caja" src="img/1.png" style="display:none">
+										     <img id="pieza-2" class="pieza2caja" src="img/2.png" style="display:none">
+										     <img id="pieza-3" class="pieza3caja" src="img/3.png" style="display:none">
+										     <img id="pieza-4" class="pieza4caja" src="img/4.png" style="display:none">
+										     <img id="pieza-5" class="pieza5caja" src="img/5.png" style="display:none">
+										 									  									    	
+										    </div>	
+
+										<a href="#tab3" data-toggle="tab" class="sonido_hover" data-sonido="sonidos/continuar.mp3"><img id="verificar" class="divbotones2 cambiarImagen" src="img/continuar.png" style="display:none" onclick="enunciado1()"></a>
+									</div>
+								</div>
+					    	</div>
+
+
+					    	 <div class="tab-pane" id="tab3">
+								    <div class="Skin2">						      			      	
+								      	<img class="Skin2" src="img/fondo.png">
+
+									    <div id="general">
+										    <img id="vida" class="vidas" >
+										    <input id="vidas" type="hidden">
+										    <img class="titulo sonido_hover" src="img/titulo.png" data-sonido="sonidos/titulo.mp3">
+										    <img class="sonido sonido_click" src="img/sonido.png" data-sonido="sonidos/enunciado1.mp3">
+										    <div class="parrafo I18N">juego2seresfo3</div>
+										    <div id="complementos">	
+
+										    <!--ARMAR DINOSAURIO-->	
+										    <div id="arrastrar" class="plataforma" style="background-image:url('img/plataforma.png');"  ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+
+										    <img class="fondopiezas" src="img/juego.png">
+
+										    <!--PIEZAS DINOSAURIO-->
+										    <div id="imagenes"></div>										   
+
+										    <!--DINOSAURIO ARMADO-->	
+										    <img id="piezaarmada-1" class="pieza1armada" src="img/1.png" style="display:none">
+										    <img id="piezaarmada-4" class="pieza2armada" src="img/4.png" style="display:none">
+										    <img id="piezaarmada-3" class="pieza3armada" src="img/3.png" style="display:none">
+										    <img id="piezaarmada-2" class="pieza4armada" src="img/2.png" style="display:none">
+										    <img id="piezaarmada-5" class="pieza5armada" src="img/5.png" style="display:none">
+
+										    </div>	
+									</div>
+								</div>
+					    	</div>
+
+						</div>	
+
+</html>
+	    <script src="./index_files/jquery-latest.js"></script>
+	    <script src="./index_files/bootstrap.min.js"></script>
+		<script src="./index_files/jquery.bootstrap.wizard.js"></script>
+		<script src="./index_files/prettify.js"></script>
+		<script src="./index_files/generalesJuego.js"></script>	
+		<script src="./index_files/juegoMethod.js"></script>
+		
+
+		<!--ARCHIVO PROPERTIES-->
+		<script src="../../../js/I18N/es.js"></script>
+		<script src="../../../js/funcion.js"></script>
+		
+	

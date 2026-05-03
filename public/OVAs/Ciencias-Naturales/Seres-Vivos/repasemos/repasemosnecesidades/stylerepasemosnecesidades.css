@@ -1,0 +1,351 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Roboto;
+ src: url(../../../fonts/Roboto-Regular.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 43%;
+    top: 11.5%;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+.ballenacria
+{
+    position: absolute;
+    right: 20%;
+    width: 16%;
+    bottom: 41%;
+    display: none;
+    animation: 2s bounceInDown;
+}
+
+.binoculares
+{
+    position: absolute;
+    right: 70.4%;
+    width: 13%;
+    bottom: 19%;
+    display: none;
+    animation: 2s pulse;
+}
+
+.calendario
+{
+    position: absolute;
+    right: 44.5%;
+    width: 18%;
+    bottom: 11%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.caracteristicas
+{
+    position: absolute;
+    right: 31.5%;
+    width: 18%;
+    bottom: 15%;
+    display: none;
+    animation: 2s flip;
+}
+
+.fondo1
+{
+    position: absolute;
+    right: 26%;
+    width: 58%;
+    bottom: 4%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.fondo2, .fondo3, .fondo4
+{
+    position: absolute;
+    right: 18%;
+    width: 70%;
+    bottom: 12%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.guia
+{
+    position: absolute;
+    right: 31%;
+    width: 45%;
+    bottom: 30%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+.habitat
+{
+    position: absolute;
+    right: 66%;
+    width: 13%;
+    bottom: 7%;
+    display: none;
+    animation: 2s zoomInDown;
+}
+
+.habitatmar
+{
+    position: absolute;
+    right: 32%;
+    width: 13%;
+    bottom: 7%;
+    display: none;
+    animation: 2s zoomInDown;
+}
+
+.habitatmono
+{
+    position: absolute;
+    right: 23%;
+    width: 13%;
+    bottom: 39%;
+    display: none;
+    animation: 2s bounceInLeft;
+}
+
+.habitatpajaros
+{
+    position: absolute;
+    width: 13%;
+    right: 75%;
+    bottom: 39%;
+    display: none;
+    animation: 2s bounceInRight;
+}
+
+.huirclima, .huircomida, .huirdepredador
+{
+    position: absolute;
+    width: 16%;
+    bottom: 20%;
+    display: none;
+    animation: 2s zoomInDown;
+}
+
+.huirclima
+{
+    right: 62%;
+}
+
+.huircomida
+{
+    right: 27%;
+}
+
+.huirdepredador
+{
+    right: 44.5%;
+}
+
+.pajaros
+{
+    position: absolute;
+    width: 55%;
+    right: 26%;
+    bottom: 60%;
+    display: none;
+    animation: 5s bounceInLeft;
+}
+
+.plantaluzagua
+{
+    position: absolute;
+    right: 26%;
+    width: 15%;
+    bottom: 24%;
+    display: none;
+    animation: 3s slideInRight;
+}
+
+.plantanoluzagua
+{
+    position: absolute;
+    right: 66%;
+    width: 15%;
+    bottom: 24%;
+    display: none;
+    animation: 3s slideInLeft;
+}
+
+.plantamuerta
+{
+    position: absolute;    
+    right: 66%;
+    width: 15%;
+    bottom: 24%;
+    display: none;
+    animation: 2s pulse;
+}
+
+.texto1
+{
+    position: absolute;    
+    right: 28%;
+    width: 21%;
+    bottom: 21%;
+    display: none;
+    animation: 2s bounceIn;   
+}
+
+.texto2
+{    
+    position: absolute;
+    width: 55%;
+    right: 25%;
+    bottom: 44%;
+    display: none;
+    animation: 3s slideInLeft;
+}
+
+.texto3
+{
+    position: absolute;
+    width: 50%;
+    right: 28.5%;
+    bottom: 68%;
+    display: none;
+    animation: s bounceInDown; 
+}
+
+.viajeballenas
+{
+    position: absolute;
+    right: 50%;
+    bottom: 27%;
+    width: 20%;
+    display: none;
+    animation: 2s zoomInDown;
+}
+
+.willi
+{
+    position: absolute;
+    right: 50%;
+    bottom: 7%;
+    width: 11%;
+    display: none;
+    animation: 2s bounceInLeft;
+}

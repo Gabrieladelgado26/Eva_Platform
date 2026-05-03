@@ -1,0 +1,336 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;
+    
+}
+
+.divbotones2
+{
+     bottom: 20%;
+    right: 5%;
+    width: 17%;
+}
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+   position: absolute;
+    text-align: justify;
+    left: 40%;
+    top: 4%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 45%;
+    background-color: #FFFFFF;
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 33%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    font-family: Nunito;
+}
+
+.sonido
+{
+    left: 36%;
+    z-index: 1;
+    width: 5%;
+    top: 10%;
+}
+
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;   
+}
+
+
+.titulo
+{
+    width: 30%;
+    left: 3%;
+    top: 2%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 19%;
+    right: 5%;
+    bottom: 42%;
+    animation: 2s zoomIn ease;
+}
+
+
+.intro
+{
+    position: absolute !important;
+    width: 25%;
+    right: 14%;
+    top: 24%;
+}
+
+.respuesta
+{
+    position: absolute;
+    z-index: 1;
+    top: 35%;
+    left: 27%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 29%;
+}
+
+
+/*efecto de animacion para todos los botones q tenga sonido acciones*/
+.sonido:hover, .sonidointro:hover, .divbotones2:hover, .divbotones:hover, .respuestafin:hover
+{
+     animation: 1s tada ;
+     cursor:url(../../../../../Shared/hand.cur), auto!important;
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+.lectura,.lectura1, .lectura2, .lectura3, .lectura4, .lectura5
+{
+    left: 29%;
+    top: 24%;
+    width: 35%;
+    display: none !important;
+}
+
+.lectura
+{
+    animation: 2s zoomIn ease;
+}
+
+.lectura1
+{
+    animation: 2s fadeInLeft ease;
+}
+
+
+.lectura2
+{
+    animation: 2s slideInDown ease;
+}
+
+
+.lectura3
+{
+    animation: 2s zoomIn ease;
+}
+
+
+.lectura4
+{
+    animation: 4s zoomInDown ease;
+}
+
+.lectura5
+{
+    animation: 2s fadeInLeft ease;
+}
+
+.boton
+{
+    display: none !important;
+}
+
+.escena1, .escena2, .escena3
+{
+    width: 18%;
+    top: 31%;
+    height: 32%;
+    position: absolute;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.escena1
+{
+     left: 2%;
+}
+
+.escena2
+{
+    left: 20%;
+}
+
+.escena3
+{
+    left: 38%;
+}
+
+.escena4, .escena5
+{
+    width: 18%;
+    bottom: 5%;
+    height: 32%;
+    position: absolute;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.escena4
+{
+    left: 12%;
+}
+
+.escena5
+{
+    left: 31%;
+}
+
+.boton1, .boton2, .boton3, .boton4, .boton5
+{
+    width: 50%;
+    right: 30%;
+    
+}
+
+.boton1
+{
+    top: 0%;
+}
+
+.boton2
+{
+    top: 20%;
+}
+
+.boton3
+{
+    bottom: 41%;
+}
+
+.boton4
+{
+   bottom: 21%;
+}
+
+.boton5
+{
+    bottom: 1%;
+
+}
+
+.sonidolectura
+{
+    left: 32%;
+    z-index: 1;
+    width: 37%;
+    top: 41%;
+    cursor: url(../../../../../Shared/hand.cur), auto!important;   
+}
+
+.sonidolectura:hover
+{
+     animation: 1s tada ;
+}
+
+.botones{
+    position: absolute;
+    width: 15%;
+    height: 69%;
+    right: 26%;
+    top: 26%;
+    background: rgba(245, 244, 244, 0.37);
+    border-radius: 19px;
+
+}
+
+.escena1 img, .escena2 img, .escena3 img, .escena4 img, .escena5 img
+{
+    top: 2%;
+    width: 35%;
+    left: 2%;
+}

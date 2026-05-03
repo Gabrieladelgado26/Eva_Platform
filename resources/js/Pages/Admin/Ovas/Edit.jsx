@@ -18,6 +18,14 @@ export default function Edit({ ova }) {
     const [preview, setPreview] = useState(ova.thumbnail ? `/storage/${ova.thumbnail}` : null);
     const [focusedField, setFocusedField] = useState(null);
     const [showUrlPreview, setShowUrlPreview] = useState(false);
+    const [urlError, setUrlError] = useState(null); // Estado para error de URL
+
+    // Lista de rutas válidas (debe coincidir con el backend)
+    const rutasValidas = [
+        '/ovas/matematicas/adicion-sustraccion/inicio',
+        '/ovas/espanol/cuento/inicio',
+        '/ovas/ciencias-naturales/seres-vivos/inicio',
+    ];
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -43,8 +51,49 @@ export default function Edit({ ova }) {
         setData("thumbnail", null);
     };
 
+    // Función para validar si la URL es un path válido
+    const isValidPath = (url) => {
+        if (!url || url === '') return false;
+        
+        // Si es URL externa (http:// o https://) es válida
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return true;
+        }
+        
+        // Verificar si es un path interno válido
+        return rutasValidas.includes(url);
+    };
+
+    // Función para validar el campo URL antes de enviar
+    const validateUrl = (url) => {
+        if (!url || url === '') {
+            setUrlError('La URL es requerida');
+            return false;
+        }
+        
+        if (!isValidPath(url)) {
+            setUrlError('Path no válido. Debe usar una de las rutas internas permitidas.');
+            return false;
+        }
+        
+        setUrlError(null);
+        return true;
+    };
+
     function submit(e) {
         e.preventDefault();
+        
+        // Validar URL antes de enviar
+        if (!validateUrl(data.url)) {
+            // Mostrar toast de error
+            if (window.toast && typeof window.toast.error === 'function') {
+                window.toast.error('URL inválida: No es un path válido. Verifique que la ruta sea correcta.');
+            } else {
+                // Fallback: usar alert si no hay sistema de toast
+                alert('Error: No es un path válido. Verifique que la ruta sea correcta.');
+            }
+            return;
+        }
         
         const formData = new FormData();
         formData.append("_method", "PUT");
@@ -70,6 +119,10 @@ export default function Edit({ ova }) {
             },
             onError: (errors) => {
                 console.error("Error al actualizar:", errors);
+                // Mostrar toast con errores del servidor si los hay
+                if (errors.url && window.toast && typeof window.toast.error === 'function') {
+                    window.toast.error(errors.url);
+                }
             },
         });
     }
@@ -77,15 +130,8 @@ export default function Edit({ ova }) {
     const isFieldValid = (field) => {
         if (!data[field]) return false;
         if (field === "url") {
-            if (data.url === '') return true;
-            
-            const rutasValidas = [
-                '/ovas/matematicas/adicion-sustraccion/inicio',
-            ];
-            
-            return rutasValidas.includes(data.url) || 
-                data.url.startsWith('http://') || 
-                data.url.startsWith('https://');
+            if (data.url === '') return false;
+            return isValidPath(data.url);
         }
         if (field === "area") return data.area.length >= 2;
         if (field === "tematica") return data.tematica.length >= 3;
@@ -97,7 +143,7 @@ export default function Edit({ ova }) {
         (data.area ? 1 : 0) +
         (data.tematica ? 1 : 0) +
         (data.description ? 1 : 0) +
-        (data.url ? 1 : 0);
+        (data.url && isValidPath(data.url) ? 1 : 0);
     
     const progress = Math.round((completedFields / totalFields) * 100);
 
@@ -347,6 +393,7 @@ export default function Edit({ ova }) {
                                             <div className="flex items-center gap-2">
                                                 <Globe className="w-4 h-4" style={{ color: "#540D6E" }} />
                                                 <span>URL del Recurso</span>
+                                                <span style={{ color: "#EE4266" }}>*</span>
                                                 {data.url && isFieldValid("url") && (
                                                     <Check className="w-4 h-4 ml-auto animate-scale-in" style={{ color: "#0EAD69" }} />
                                                 )}
@@ -356,24 +403,32 @@ export default function Edit({ ova }) {
                                             <input
                                                 type="text"
                                                 value={data.url}
-                                                onChange={(e) => setData("url", e.target.value)}
+                                                onChange={(e) => {
+                                                    setData("url", e.target.value);
+                                                    // Limpiar error al cambiar
+                                                    if (urlError) setUrlError(null);
+                                                }}
                                                 onFocus={() => setFocusedField("url")}
-                                                onBlur={() => setFocusedField(null)}
+                                                onBlur={() => {
+                                                    setFocusedField(null);
+                                                    // Validar al salir del campo
+                                                    if (data.url) validateUrl(data.url);
+                                                }}
                                                 className={`w-full px-4 py-3 border rounded-lg font-medium transition-all duration-200 ${
-                                                    errors.url
+                                                    errors.url || urlError
                                                         ? "border-red-300 bg-red-50/50"
                                                         : focusedField === "url"
                                                             ? "bg-white shadow-sm ring-2"
                                                             : "border-gray-300 bg-white hover:border-gray-400"
                                                 }`}
                                                 style={
-                                                    focusedField === "url" && !errors.url
+                                                    focusedField === "url" && !errors.url && !urlError
                                                         ? { borderColor: "#540D6E", "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }
                                                         : {}
                                                 }
                                                 placeholder="Ruta interna o enlace externo"
                                             />
-                                            {data.url && isFieldValid("url") && !errors.url && (
+                                            {data.url && isFieldValid("url") && !errors.url && !urlError && (
                                                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                     <button
                                                         type="button"
@@ -397,12 +452,15 @@ export default function Edit({ ova }) {
                                             </div>
                                         )}
                                         <p className="text-xs text-gray-500 mt-1">
-                                            Ruta interna del sistema o enlace externo al contenido interactivo (opcional)
+                                            Ruta interna del sistema o enlace externo al contenido interactivo (obligatorio)
                                         </p>
-                                        {errors.url && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Rutas internas válidas: {rutasValidas.join(', ')}
+                                        </p>
+                                        {(errors.url || urlError) && (
                                             <div className="mt-2 flex items-start gap-2 p-3 bg-red-50 border-l-4 rounded-r-lg animate-slide-down" style={{ borderLeftColor: "#EE4266" }}>
                                                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#EE4266" }} />
-                                                <p className="text-sm font-medium text-red-800">{errors.url}</p>
+                                                <p className="text-sm font-medium text-red-800">{errors.url || urlError}</p>
                                             </div>
                                         )}
                                     </div>
@@ -507,7 +565,7 @@ export default function Edit({ ova }) {
                                         { label: "Área de Conocimiento", completed: !!data.area },
                                         { label: "Temática / Título", completed: !!data.tematica },
                                         { label: "Descripción", completed: !!data.description },
-                                        { label: "URL del Recurso", completed: !!data.url },
+                                        { label: "URL del Recurso", completed: !!(data.url && isValidPath(data.url)) },
                                     ].map((item, index) => (
                                         <div
                                             key={index}

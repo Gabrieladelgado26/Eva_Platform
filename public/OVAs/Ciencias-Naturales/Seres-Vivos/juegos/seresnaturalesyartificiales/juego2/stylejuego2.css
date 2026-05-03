@@ -1,0 +1,402 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;
+    
+}
+
+.divbotones2
+{
+    bottom: 13%;
+    right: 3%;
+    width: 17%;
+}
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+   position: absolute;
+    text-align: justify;
+    left: 40%;
+    top: 4%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 45%;
+    background-color: #FFFFFF;
+    padding: 1%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 33%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    
+}
+
+.sonido
+{
+    left: 36%;
+    z-index: 1;
+    width: 5%;
+    top: 10%;
+}
+
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;   
+}
+
+
+.titulo
+{
+    width: 30%;
+    left: 3%;
+    top: 2%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 19%;
+    right: 5%;
+    bottom: 42%;
+    animation: 2s zoomIn ease;
+}
+
+
+.intro
+{
+    position: absolute !important;
+    width: 34%;
+    right: 14%;
+    top: 14%;
+}
+
+.respuesta
+{
+    position: absolute;
+    z-index: 1;
+    top: 30%;
+    left: 34%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 29%;
+}
+
+
+/*efecto de animacion para todos los botones q tenga sonido acciones*/
+.sonido:hover, .sonidointro:hover, .divbotones2:hover, .divbotones:hover, .respuestafin:hover
+{
+     animation: 1s tada ;
+     cursor:url(../../../../../Shared/hand.cur), auto!important;
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+.piligif
+{
+    position: absolute;
+    width: 26%;
+    right: 21%;
+    bottom: 3%;
+}
+
+
+.caja
+{
+    background-image: url('img/caja.png');
+    position: absolute;
+    height: 33%;
+    width: 24%;
+    right: 0.6%;
+    top: 31%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.desierto
+{
+    width: 73%;
+    left: 3%;
+    top: 25%;
+}
+
+/*PIEZAS BAJO DESIERTO*/
+.circulo1:hover, .circulo2:hover, .circulo3:hover, .circulo4:hover, .circulo5:hover
+{
+    cursor:url(../../../../../Shared/hand.cur), auto!important;
+    display: none !important;
+    z-index: -1;
+}
+
+.pieza1:hover, .pieza2:hover, .pieza3:hover, .pieza4:hover, .pieza5:hover
+{
+    animation: 1s tada ;
+    cursor:url(../../../../../Shared/hand.cur), auto!important;
+    display: table !important;
+    z-index: 1;
+}
+
+.pieza1, .pieza2, .pieza3, .pieza4, .pieza5, .circulo1, .circulo2, .circulo3, .circulo4, .circulo5
+{
+    width: 11%;   
+}
+
+.pieza1, .circulo1
+{
+    bottom: 3%;
+    left: 17%;
+}
+
+.pieza2, .circulo2
+{
+    bottom: 12%;
+    left: 30%;
+    width: 10% !important;
+}
+
+.pieza3, .circulo3
+{
+    width: 11% !important;
+    bottom: 4%;
+    left: 41%;
+}
+
+.pieza4, .circulo4
+{
+    width: 10%;
+    right: 36%;
+    bottom: 10%;
+}
+
+
+.pieza5, .circulo5
+{
+    width: 10%;
+    right: 25%;
+    bottom: 5%;
+}
+
+/*PIEZAS CAJAS*/
+
+.pieza1caja, .pieza2caja, .pieza3caja, .pieza4caja, .pieza5caja
+{
+   width: 5%;  
+}
+
+.pieza1caja
+{
+    right: 10%;
+    top: 48%;
+}
+
+
+.pieza2caja
+{
+    right: 6%;
+    top: 41%;
+}
+
+.pieza3caja
+{    
+    right: 11%;
+    top: 43%;
+}
+
+.pieza4caja
+{
+    right: 14%;
+    top: 39%;
+}
+
+.pieza5caja
+{
+    right: 10%;
+    top: 51%;
+}
+
+/*ARMAR ROMPECABEZAS*/
+
+.plataforma
+{
+    background-image: url('img/plataforma.png');
+    position: absolute;
+    width: 43%;
+    bottom: 0%;
+    left: 27%;
+    height: 52%;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+
+.fondopiezas
+{
+    width: 25%;
+    height: 351px !important;
+    left: 2%;
+    top: 23%;
+}
+
+
+
+.pieza1armada
+{
+    width: 9%;
+    top: 44.9%;
+    left: 32.8%;
+}
+
+
+.pieza2armada
+{
+    width: 7.4%;
+    left: 35%;
+    bottom: 16%;
+}
+
+.pieza3armada
+{
+    width: 19%;
+    left: 41%;
+    top: 45%;
+}
+
+.pieza4armada
+{
+    left: 52.5%;
+    top: 59%;
+    width: 7%;
+}
+
+.pieza5armada
+{
+    left: 59%;
+    top: 44%;
+    width: 18%;
+}
+
+
+/*PIEZAS DESARMADAS*/
+
+
+.pieza1des
+{
+    width: 11%;
+    bottom: 31%;
+    left: 7%;
+}
+
+.pieza2des
+{
+    width: 13%;
+    top: 26%;
+    left: 4%;
+}
+
+.pieza3des
+{
+    width: 10%;
+    bottom: 56%;
+    left: 15%;
+}
+
+.pieza4des
+{
+    width: 6%;
+    bottom: 13%;
+    left: 3%;
+}
+
+.pieza5des
+{
+    width: 11%;
+    left: 11%;
+    top: 73%;
+}

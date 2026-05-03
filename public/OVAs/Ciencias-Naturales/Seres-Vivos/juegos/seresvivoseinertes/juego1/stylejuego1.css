@@ -1,0 +1,386 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+
+/* Estilos de juego */
+.atomo
+{
+    width: 30%;
+    top: 19%;
+    right: 11%;
+}
+
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;   
+}
+
+.divbotones2
+{
+    bottom: 20%;
+    right: 4%;
+    width: 17%;
+}
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+    position: absolute;
+    text-align: justify;
+    left: 44%;
+    top: 3%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 41%;
+    background-color: #FFFFFF;
+    padding: 1.2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+
+
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 30%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    
+}
+
+.sonido
+{
+    left: 40%;
+    z-index: 1;
+    width: 5%;
+    top: 9%;
+
+}
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;
+    
+}
+
+.titulo
+{
+    width: 33%;
+    left: 3%;
+    top: 4%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 19%;
+    right: 4%;
+    bottom: 42%;
+    animation: 2s zoomIn ease;
+}
+
+.respuesta{
+    position: absolute;
+    z-index: 1;
+    top: 28%;
+    left: 36%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 29%;
+}
+
+/*efecto de animacion y cursor para todos los botones q tenga sonido acciones*/
+.sonido:hover,.sonidointro:hover,.divbotones2:hover,.divbotones:hover,.respuestafin:hover
+{
+     animation: 1s tada ;
+      cursor:url(../../../../../Shared/hand.cur) , auto!important;
+}
+
+
+
+/*estilos de funcionamiento del juego*/
+
+.balon
+{
+    width: 5%;
+    right: 52%;
+    top: 33%;
+}
+
+.beto1, .beto2, .beto3, .beto4, .beto5, .beto6, .beto7
+{
+    width: 11%;
+}
+
+.beto1
+{
+
+    top: 44%;
+    left: 4%;
+}
+
+.beto2
+{
+    left: 16%;
+    bottom: 13%;
+}
+
+.beto3
+{
+    left: 34%;
+    bottom: 29%;
+}
+
+
+.beto4
+{
+    left: 30%;
+    bottom: 44%;
+}
+
+.beto5
+{
+    top: 22%;
+    left: 34%;
+}
+
+
+.beto6
+{
+    top: 29%;
+    right: 37%;
+}
+
+.beto7
+{
+    top: 36%;
+    right: 24%;
+}
+
+.botoninerte, .botonvivo
+{
+    width: 24%;
+    top: 54%;
+}
+
+.botonvivo
+{
+    right: 6%;
+}
+
+.divpregunta
+{
+   position: absolute !important;
+    padding: 3%;
+    background: rgb(253, 251, 250);
+    width: 53%;
+    padding: 5%;
+    left: 18%;
+    top: 31%;
+    color: #040000;
+    border-radius: 8px 8px 8px 8px;
+    z-index: 1;
+    text-align: justify;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    height: 166px;
+}
+
+.divimagenpregunta
+{
+    position: absolute;
+    left: 9%;
+    width: 23%;
+    background-color: #fff !IMPORTANT;
+    padding: 1%;
+    top: 17%;
+    height: 203px;
+    border-radius: 15px;
+    border: 10px solid #689F38;
+    height: 60%;
+}
+
+.divtextopregunta
+{
+    width: 61%;
+    float: right;
+    font-size: 31px;
+    font-family: Chewy;
+    text-align: center;
+    margin-top: 8%;
+}
+
+
+.laberinto
+{
+    width: 73%;
+    bottom: 4%;
+    left: 3%;
+}
+
+#imagenes img{
+    width: 7% !important;
+}
+
+
+.img1
+{
+    bottom: 13%;
+    left: 24.5%;
+}
+
+.img2
+{
+    left: 42%;
+    bottom: 28%;
+}
+
+.img3
+{
+    left: 30.5%;
+    top: 36%;
+}
+
+.img4
+{
+    left: 41%;
+    top: 29%;
+}
+
+.img5
+{
+    right: 39%;
+    top: 43%;
+}
+
+.piligif
+{
+    position: absolute;
+    width: 26%;
+    right: 21%;
+    bottom: 3%;
+}
+
+.in1,.in2,.in3,.in4,.in5
+{
+     width: 4%;
+     cursor:url(../../../../../Shared/hand.cur) , auto!important;
+     animation: 1s tada infinite;
+}
+
+.in1
+{   
+    left: 26%;
+    bottom: 26%;
+}
+
+.in2
+{    
+    left: 49%;
+    bottom: 28%;
+}
+
+.in3
+{
+    left: 26%;
+    top: 44%;
+}
+
+.in4
+{
+    left: 44%;
+    top: 27%;
+}
+
+.in5
+{
+    left: 50%;
+    top: 51%;
+}
+
+.cerrar{
+    position: absolute;
+    width: 6%;
+    right: 1%;
+    top: 1.5%; 
+}

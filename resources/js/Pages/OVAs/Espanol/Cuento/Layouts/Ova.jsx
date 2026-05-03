@@ -155,12 +155,19 @@ export function OvaModal({
     );
 }
 
+// ─── Volume duck helpers ──────────────────────────────────────────────────────
+const VOLUME_NORMAL = 0.6;
+const VOLUME_DUCK   = 0.12;
+
+function duckVolume(bgRef)    { if (bgRef?.current) bgRef.current.volume = VOLUME_DUCK; }
+function restoreVolume(bgRef) { if (bgRef?.current) bgRef.current.volume = VOLUME_NORMAL; }
+
 // ─── Modal Slider ─────────────────────────────────────────────────────────────
-function ModalSlider({ open, onClose }) {
+function ModalSlider({ open, onClose, bgRef }) {
     const [src, setSrc] = useState('');
     useEffect(() => {
-        if (open) setSrc('/ovas/espanol/cuento/slider');
-        else      setSrc('');
+        if (open) { setSrc('/ovas/espanol/cuento/slider'); duckVolume(bgRef); }
+        else      { setSrc(''); restoreVolume(bgRef); }
     }, [open]);
 
     return (
@@ -175,13 +182,13 @@ function ModalSlider({ open, onClose }) {
 }
 
 // ─── Modal Conoce ─────────────────────────────────────────────────────────────
-function ModalConoce({ open, onClose, videoSrc: externalVideoSrc }) {
+function ModalConoce({ open, onClose, videoSrc: externalVideoSrc, bgRef }) {
     const defaultVideo = 'https://www.youtube-nocookie.com/embed/pd100ARogHU?rel=0&showinfo=0';
     const [videoSrc, setVideoSrc] = useState('');
 
     useEffect(() => {
-        if (open) setVideoSrc(externalVideoSrc || defaultVideo);
-        else      setVideoSrc('');
+        if (open) { setVideoSrc(externalVideoSrc || defaultVideo); duckVolume(bgRef); }
+        else      { setVideoSrc(''); restoreVolume(bgRef); }
     }, [open, externalVideoSrc]);
 
     return (
@@ -199,11 +206,11 @@ function ModalConoce({ open, onClose, videoSrc: externalVideoSrc }) {
 }
 
 // ─── Modal Repasemos ──────────────────────────────────────────────────────────
-function ModalRepasemos({ open, onClose, src: externalSrc }) {
+function ModalRepasemos({ open, onClose, src: externalSrc, bgRef }) {
     const [src, setSrc] = useState('');
     useEffect(() => {
-        if (open && externalSrc) setSrc(externalSrc);
-        else if (!open)          setSrc('');
+        if (open && externalSrc) { setSrc(externalSrc); duckVolume(bgRef); }
+        else if (!open)          { setSrc(''); restoreVolume(bgRef); }
     }, [open, externalSrc]);
 
     return (
@@ -473,13 +480,13 @@ export default function OvaLayout({
             </div>
 
             {/* Modales comunes */}
-            <ModalSlider    open={sliderOpen}    onClose={() => setSliderOpen(false)} />
-            <ModalRepasemos open={repasemosOpen} onClose={() => setRepasemosOpen(false)} src={repasemosSrc} />
-            <ModalConoce    open={conoceOpen}    onClose={() => setConoceOpen(false)}    videoSrc={conoceVideoSrc} />
+            <ModalSlider    open={sliderOpen}    onClose={() => setSliderOpen(false)}    bgRef={bgMusicRef} />
+            <ModalRepasemos open={repasemosOpen} onClose={() => setRepasemosOpen(false)} src={repasemosSrc} bgRef={bgMusicRef} />
+            <ModalConoce    open={conoceOpen}    onClose={() => setConoceOpen(false)}    videoSrc={conoceVideoSrc} bgRef={bgMusicRef} />
 
-            {/* Modales del tema (inyectados desde la página) */}
-            {renderAprende   && renderAprende(aprendeOpen,   () => setAprendeOpen(false))}
-            {renderEvaluemos && renderEvaluemos(evaluemosOpen, () => setEvaluemosOpen(false))}
+            {/* Modales del tema (inyectados desde la página) — duck/restore gestionado dentro de cada modal */}
+            {renderAprende   && renderAprende(aprendeOpen,   () => { setAprendeOpen(false);   restoreVolume(bgMusicRef); }, bgMusicRef)}
+            {renderEvaluemos && renderEvaluemos(evaluemosOpen, () => { setEvaluemosOpen(false); restoreVolume(bgMusicRef); }, bgMusicRef)}
 
             {children}
         </>

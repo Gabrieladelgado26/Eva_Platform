@@ -1,0 +1,372 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+
+}
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;
+    
+}
+
+.divbotones2
+{
+     bottom: 20%;
+    right: 5%;
+    width: 17%;
+}
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+   position: absolute;
+    text-align: justify;
+    left: 40%;
+    top: 4%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 45%;
+    background-color: #FFFFFF;
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 33%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    
+}
+
+.sonido
+{
+    left: 36%;
+    z-index: 1;
+    width: 5%;
+    top: 10%;
+}
+
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;   
+}
+
+
+.titulo
+{
+    width: 30%;
+    left: 3%;
+    top: 2%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 19%;
+    right: 5%;
+    bottom: 42%;
+    animation: 2s zoomIn ease;
+}
+
+
+.intro
+{
+    position: absolute !important;
+    width: 29%;
+    right: 12%;
+    top: 19%;
+}
+
+.respuesta
+{
+    position: absolute;
+    z-index: 1;
+    top: 35%;
+    left: 27%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 29%;
+}
+
+
+/*efecto de animacion para todos los botones q tenga sonido acciones*/
+.sonido:hover, .sonidointro:hover, .divbotones2:hover, .divbotones:hover, .respuestafin:hover
+{
+     animation: 1s tada ;
+     cursor:url(../../../../../Shared/hand.cur), auto!important;
+}
+
+
+/*DISEÑO ELEMETOS JUEGO*/
+
+/*escenario 1*/
+.fondo
+{
+    position: absolute;
+    width: 63%;
+    left: 7%;
+    top: 33%;
+}
+
+.asiento
+{
+    width: 18%;
+    bottom: 10%;
+    left: 7%;
+    animation: 10s tada ;
+}
+
+
+.cuadro
+{
+    width: 20%;
+    left: 28%;
+    top: 28%;
+    animation: 10s tada ;
+}
+
+.gato
+{
+    width: 15%;
+    right: 31%;
+    bottom: 13%;
+    animation: 10s tada ;
+}
+
+
+.mosca
+{
+    width: 5%;
+    left: 36%;
+    bottom: 28%;
+    animation: 10s tada ;
+}
+
+/*ESCENARIO 2*/
+
+
+.juguetes
+{
+    width: 8%;
+    bottom: 14%;
+    left: 22%;
+    animation: 10s tada ;
+}
+
+.pecera
+{
+    width: 8%;
+    left: 27%;
+    bottom: 42%;
+    animation: 10s tada ;
+}
+
+.lampara
+{
+    width: 7%;
+    right: 34%;
+    bottom: 23%;
+    animation: 10s tada ;
+}
+
+.planta
+{
+    width: 8%;
+    left: 4.8%;
+    bottom: 27%;
+    animation: 10s tada ;
+}
+
+/*ESCENARIO 3*/
+
+.cactus
+{
+    width: 5%;
+    right: 29%;
+    bottom: 25%;
+    animation: 10s tada ;
+}
+
+.maletin
+{
+    width: 9%;
+    right: 36%;
+    bottom: 5%;
+    animation: 10s tada ;
+}
+
+.plantaestudio
+{
+    width: 13%;
+    left: 28%;
+    bottom: 13%;
+    animation: 10s tada ;
+
+}
+
+.reloj
+{
+    width: 10%;
+    left: 22%;
+    top: 39%;
+    animation: 10s tada ;
+}
+
+/*ESCENARIO 4*/
+
+.hamburguesa
+{
+    width: 7%;
+    bottom: 26%;
+    left: 43%;
+    animation: 10s tada ;
+}
+
+
+.loro
+{
+    width: 15%;
+    right: 29%;
+    top: 33%;
+    animation: 10s tada ;
+}
+
+.raton
+{
+    width: 7%;
+    left: 8%;
+    top: 74%;
+    animation: 10s tada ;
+}
+
+.silla
+{
+    width: 17%;
+    bottom: 9%;
+    left: 12%;
+    animation: 10s tada;
+    
+}
+
+
+/*ESCENARIO 5*/
+
+.gaseosa
+{
+    width: 2%;
+    left: 42%;
+    bottom: 35%;
+    animation: 10s tada ;
+}
+
+.perro
+{
+    width: 16%;
+    left: 8%;
+    bottom: 12%;
+    animation: 10s tada ;
+}
+
+.plantanevera
+{
+    width: 7%;
+    right: 31%;
+    top: 33.3%;
+    animation: 10s tada ;
+}
+
+.reloj
+{
+    width: 10%;
+    left: 9%;
+    top: 35%;
+    animation: 10s tada ;
+}
+
+.tituloseres
+{
+    width: 30%;
+    top: 23%;
+    left: 26%;
+
+}

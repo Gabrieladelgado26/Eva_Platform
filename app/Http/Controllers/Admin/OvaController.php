@@ -33,6 +33,8 @@ class OvaController extends Controller
         '/ovas/matematicas/adicion-sustraccion/inicio',
         // Español — El Cuento
         '/ovas/espanol/cuento/inicio',
+        // Ciencias Naturales — Seres Vivos
+        '/ovas/ciencias-naturales/seres-vivos/inicio',
     ];
 
     public function index(Request $request)
@@ -93,7 +95,7 @@ class OvaController extends Controller
             ],
             'description' => ['nullable', 'string'],
             'url'         => [
-                'nullable',
+                'required',
                 'string',
                 'in:' . implode(',', self::OVA_PATHS_VALIDOS),
                 Rule::unique('ovas', 'url')->whereNotNull('url')
