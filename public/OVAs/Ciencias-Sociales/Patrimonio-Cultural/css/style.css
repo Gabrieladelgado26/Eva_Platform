@@ -1,0 +1,579 @@
+@CHARSET "UTF-8";
+/*
+over-ride "Weak" message, show font in dark grey
+*/
+body
+{
+  overflow-y: hidden;
+}
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+
+form[role=login] {
+  color: #5d5d5d;
+  background: #f2f2f2;
+  padding: 26px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+  form[role=login] img {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 35px;
+  }
+  form[role=login] input,
+  form[role=login] button {
+    font-size: 18px;
+    margin: 16px 0;
+  }
+  form[role=login] > div {
+    text-align: center;
+  }
+
+
+.form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    @include box-sizing(border-box);
+
+    &:focus {
+      z-index: 2;
+    }
+  }
+
+
+.form-links {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 50px;
+}
+
+.form-links a {
+    color: #fff;
+  }
+
+.login-form {
+  margin-top: 60px;
+}
+
+
+.progress-bar {
+    color: #333;
+} 
+
+* {
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  outline: none;
+}
+
+ 
+
+  /*DISEÑO DE VISTA MENU PLANTILLA*/
+    body{
+
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: auto;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+
+}
+
+#skin {
+    display: block;
+    float: left;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    /* background-image: url(../img/skn_paramo_1.jpg); */
+    background-color: #6c7c7c;
+    background-size: cover;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+}
+
+
+ /* FIN DISEÑO DE VISTA MENU*/
+
+
+  /*DISEÑO ELEMENTOS VISTA*/
+
+
+
+.actividades
+{
+  width: 15%;
+  top: 37%;
+  left: 18%;
+  z-index: 1;
+}
+
+.actividades:hover
+{
+
+ cursor:url(../../../Shared/hand.cur) , auto!important;
+-webkit-transition:-webkit-transform 0.8s ease-out; 
+-moz-transition:-moz-transform 0.8s ease-out; 
+-o-transition:-o-transform 0.8s ease-out; 
+-ms-transition:-ms-transform 8.1s ease-out; 
+transition:transform 0.8s ease-out;
+-moz-transform: scale(1.3);
+-webkit-transform: scale(1.3);
+ -o-transform: scale(1.3);
+-ms-transform: scale(1.3);
+transform: scale(1.3);
+}
+
+.busqueda
+
+{
+
+ left: 94%;
+ top: 54%;
+ width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+}
+
+
+.busqueda:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+.cajas
+{
+      width: 18%;
+    left: -105px;
+    top: 64%;
+    z-index: 1000;
+}
+
+.calificacion
+
+{
+
+ left: 94%;
+ top: 42%;
+ width: 6%;
+ -webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+}
+
+
+.calificacion:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+
+.conoce
+{
+    width: 8%;
+    top: 41%;
+    left: 70%;
+    z-index: 1000;
+}
+
+.conoce:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+-webkit-transition:-webkit-transform 0.8s ease-out; 
+-moz-transition:-moz-transform 0.8s ease-out; 
+-o-transition:-o-transform 0.8s ease-out; 
+-ms-transition:-ms-transform 8.1s ease-out; 
+transition:transform 0.8s ease-out;
+-moz-transform: scale(1.3);
+-webkit-transform: scale(1.3);
+ -o-transform: scale(1.3);
+-ms-transform: scale(1.3);
+transform: scale(1.3);
+}
+
+
+.comprension
+{
+    top: 64%;
+    left: 11%;
+    width: 10%;
+     z-index: 1;
+}
+
+
+.comprension:hover
+{
+
+ cursor:url(../../../Shared/hand.cur) , auto!important;
+-webkit-transition:-webkit-transform 0.8s ease-out; 
+-moz-transition:-moz-transform 0.8s ease-out; 
+-o-transition:-o-transform 0.8s ease-out; 
+-ms-transition:-ms-transform 8.1s ease-out; 
+transition:transform 0.8s ease-out;
+-moz-transform: scale(1.3);
+-webkit-transform: scale(1.3);
+ -o-transform: scale(1.3);
+-ms-transform: scale(1.3);
+transform: scale(1.3);
+}
+
+
+.evaluaciones
+{
+  top: 57%;
+  left: 10%;
+  width: 10%;
+   z-index: 2;
+}
+
+.inicio
+
+{
+
+left: 94%;
+top: 30%;
+width: 6%;
+-webkit-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 5px -5px rgba(0,0,0,0.75);
+}
+
+
+.inicio:hover
+{
+  cursor:url(../../../Shared/hand.cur) , auto!important;
+}
+
+
+.lamparamovimiento
+{
+    width: 30%;
+    left: 35%;
+}
+
+.letrero {
+    position: fixed;
+    z-index: 555;
+    display: block;
+    float: right;
+    clear: both;
+    width: 14%;
+    height: auto;
+    bottom: 0;
+    right: 0;
+    z-index: 999;
+}
+
+
+.letreroContenido
+{
+  width: 33%;
+  left: 2%;
+}
+
+
+
+#logoInicio {
+    display: block;
+    width: 5%;
+    height: auto;
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    z-index: 999;
+}
+
+
+
+
+.mono {
+    transition-duration: 0.1s;
+    transition-timing-function: linear;
+    position: absolute; 
+    left: 10%; 
+    top: 70%; 
+    width:14%;
+}
+
+
+.motivacion
+{
+    top: 68%;
+    left: 32%;
+    width: 15%;
+}
+
+
+.personaje
+{
+  top: 48%;
+  left: 49%;
+ width: 5%;
+ z-index: 1000;
+}
+
+
+.personaje:hover
+{
+
+ cursor:url(../../../Shared/hand.cur) , auto!important;
+-webkit-transition:-webkit-transform 0.8s ease-out; 
+-moz-transition:-moz-transform 0.8s ease-out; 
+-o-transition:-o-transform 0.8s ease-out; 
+-ms-transition:-ms-transform 8.1s ease-out; 
+transition:transform 0.8s ease-out;
+-moz-transform: scale(1.3);
+-webkit-transform: scale(1.3);
+ -o-transform: scale(1.3);
+-ms-transform: scale(1.3);
+transform: scale(1.3);
+}
+
+
+.reloj
+{
+  left: 61%;
+  top: 25%;
+  width: 4%;
+}
+
+.standRevistas
+{
+    width: 16%;
+    top: 41%;
+    left: 8%;
+     z-index: 1;
+}
+
+.titulocontenido
+{
+   position: absolute;
+    top: 8%;
+    z-index: 1;
+    left: 5%;
+    color: #FFF;
+    font-size: 266%;
+    width: 27%;
+    text-align: center;
+    font-family:Chewy;
+}
+
+.ventilador
+{
+    left: 86%;
+    top: 33%;
+    width: 5%;
+}
+
+  /* FIN DISEÑO ELEMENTOS VISTA*/
+
+  /*DISEÑO DE TOOLTIPS*/
+
+.info
+{
+    top: 340;
+    left: 407;
+    width: 150;
+    display: none;
+    
+}
+
+.infoEvaluacion
+{
+
+    width: 10%;
+    top: 65%;
+    left: 1%;
+    z-index: 3000;
+    display: none;
+
+}
+
+
+.infoRepasemos
+{
+    left: 53%;
+    top: 47%;
+    width: 10%;
+    display: none;    
+
+}
+
+
+ /*FIN DISEÑO DE TOOLTIPS*/
+
+ /*INICIO DE ESTRELLAS ANIMADAS*/
+
+.estrellasaprendemas
+{
+  width: 6%;
+  left: 28%;
+  top: 44%;
+  z-index: 1;
+}
+
+.estrellasconoce
+{
+    z-index: 1000;
+    width: 8%;
+    top: 38%;
+    left: 71%;
+}
+
+.estrellasevaluacion
+{
+    width: 7%;
+    top: 60%;
+    left: 9%;
+    z-index: 1;
+
+}
+
+.estrellasrepasemos
+{
+    left: 45%;
+    width: 6%;
+    top: 45%;
+    z-index: 1;
+}
+
+ /*FIN DE ESTRELLAS ANIMADAS*/
+
+
+
+ /*DISEÑO MODALES*/
+
+.divmodal
+{
+ 
+  background-color: white !important;    
+  top: 0 !important;
+  position: absolute !important;
+  top: 16% !important;
+  width: 94% !important;
+  border-radius: 5px !important;
+  left: 3% !important;
+  height: auto;
+  
+}
+
+
+.iconoadelante
+{
+   position: absolute;
+    bottom: 8%;
+    z-index: 1;
+    right: 10%;
+    width: 5%;
+}
+
+.iconoatrasconoce
+{
+  position: absolute;
+    bottom: 1%;
+    z-index: 1;
+    right: 3%;
+    width: 6%;
+}
+
+.iconoayuda
+{
+    position: absolute;
+    top: 8%;
+    left: 9%;
+    width: 4%;
+}
+
+.iconocerrar
+{
+   cursor:url(../../../Shared/hand.cur) , auto!important;
+  position: absolute;
+    top: 7%;
+    right: 4%;
+    width: 4%;
+}
+
+.iconoinfo
+{
+    position: absolute;
+    top: 8%;
+    left: 14%;
+    width: 4%;
+}
+
+
+.iconosonido
+{
+    position: absolute;
+    top: 8%;
+    left: 4%;
+    width: 4%;
+}
+
+
+.modalImagen
+{
+  width: 100% !important; 
+  margin-top: 1% !important;
+}
+
+
+.videomodal
+{
+    z-index: 1;
+    left: 6%;
+    width: 85%;
+    float: left;
+    padding: 1%;
+    margin-left: 8%;
+}
+
+
+
+
+
+
+
+ /*FIN DISEÑO MODALES*/

@@ -1,0 +1,244 @@
+body
+{
+  overflow-y: hidden;
+  margin-bottom: 56%;
+  background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.Skin3 {
+    width: 98% !important;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+    top: 5%;
+}
+
+/*DISEÑO ELEMETOS REPASEMOS*/
+
+.antes
+{
+    position: absolute;
+    width: 7%;
+    left: 2%;
+    bottom: 4%;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido
+{
+    position: absolute;
+    left: 41%;
+    top: 12.5%;
+    width: 5%;
+}
+
+.iconoSonido:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.iconoSonido2
+{
+    position: absolute;
+    left: 2%;
+    top: 4%;
+    width: 5%;
+}
+
+.iconoSonido2:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.siguiente2
+{
+    position: absolute;
+    width: 7%;
+    right: 9%;
+    bottom: 4%;
+    z-index: 10000;
+    cursor:url(../../../../Shared/hand.cur) , auto!important;
+}
+
+.titulo
+{
+    width: 37%;
+    position: absolute;
+    right: 27%;
+    top: 37%;
+}
+
+.borrarimg
+{
+    display: none;
+}
+
+/*DISEÑO ELEMENTOS ANIMADOS REPASEMOS*/
+
+
+
+.guia
+{
+   position: absolute;
+    right: 25%;
+    width: 57%;
+    bottom: 21%;
+    display: none;
+    animation: 2s bounceIn;
+}
+
+.guia:hover
+{
+     cursor:url(../../../../Shared/hand.cur) , auto!important;
+     animation: 2s pulse;
+}
+
+/*DIA POSITIVA 1*/
+
+
+.fondo1
+{
+    position: absolute;
+    right: 25%;
+    width: 62%;
+    bottom: 4%;
+    display: none;
+    animation: 2s zoomIn;
+}
+
+.recetario
+{
+    position: absolute;
+    width: 19%;
+    right: 28%;
+    top: 40%;
+    display: none;
+    animation: 2s fadeIn;
+}
+
+
+/*DIA POSITIVA 2*/
+
+.fondo2
+{
+    position: absolute;
+    display: none;
+}
+
+.fondo2
+{    
+    left: 8.5%;
+    width: 76%;
+    top: 6%;
+    animation: 2s zoomIn;
+}
+
+.plato1, .plato2, .plato3, .plato4
+{
+    position: absolute;
+    width: 14%;
+    display: none;
+    animation: 2s flipInY;
+    
+}
+
+.plato1
+{
+  left: 15%;
+  top: 17%;
+}
+
+.plato2
+{
+    right: 24%;
+    top: 17%;
+}
+
+.plato3
+{
+    left: 15%;
+    bottom:20%;
+}
+
+.plato4
+{
+    right: 24%;
+    bottom:20%;
+}
+
+/*DIA POSITIVA 3*/
+
+.fondo3
+{
+    position: absolute;
+    left: 8.5%;
+    width: 76%;
+    top: 6%;
+    animation: 2s zoomIn;
+}
+
+.cuy
+{
+    position: absolute;
+    width: 25%;
+    right: 18%;
+    bottom: 15%;
+    display: none;
+    animation: 2s fadeInRight;
+}
+
+.cuyasado
+{
+    position: absolute;
+    width: 16%;
+    left: 15%;
+    top: 14%;
+    display: none;
+    animation: 2s fadeInLeft;
+}

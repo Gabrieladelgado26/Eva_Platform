@@ -506,8 +506,11 @@
                             const tab = document.getElementById('tabresultados');
                             if (!tab) return;
                             const isVisible = tab.style.display !== 'none';
-                            if (isVisible && buenas.value !== '') {
-                                self.sendResult(parseInt(buenas.value, 10), 5);
+                            if (isVisible && buenas.value !== undefined && buenas.value !== '') {
+                                const score = parseInt(buenas.value, 10);
+                                if (!isNaN(score)) {
+                                    self.sendResult(score, 5);
+                                }
                             }
                         }, 300);
                     };

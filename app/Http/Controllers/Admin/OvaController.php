@@ -35,6 +35,8 @@ class OvaController extends Controller
         '/ovas/espanol/cuento/inicio',
         // Ciencias Naturales — Seres Vivos
         '/ovas/ciencias-naturales/seres-vivos/inicio',
+        // Ciencias Sociales — Patrimonio Cultural
+        '/ovas/ciencias-sociales/patrimonio-cultural/inicio',
     ];
 
     public function index(Request $request)

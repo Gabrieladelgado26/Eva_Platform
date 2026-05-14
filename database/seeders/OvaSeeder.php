@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Ova;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class OvaSeeder extends Seeder
 {
@@ -12,35 +14,48 @@ class OvaSeeder extends Seeder
      */
     public function run(): void
     {
+        // Deshabilitar temporalmente las restricciones de clave foránea
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        Ova::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         $ovas = [
             [
-                'area' => 'Matemáticas',
-                'tematica' => 'Adición y sustracción',
-                'description' => 'OVA interactivo para aprender y practicar operaciones básicas de suma y resta mediante actividades dinámicas.',
-                'url' => '/ovas/matematicas/adicion-sustraccion/inicio',
-                'thumbnail' => '',
-                'is_active' => true
-            ],
-            [
-                'area' => 'Español',
-                'tematica' => 'Comprensión lectora',
-                'description' => 'OVA diseñado para fortalecer la comprensión lectora a través de cuentos, preguntas y actividades interactivas.',
-                'url' => '/ovas/espanol/cuento/inicio',
-                'thumbnail' => '',
-                'is_active' => true
-            ],
-            [
+                'id' => 1,
                 'area' => 'Ciencias Naturales',
-                'tematica' => 'Seres vivos y objetos inertes',
-                'description' => 'OVA interactivo que permite identificar y diferenciar los seres vivos de los objetos inertes mediante ejemplos y ejercicios.',
+                'tematica' => 'Seres Vivos y Objetos Inertes',
+                'description' => null,
                 'url' => '/ovas/ciencias-naturales/seres-vivos/inicio',
-                'thumbnail' => '',
-                'is_active' => true
+                'is_active' => true,
+                'created_at' => '2026-05-02 17:20:01',
+                'updated_at' => '2026-05-02 17:43:05'
             ],
+            [
+                'id' => 2,
+                'area' => 'Matemáticas',
+                'tematica' => 'Adición y Sustracción',
+                'description' => null,
+                'url' => '/ovas/matematicas/adicion-sustraccion/inicio',
+                'is_active' => true,
+                'created_at' => '2026-05-02 17:31:47',
+                'updated_at' => '2026-05-02 17:31:47'
+            ],
+            [
+                'id' => 3,
+                'area' => 'Español',
+                'tematica' => 'El Cuento',
+                'description' => null,
+                'url' => '/ovas/espanol/cuento/inicio',
+                'is_active' => true,
+                'created_at' => '2026-05-02 17:45:25',
+                'updated_at' => '2026-05-02 17:45:25'
+            ]
         ];
 
-        foreach ($ovas as $ova) {
-            Ova::create($ova);
+        foreach ($ovas as $ovaData) {
+            Ova::create($ovaData);
         }
+
+        $this->command->info('OVAs insertados exitosamente: ' . count($ovas) . ' registros');
     }
 }

@@ -25,7 +25,10 @@ const OVA_RECURSOS = [
     { label: "Matemáticas · Adición y Sustracción",     path: "/ovas/matematicas/adicion-sustraccion/inicio" },
     // Español — El Cuento
     { label: "Español · El Cuento",     path: "/ovas/espanol/cuento/inicio" },
+    // Ciencias Naturales — Seres Vivos
     { label: "Ciencias Naturales · Seres Vivos",     path: "/ovas/ciencias-naturales/seres-vivos/inicio" },
+    // Ciencias Sociales — Patrimonio Cultural
+    { label: "Ciencias Sociales · Patrimonio Cultural",     path: "/ovas/ciencias-sociales/patrimonio-cultural/inicio" },
 ];
 
 export default function Create() {

@@ -1,0 +1,45 @@
+/* CSS Document */
+/*-------------------------------------------*/
+
+	#zona_trabajo{
+		  min-height: 100%;
+		  left: 0px;
+		  width: 100%;
+		  border-radius: 12px;
+		  position: absolute;
+	}
+	
+	#Seguir
+	{
+	background-color: #E65100;
+    color: white;
+    padding: 7px;
+    border-radius: 20px;
+	cursor: url(../../../../../Shared/hand.cur), auto;
+	}
+	 .progress {
+    width: 75%;
+    height: 20px;
+    margin-bottom: 3px;
+    margin-top: -10px;
+ }
+	
+	#mensaje
+	{
+	    position: absolute;
+		    border-radius: 12px;
+    width: 499px;
+    height: 373px;
+    top: -7px;
+    left: 12%;
+    z-index: 1000000;
+    background-color: rgba(255, 255, 255, 0.73);
+    margin-top: 7px;
+    font-size: 20px;
+    color: #EF6C00;
+    font-family: Chewy;
+    text-align: center;
+	}
+
+
+			 

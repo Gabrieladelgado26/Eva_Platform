@@ -178,27 +178,27 @@ Route::middleware(['web', 'auth'])
         })->name('slider');
 
         Route::get('/seresvivoseinertes', function () {
-            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/SeresVivosEInertos')
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Seres-Vivos/SeresVivosEInertos')
                 ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
         })->name('seresvivoseinertes');
 
         Route::get('/seresnaturalesartificiales', function () {
-            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/SeresNaturalesYArtificiales')
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Seres-Vivos/SeresNaturalesYArtificiales')
                 ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
         })->name('seresnaturalesartificiales');
 
         Route::get('/ciclodevida', function () {
-            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/CicloDeVida')
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Seres-Vivos/CicloDeVida')
                 ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
         })->name('ciclodevida');
 
         Route::get('/necesidades', function () {
-            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Necesidades')
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Seres-Vivos/Necesidades')
                 ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
         })->name('necesidades');
 
         Route::get('/adaptaciones', function () {
-            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Adaptaciones')
+            return Inertia::render('OVAs/CienciasNaturales/Seres-Vivos/Seres-Vivos/Adaptaciones')
                 ->rootView('OVAs.Ciencias-Naturales.Seres-Vivos.ova');
         })->name('adaptaciones');
     });
@@ -214,6 +214,48 @@ Route::prefix('ciencias-naturales/seres-vivos')->group(function () {
     Route::redirect('/necesidades',              '/ovas/ciencias-naturales/seres-vivos/necesidades',               301);
     Route::redirect('/adaptaciones',             '/ovas/ciencias-naturales/seres-vivos/adaptaciones',             301);
 });
+
+/*
+|--------------------------------------------------------------------------
+| OVA Routes — Ciencias Sociales / Patrimonio Cultural
+| Requiere autenticación (auth).
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth'])
+    ->prefix('ovas/ciencias-sociales/patrimonio-cultural')
+    ->name('ova.ciencias.patrimoniocultural.')
+    ->group(function () {
+
+        Route::get('/inicio', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Index')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.ova');
+        })->name('index');
+
+        Route::get('/menu', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Menu')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.ova');
+        })->name('menu');
+
+        Route::get('/slider', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Components/Slider')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.slider');
+        })->name('slider');
+
+        Route::get('/patrimoniocultural', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Patrimonio-Cultural/PatrimonioCultural')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.ova');
+        })->name('patrimoniocultural');
+
+        Route::get('/gastronomia', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Patrimonio-Cultural/Gastronomia')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.ova');
+        })->name('gastronomia');
+
+        Route::get('/turismo', function () {
+            return Inertia::render('OVAs/CienciasSociales/Patrimonio-Cultural/Patrimonio-Cultural/Turismo')
+                ->rootView('OVAs.Ciencias-Sociales.Patrimonio-Cultural.ova');
+        })->name('turismo');
+    });
 
 /*
 |--------------------------------------------------------------------------

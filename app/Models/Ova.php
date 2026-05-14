@@ -18,7 +18,6 @@ class Ova extends Model
         'tematica',
         'description',
         'url',
-        'thumbnail',
         'is_active'
     ];
 

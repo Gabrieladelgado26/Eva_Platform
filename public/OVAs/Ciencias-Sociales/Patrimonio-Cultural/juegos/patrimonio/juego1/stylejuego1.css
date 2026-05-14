@@ -1,0 +1,285 @@
+body
+{
+ 
+overflow-x: hidden;
+overflow-y: hidden;
+margin-bottom: 56%;
+background: none transparent;
+}
+
+@font-face
+{
+  font-family:Chewy;
+  src: url(../../../../../Shared/fonts/Chewy.ttf);
+}
+@font-face
+{
+ font-family:Nunito;
+ src: url(../../../../../Shared/fonts/Nunito-VariableFont_wght.ttf);
+}
+
+
+
+.Skin2 img {
+    display: block;
+    float: left;
+    clear: none;
+    position: absolute;
+    height: auto;
+
+}
+
+.Skin2 {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    bottom: 0;
+    float: left;
+    position: relative !important;
+    display: block;
+    clear: none;
+}
+
+
+.divbotones
+{
+    position: absolute;
+    bottom: 5%;
+    right: 4%;
+    width: 17%;
+    
+}
+
+
+.divbotones2
+{
+    bottom: 25%;
+    right: 4%;
+    width: 17%;
+
+}
+
+
+.juega
+{
+    width: 62%;
+    left: 17%;
+    top: 28%;
+    animation: 2s zoomIn ease;
+}
+
+.numeros
+{
+    left: 42%;
+    top: 25%;
+    animation: 2s zoomIn ease;
+}
+
+.parrafo
+{
+   position: absolute;
+    text-align: justify;
+    left: 40%;
+    top: 4%;
+    font-family: Nunito;
+    font-size: 16px;
+    width: 45%;
+    background-color: #FFFFFF;
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 56px;
+    animation: 3s fadeIn ease;
+
+}
+
+.parrafointro
+{
+    font-family: Nunito;
+    font-weight: 500;
+    position: absolute;
+    text-align: justify;
+    left: 13%;
+    top: 38%;
+    color: black;
+    font-size: 21px;
+    width: 30%;
+    background-color: rgba(255,255,255,1);
+    padding: 2%;
+    border-radius: 14px;
+    padding-right: 4%;
+    min-height: 91px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+    
+}
+
+.sonido
+{
+    left: 36%;
+    z-index: 1;
+    width: 5%;
+    top: 9%;
+
+}
+
+.sonidointro
+{
+    left: 11%;
+    z-index: 1;
+    width: 5%;
+    top: 33%;
+    
+}
+.titulo
+{
+    width: 30%;
+    left: 3%;
+    top: 2%;
+    animation: 1.5s bounceInDown ease;
+}
+
+.vidas
+{
+    width: 18%;
+    right: 5%;
+    bottom: 42%;
+    animation: 2s zoomIn ease;
+}
+
+/*efecto de animacion para todos los botones q tenga sonido acciones*/
+.sonido:hover,.sonidointro:hover,.divbotones2:hover,.divbotones:hover,.respuestafin:hover
+{
+     animation: 1s tada ;
+     cursor:url(../../../../../Shared/hand.cur) , auto!important;
+}
+
+.respuesta
+{
+    position: absolute;
+    z-index: 1;
+    top: 32%;
+    left: 20%;
+}
+
+.respuestafin{
+    position: absolute;
+    z-index: 1;
+    width: 28%;
+    left: 29%;
+    bottom: 29%;
+}
+
+.intro
+{
+    position: absolute !important;
+    width: 27%;
+    right: 15%;
+    top: 20%;
+}
+
+
+/*ESTILO JUEGO*/
+
+.tablaletras
+{
+    background-image: url('img/tabla.png');
+    background-repeat: no-repeat;
+    background-size: 89%;
+    position: absolute;
+    width: 79%;
+    height: 47%;
+    bottom: 0%;
+}
+
+
+.contenedor
+{
+    position: absolute;
+    width: 76%;
+    height: 72%;
+    bottom: 16%;
+    left: 10%;
+}
+
+.contenedor div
+{
+    cursor:url(../../../../../Shared/hand.cur) , auto!important;
+    border-radius: 50%;
+    font-family: Chewy;
+    float: left;
+    padding: 17px;
+    top: 2%;
+    color: black;
+    font-size: 40px;
+}
+
+.parte1, .parte2, .parte3, .parte4
+{
+    position: absolute;
+    width: 12%;
+}
+
+.parte1
+{
+
+    right: 16%;
+    top: 34%;
+}
+
+.parte2
+{
+    
+    right: 4%;
+    top: 34%;
+}
+
+.parte3
+{
+
+    right: 16%;
+    top: 54.9%;
+}
+
+.parte4
+{    
+    right: 4%;
+    top: 54.9%;
+}
+
+.preg
+{
+    position: absolute;
+    width: 62%;
+    background: rgba(224, 61, 17, 0.82);
+    border-radius: 9px;
+    top: 27%;
+    left: 5.5%;
+}
+
+.conten{
+
+    position: absolute;
+    width: 59%;
+    height: 15%;
+    top: 37%;
+    left: 7%;
+    float: left;
+}
+
+.conten div
+{
+    font-family: chewy;
+    font-size: 40px;
+    color: black;
+    text-align: center;
+    width: 8%;
+    margin-left: 10px;
+    height: 30px;
+    margin-top: 31px;
+    float: left;
+    border-bottom: 6px solid rgb(104, 59, 16);
+}
+
+
