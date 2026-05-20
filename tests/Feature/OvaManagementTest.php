@@ -157,21 +157,6 @@ class OvaManagementTest extends TestCase
         ]);
     }
 
-    /** CA-2: El OVA puede crearse sin URL (campo nullable). */
-    public function test_admin_puede_crear_ova_sin_url(): void
-    {
-        $admin = $this->makeAdmin();
-
-        $response = $this->actingAs($admin)->post(route('admin.ovas.store'), [
-            'area'      => self::AREA_CIENCIAS_NAT,
-            'tematica'  => 'El ecosistema',
-            'is_active' => true,
-        ]);
-
-        $response->assertRedirect(route('admin.ovas.index'));
-        $this->assertDatabaseHas('ovas', ['tematica' => 'El ecosistema']);
-    }
-
     /** CA-3: URL duplicada es rechazada. */
     public function test_url_duplicada_falla_validacion(): void
     {

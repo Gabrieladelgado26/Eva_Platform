@@ -255,26 +255,6 @@ class StudentAcademicExperienceTest extends TestCase
     }
 
     /**
-     * OVAs sin URL no aparecen en el dashboard (están excluidas explícitamente).
-     */
-    public function test_ovas_sin_url_no_aparecen_en_el_dashboard(): void
-    {
-        $teacher = $this->makeTeacher();
-        $course  = $this->makeCourse($teacher);
-        $student = $this->makeStudent();
-        $ovaSinUrl = $this->makeOva(['url' => null]);
-        $this->attachOva($course, $ovaSinUrl);
-        $this->enrollStudent($course, $student);
-
-        $response = $this->actingAs($student)->get(route('student.dashboard'));
-
-        $props = $response->original->getData()['page']['props'];
-        $courseData = collect($props['courses'])->firstWhere('id', $course->id);
-        $ovaIds = collect($courseData['ovas'])->pluck('id')->toArray();
-        $this->assertNotContains($ovaSinUrl->id, $ovaIds);
-    }
-
-    /**
      * CA-1: El estudiante puede ver el detalle de su curso.
      */
     public function test_estudiante_puede_ver_detalle_de_su_curso(): void
@@ -466,7 +446,7 @@ class StudentAcademicExperienceTest extends TestCase
         $course  = $this->makeCourse($teacher);
         $student = $this->makeStudent();
         $ova1    = $this->makeOva();
-        $ova2    = $this->makeOva(['url' => null]);
+        $ova2 = $this->makeOva();
         $this->attachOva($course, $ova1, 0);
         $this->attachOva($course, $ova2, 1);
         $this->enrollStudent($course, $student);

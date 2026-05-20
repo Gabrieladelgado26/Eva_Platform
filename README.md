@@ -1,59 +1,228 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/assets/images/logos/logo-evaplatform.png" width="200" alt="EVA Logo"/>
 </p>
 
-## About Laravel
+<h1 align="center">Entorno Virtual de Aprendizaje</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white" alt="Laravel 11"/></a>
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black" alt="React 18"/></a>
+  <a href="https://inertiajs.com"><img src="https://img.shields.io/badge/Inertia.js-1.x-9553E9?style=flat&logo=inertia&logoColor=white" alt="Inertia.js"/></a>
+  <a href="https://www.mysql.com"><img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" alt="MySQL"/></a>
+  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=flat&logo=php&logoColor=white" alt="PHP 8.4"/>
+  <img src="https://img.shields.io/badge/licencia-académica-green?style=flat" alt="Licencia académica"/>
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Sobre EVA
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> Plataforma educativa web para la enseñanza de matemáticas en básica secundaria, desarrollada con Laravel 11 + React (Inertia.js).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Descripción general
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+EVA Platform es una estrategia computacional desarrollada para facilitar la integración, gestión y uso de Objetos Virtuales de Aprendizaje (OVA) en contextos educativos de básica primaria. La plataforma permite la administración de usuarios, cursos, evaluaciones y recursos educativos digitales, incorporando además elementos de contextualización cultural nariñense y mecanismos de seguimiento académico.
 
-## Laravel Sponsors
+El sistema fue construido bajo una arquitectura basada en Laravel, React e Inertia.js, permitiendo una experiencia tipo SPA sin necesidad de una API REST independiente.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Objetivo
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Desarrollar una estrategia computacional orientada a promover el uso de recursos educativos digitales en las áreas de básica primaria, en instituciones educativas del departamento de Nariño, en articulación con los lineamientos de la Secretaría de Educación Departamental.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Tecnologías utilizadas
 
-## Code of Conduct
+| Capa | Tecnología |
+|------|-----------|
+| Backend | PHP 8.4 · Laravel 11 |
+| Frontend | React 18 · Inertia.js · Vite |
+| Base de datos | MySQL 8.0 (producción) · SQLite (pruebas) |
+| Estilos | Tailwind CSS |
+| Autenticación | Laravel Breeze / Sanctum |
+| Gestión de dependencias PHP | Composer 2.x |
+| Gestión de dependencias JS | Node.js 18+ · npm 9+ |
+| Servidor web | Apache 2.4+ o Nginx |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Requisitos mínimos del sistema
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Componente | Requisito |
+|-----------|-----------|
+| PHP | 8.4 o superior (con extensiones: OpenSSL, PDO, Mbstring, Tokenizer, XML, Ctype, JSON, BCMath) |
+| Servidor web | Apache 2.4+ (con mod_rewrite) o Nginx (con try_files) |
+| Base de datos | MySQL 5.7+ (recomendado 8.0+) |
+| Composer | 2.x |
+| Node.js | 18+ |
+| npm | 9+ |
+| Navegadores | Chrome 90+, Firefox 88+, Edge 90+, Safari 14+ |
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Instalación y ejecución local
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/Gabrieladelgado26/Eva_Platform.git
+cd Eva_Platform
+```
+
+### 2. Instalar dependencias PHP
+
+```bash
+composer install
+```
+
+### 3. Configurar variables de entorno
+
+```bash
+cp .env.example .env
+```
+
+Editar el archivo `.env` con los valores correspondientes:
+
+```env
+APP_NAME=EVA
+APP_ENV=local
+APP_KEY=        # se genera en el paso siguiente
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=eva_platform
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_contraseña
+
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
+```
+
+### 4. Generar la clave de aplicación
+
+```bash
+php artisan key:generate
+```
+
+### 5. Crear la base de datos y ejecutar migraciones con datos semilla
+
+```bash
+php artisan migrate --seed
+```
+
+> Este paso crea el esquema completo de la base de datos y ejecuta el `RoleSeeder` que genera los tres roles del sistema: **Administrador**, **Docente** y **Estudiante**.
+
+### 6. Instalar dependencias frontend y compilar assets
+
+```bash
+npm install
+npm run build
+```
+
+> Para desarrollo con hot-reload usar `npm run dev` en lugar de `npm run build`.
+
+### 7. Iniciar el servidor de desarrollo
+
+```bash
+php artisan serve
+```
+
+---
+
+## Configuración del servidor web (producción)
+
+El directorio raíz del servidor web debe apuntar a `public/`. Ejemplo para Apache:
+
+```apache
+<VirtualHost *:80>
+    ServerName eva.tudominio.com
+    DocumentRoot /var/www/Eva_Platform/public
+
+    <Directory /var/www/Eva_Platform/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+Para Nginx, asegurarse de incluir la directiva `try_files $uri $uri/ /index.php?$query_string;`.
+
+---
+
+## Estructura del sistema
+
+```
+Eva_Platform/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/        # Controladores por módulo
+│   │   └── Middleware/         # Middlewares de autenticación y roles
+│   ├── Models/                 # Modelos Eloquent
+│   └── Policies/               # Políticas de autorización
+├── database/
+│   ├── migrations/             # Migraciones de base de datos
+│   └── seeders/                # Seeders (RoleSeeder, UsersSeeder, etc.)
+├── resources/
+│   ├── js/
+│   │   ├── Pages/              # Componentes de página React (por módulo)
+│   │   └── Components/         # Componentes reutilizables
+│   └── views/                  # Vistas Blade (layouts base)
+├── routes/
+│   ├── web.php                 # Rutas web principales
+│   └── auth.php                # Rutas de autenticación
+├── public/                     # Raíz pública del servidor web
+│   └── build/                  # Assets compilados por Vite
+└── .env.example                # Plantilla de variables de entorno
+```
+
+---
+
+## Módulos principales
+
+| Módulo | Descripción |
+|--------|-------------|
+| **Autenticación y roles** | Registro, inicio de sesión y control de acceso basado en roles (Administrador, Docente, Estudiante) |
+| **Gestión de cursos** | Creación, edición y asignación de cursos a grupos de estudiantes |
+| **OVA (Objetos Virtuales de Aprendizaje)** | Integración y visualización de contenidos interactivos por tema |
+| **Actividades y evaluaciones** | Creación de actividades con retroalimentación automática |
+| **Seguimiento de progreso** | Registro del avance y calificaciones de cada estudiante por actividad |
+| **Analítica docente** | Dashboards con estadísticas de uso y desempeño (basados en funciones nativas de MySQL: `YEAR()`, `MONTH()`, `HOUR()`) |
+| **Panel de administración** | Gestión de usuarios, cursos y configuración general de la plataforma |
+
+---
+
+## Usuarios de prueba
+
+Tras ejecutar `php artisan migrate --seed`, el sistema crea los siguientes usuarios de prueba:
+
+| Rol | Correo | Contraseña |
+|-----|--------|-----------|
+| Administrador | admin@eva.com | admin123 |
+| Docente | fparra@gmail.com | admin123 |
+
+> Las credenciales anteriores corresponden al entorno de desarrollo local. Cambiarlas antes de cualquier despliegue en producción.
+
+---
+
+## Orientaciones para la revisión del software
+
+1. **Clonar y configurar** el proyecto siguiendo los pasos de instalación descritos arriba.
+2. **Iniciar sesión** con cada uno de los usuarios de prueba para explorar las vistas y permisos según el rol.
+3. **Revisar el módulo de OVA** accediendo a un curso activo desde la cuenta de Estudiante o Docente.
+4. **Explorar la analítica** desde la cuenta de Docente o Administrador para visualizar los dashboards de seguimiento.
+5. **Ejecutar las pruebas automatizadas** (si aplica) con:
+   ```bash
+   php artisan test
+   ```
+   Las pruebas usan SQLite como base de datos en memoria, por lo que no requieren una base de datos MySQL configurada.
+6. Los módulos de analítica requieren **MySQL en producción** para el correcto funcionamiento de las funciones de fecha (`YEAR()`, `MONTH()`, `HOUR()`); en SQLite estas funciones no están disponibles.
+
+---
+
+## Licencia
+
+Proyecto académico desarrollado como trabajo de grado. Todos los derechos reservados por los autores.

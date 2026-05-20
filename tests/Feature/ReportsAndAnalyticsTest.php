@@ -206,7 +206,7 @@ class ReportsAndAnalyticsTest extends TestCase
             Ova::create([
                 'area'      => $area,
                 'tematica'  => "OVA {$area}",
-                'url'       => null,
+                'url'       => "/ovas/" . \Str::slug($area) . "/inicio",
                 'is_active' => true,
             ]);
         }
@@ -514,7 +514,7 @@ class ReportsAndAnalyticsTest extends TestCase
         $course  = $this->makeCourse($teacher);
         $ova1    = $this->makeOva('Matemáticas');
         $ova2    = $this->makeOva('Español', '/ovas/espanol/cuento/inicio');
-        $ova3    = $this->makeOva('Inglés', null); // OVA en catálogo pero NO asignado
+        $ova3    = $this->makeOva('Inglés'); // OVA en catálogo pero NO asignado
         $this->attachOva($course, $ova1, 0);
         $this->attachOva($course, $ova2, 1);
 

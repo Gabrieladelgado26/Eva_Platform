@@ -69,7 +69,7 @@ class CourseOvaAssignmentTest extends TestCase
         return Ova::create(array_merge([
             'area'      => 'Matemáticas',
             'tematica'  => "OVA Test {$counter}",
-            'url'       => null,
+            'url'       => "/ovas/matematicas/test-{$counter}/inicio",
             'is_active' => true,
         ], $overrides));
     }
