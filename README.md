@@ -1,11 +1,9 @@
 <p align="center">
-  <img src="public/assets/images/logos/logo-evaplatform.png" width="200" alt="EVA Logo"/>
+  <img src="public/assets/images/logos/logo-evaplatform.png" width="400" alt="EVA Logo"/>
 </p>
 
-<h1 align="center">Entorno Virtual de Aprendizaje</h1>
-
 <p align="center">
-  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white" alt="Laravel 11"/></a>
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.58.0-FF2D20?style=flat&logo=laravel&logoColor=white" alt="Laravel 12.58.0"/></a>
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black" alt="React 18"/></a>
   <a href="https://inertiajs.com"><img src="https://img.shields.io/badge/Inertia.js-1.x-9553E9?style=flat&logo=inertia&logoColor=white" alt="Inertia.js"/></a>
   <a href="https://www.mysql.com"><img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" alt="MySQL"/></a>
@@ -15,7 +13,7 @@
 
 ## Sobre EVA
 
-> Plataforma educativa web para la enseñanza de matemáticas en básica secundaria, desarrollada con Laravel 11 + React (Inertia.js).
+> Plataforma educativa web orientada a promover el uso de recursos educativos digitales en educación básica primaria, desarrollada con Laravel 12, React e Inertia.js.
 
 ---
 
