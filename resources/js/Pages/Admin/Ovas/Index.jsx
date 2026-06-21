@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import AppSidebar, { useSidebarState } from '@/Components/AppSidebar';
 
-// ─── Componente Toast con barra de progreso ───────────────────────────────────
 function Toast({ message, type = 'success', onClose, duration = 4000 }) {
     const [progress, setProgress] = useState(100);
     const intervalRef = React.useRef(null);
@@ -18,74 +17,32 @@ function Toast({ message, type = 'success', onClose, duration = 4000 }) {
             const elapsed = Date.now() - startTimeRef.current;
             const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
             setProgress(remaining);
-            
-            if (remaining <= 0) {
-                onClose();
-            }
+            if (remaining <= 0) onClose();
         };
-
         intervalRef.current = setInterval(updateProgress, 50);
-
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
+        return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
     }, [duration, onClose]);
 
-    const bgColor = type === 'success' 
-        ? 'bg-green-50 border-green-300' 
-        : type === 'error' 
-            ? 'bg-red-50 border-red-300' 
-            : 'bg-blue-50 border-blue-300';
-    
-    const textColor = type === 'success' 
-        ? 'text-green-800' 
-        : type === 'error' 
-            ? 'text-red-800' 
-            : 'text-blue-800';
-    
-    const iconColor = type === 'success' 
-        ? 'text-green-600' 
-        : type === 'error' 
-            ? 'text-red-600' 
-            : 'text-blue-600';
-    
-    const progressColor = type === 'success' 
-        ? '#0EAD69' 
-        : type === 'error' 
-            ? '#EE4266' 
-            : '#3B9AE1';
+    const bgColor = type === 'success' ? 'bg-green-50 border-green-300' : type === 'error' ? 'bg-red-50 border-red-300' : 'bg-blue-50 border-blue-300';
+    const textColor = type === 'success' ? 'text-green-800' : type === 'error' ? 'text-red-800' : 'text-blue-800';
+    const iconColor = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600';
+    const progressColor = type === 'success' ? '#0EAD69' : type === 'error' ? '#EE4266' : '#3B9AE1';
 
     return (
         <div className="fixed top-4 right-4 z-50 animate-slide-down min-w-[320px] max-w-md">
             <div className={`relative overflow-hidden rounded-lg shadow-xl border ${bgColor}`}>
                 <div className="flex items-start gap-3 px-4 py-3">
-                    {type === 'success' ? (
-                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    ) : type === 'error' ? (
-                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    ) : (
-                        <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
-                    )}
+                    {type === 'success'
+                        ? <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />
+                        : <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${iconColor}`} />}
                     <div className="flex-1">
                         <p className={`text-sm font-medium ${textColor}`}>{message}</p>
                     </div>
-                    <button 
-                        onClick={onClose} 
-                        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
+                    <button onClick={onClose} className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
-                
-                <div 
-                    className="h-1 transition-all duration-50 ease-linear"
-                    style={{ 
-                        width: `${progress}%`,
-                        backgroundColor: progressColor
-                    }}
-                />
+                <div className="h-1 transition-all duration-50 ease-linear" style={{ width: `${progress}%`, backgroundColor: progressColor }} />
             </div>
         </div>
     );
@@ -95,7 +52,7 @@ export default function Index({ ovas, filters, areas }) {
     const { props } = usePage();
     const flash = props.flash || {};
     const [collapsed] = useSidebarState();
-    
+
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedArea, setSelectedArea] = useState(filters.area || '');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
@@ -106,8 +63,8 @@ export default function Index({ ovas, filters, areas }) {
     const [showDeactivateModal, setShowDeactivateModal] = useState(false);
     const [ovaToToggle, setOvaToToggle] = useState(null);
 
-    // Toast state
     const [toast, setToast] = useState(null);
+    const lastFlashRef = React.useRef(null);
 
     const ovasData = ovas?.data ?? [];
     const currentPage = ovas?.current_page ?? 1;
@@ -117,50 +74,79 @@ export default function Index({ ovas, filters, areas }) {
     const total = ovas?.total ?? 0;
     const links = ovas?.links ?? [];
 
-    // Mostrar toast cuando hay flash messages
     useEffect(() => {
-        if (flash?.success) {
-            setToast({ message: flash.success, type: 'success' });
-            // Limpiar el flash después de mostrarlo
-            flash.success = null;
-        }
-        if (flash?.error) {
-            setToast({ message: flash.error, type: 'error' });
-            // Limpiar el flash después de mostrarlo
-            flash.error = null;
-        }
-    }, [flash]);
+        setSearchTerm(filters.search || '');
+        setSelectedArea(filters.area || '');
+        setSelectedStatus(filters.status || '');
+    }, [filters.search, filters.area, filters.status]);
 
-    const hasActiveFilters = searchTerm || selectedArea || selectedStatus;
+    useEffect(() => {
+        const msg = flash?.success || flash?.error;
+        if (msg && msg !== lastFlashRef.current) {
+            lastFlashRef.current = msg;
+            setToast({ message: msg, type: flash?.success ? 'success' : 'error' });
+        }
+    }, [flash?.success, flash?.error]);
+
+    // ── Navegación con filtros automáticos ──────────────────────────────
+    const navigateWithFilters = (overrides = {}) => {
+        const params = {};
+        
+        // Usar valores de estado o overrides
+        const search = 'search' in overrides ? overrides.search : searchTerm;
+        const area   = 'area'   in overrides ? overrides.area   : selectedArea;
+        const status = 'status' in overrides ? overrides.status : selectedStatus;
+
+        // Solo agregar parámetros que tengan valor
+        if (search && search.trim() !== '') params.search = search.trim();
+        if (area && area !== '') params.area = area;
+        if (status && status !== '') params.status = status;
+
+        // Navegar a la ruta con los parámetros
+        router.get(route('admin.ovas.index'), params, { preserveState: true, preserveScroll: true });
+    };
+
+    // ── Handlers para filtros automáticos ────────────────────────────────
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        navigateWithFilters({ search: value });
+    };
+
+    const handleAreaChange = (e) => {
+        const value = e.target.value;
+        setSelectedArea(value);
+        navigateWithFilters({ area: value });
+    };
+
+    const handleStatusChange = (e) => {
+        const value = e.target.value;
+        setSelectedStatus(value);
+        navigateWithFilters({ status: value });
+    };
 
     const clearFilters = () => {
         setSearchTerm('');
         setSelectedArea('');
         setSelectedStatus('');
-        router.get(route('admin.ovas.index'), {}, { preserveState: true });
+        router.get(route('admin.ovas.index'), {}, { preserveState: true, preserveScroll: true });
     };
 
-    const applyFilters = () => {
-        router.get(route('admin.ovas.index'), {
-            search: searchTerm,
-            area: selectedArea,
-            status: selectedStatus,
-        }, { preserveState: true });
-    };
+    const hasActiveFilters = searchTerm || selectedArea || selectedStatus;
 
     const goToPage = (url) => {
         if (!url) return;
-        router.get(url, {
-            search: searchTerm,
-            area: selectedArea,
-            status: selectedStatus,
-        }, { preserveState: true });
+        const params = {};
+        if (searchTerm)    params.search = searchTerm;
+        if (selectedArea)  params.area   = selectedArea;
+        if (selectedStatus) params.status = selectedStatus;
+        const urlObj = new URL(url, window.location.origin);
+        const page = urlObj.searchParams.get('page');
+        if (page) params.page = page;
+        router.get(route('admin.ovas.index'), params, { preserveState: true, preserveScroll: true });
     };
 
-    const handleDeleteClick = (ova) => { 
-        setOvaToDelete(ova); 
-        setShowDeleteModal(true); 
-    };
+    const handleDeleteClick = (ova) => { setOvaToDelete(ova); setShowDeleteModal(true); };
 
     const confirmDelete = () => {
         router.delete(route('admin.ovas.destroy', ovaToDelete.id), {
@@ -169,30 +155,17 @@ export default function Index({ ovas, filters, areas }) {
             onSuccess: (page) => {
                 setShowDeleteModal(false);
                 setOvaToDelete(null);
-                
-                // Usar el mensaje exacto que viene del servidor
                 if (page.props.flash?.error) {
-                    setToast({ 
-                        message: page.props.flash.error, 
-                        type: 'error' 
-                    });
+                    setToast({ message: page.props.flash.error, type: 'error' });
                 } else if (page.props.flash?.success) {
-                    setToast({ 
-                        message: page.props.flash.success, 
-                        type: 'success' 
-                    });
+                    setToast({ message: page.props.flash.success, type: 'success' });
                 }
             },
             onError: (errors) => {
                 setShowDeleteModal(false);
                 setOvaToDelete(null);
-                
-                // Mostrar errores de validación si los hay
                 const errorMessage = Object.values(errors).flat().join('\n') || 'Error al eliminar el OVA';
-                setToast({ 
-                    message: errorMessage, 
-                    type: 'error' 
-                });
+                setToast({ message: errorMessage, type: 'error' });
             }
         });
     };
@@ -209,57 +182,36 @@ export default function Index({ ovas, filters, areas }) {
                 setShowActivateModal(false);
                 setShowDeactivateModal(false);
                 setOvaToToggle(null);
-                setToast({ 
-                    message: ovaToToggle.is_active ? 'OVA desactivado correctamente' : 'OVA activado correctamente', 
-                    type: 'success' 
+                setToast({
+                    message: ovaToToggle.is_active ? 'OVA desactivado correctamente' : 'OVA activado correctamente',
+                    type: 'success'
                 });
             },
-            onError: () => {
-                setToast({ message: 'Error al cambiar el estado', type: 'error' });
-            }
+            onError: () => setToast({ message: 'Error al cambiar el estado', type: 'error' })
         });
     };
 
     const buildPageNumbers = () => {
-        if (lastPage <= 7) {
-            return Array.from({ length: lastPage }, (_, i) => i + 1);
-        }
+        if (lastPage <= 7) return Array.from({ length: lastPage }, (_, i) => i + 1);
         const pages = [];
         pages.push(1);
         if (currentPage > 3) pages.push(null);
-        for (
-            let p = Math.max(2, currentPage - 1);
-            p <= Math.min(lastPage - 1, currentPage + 1);
-            p++
-        ) {
-            pages.push(p);
-        }
+        for (let p = Math.max(2, currentPage - 1); p <= Math.min(lastPage - 1, currentPage + 1); p++) pages.push(p);
         if (currentPage < lastPage - 2) pages.push(null);
         pages.push(lastPage);
         return pages;
     };
 
     const pageNumbers = buildPageNumbers();
-
-    const selectStyle = {
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        appearance: 'none',
-    };
+    const selectStyle = { WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' };
 
     return (
         <>
             <Head title="Gestión de OVAs" />
             <AppSidebar currentRoute="admin.ovas.index" />
 
-            {/* Toast */}
             {toast && (
-                <Toast 
-                    message={toast.message} 
-                    type={toast.type} 
-                    onClose={() => setToast(null)} 
-                    duration={4000}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} duration={4000} />
             )}
 
             <main className={`transition-all duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-72'} min-h-screen bg-gray-50`}>
@@ -269,17 +221,11 @@ export default function Index({ ovas, filters, areas }) {
                         {/* Breadcrumb */}
                         <div className="mb-6">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">
-                                    Panel de Control
-                                </Link>
+                                <Link href={route("dashboard")} className="hover:text-purple-600 transition-colors">Panel de Control</Link>
                                 <span>/</span>
-                                <Link href={route("admin.dashboard")} className="hover:text-purple-600 transition-colors">
-                                    Administración
-                                </Link>
+                                <Link href={route("admin.dashboard")} className="hover:text-purple-600 transition-colors">Administración</Link>
                                 <span>/</span>
-                                <span style={{ color: "#540D6E" }} className="font-medium">
-                                    OVAs
-                                </span>
+                                <span style={{ color: "#540D6E" }} className="font-medium">OVAs</span>
                             </div>
                         </div>
 
@@ -307,7 +253,7 @@ export default function Index({ ovas, filters, areas }) {
                             </div>
                         </div>
 
-                        {/* Filtros */}
+                        {/* Filtros con búsqueda automática */}
                         <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                             <div className="flex flex-col lg:flex-row gap-4">
                                 <div className="relative flex-1">
@@ -316,15 +262,20 @@ export default function Index({ ovas, filters, areas }) {
                                         type="text"
                                         placeholder="Buscar por área o temática..."
                                         value={searchTerm}
-                                        onChange={e => setSearchTerm(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && applyFilters()}
+                                        onChange={handleSearchChange}
                                         className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
-                                        style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
+                                        style={{ '--tw-ring-color': 'rgba(84, 13, 110, 0.2)' }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     />
                                     {searchTerm && (
-                                        <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                                        <button 
+                                            onClick={() => {
+                                                setSearchTerm('');
+                                                navigateWithFilters({ search: '' });
+                                            }} 
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                                        >
                                             <X className="w-4 h-4" />
                                         </button>
                                     )}
@@ -332,16 +283,14 @@ export default function Index({ ovas, filters, areas }) {
                                 <div className="relative">
                                     <select
                                         value={selectedArea}
-                                        onChange={e => setSelectedArea(e.target.value)}
+                                        onChange={handleAreaChange}
                                         style={selectStyle}
-                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 outline-none transition-all hover:border-gray-300 appearance-none"
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     >
                                         <option value="">Todas las áreas</option>
-                                        {areas.map(area => (
-                                            <option key={area} value={area}>{area}</option>
-                                        ))}
+                                        {areas.map(area => <option key={area} value={area}>{area}</option>)}
                                     </select>
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                         <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -350,9 +299,9 @@ export default function Index({ ovas, filters, areas }) {
                                 <div className="relative">
                                     <select
                                         value={selectedStatus}
-                                        onChange={e => setSelectedStatus(e.target.value)}
+                                        onChange={handleStatusChange}
                                         style={selectStyle}
-                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
+                                        className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 outline-none transition-all hover:border-gray-300 appearance-none"
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     >
@@ -364,15 +313,17 @@ export default function Index({ ovas, filters, areas }) {
                                         <ChevronDown className="w-4 h-4 text-gray-400" />
                                     </div>
                                 </div>
-                                <button
-                                    onClick={applyFilters}
-                                    className="px-6 py-3 text-sm font-bold text-white rounded-lg transition-all shadow-sm hover:shadow-md"
-                                    style={{ backgroundColor: "#540D6E" }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
-                                >
-                                    <Search className="w-5 h-5" />
-                                </button>
+                                {hasActiveFilters && (
+                                    <button
+                                        onClick={clearFilters}
+                                        className="px-4 py-3 text-sm font-bold text-white rounded-lg transition-all shadow-sm hover:shadow-md"
+                                        style={{ backgroundColor: "#540D6E" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
+                                    >
+                                        <RotateCcw className="w-5 h-5" />
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -391,7 +342,7 @@ export default function Index({ ovas, filters, areas }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Búsqueda: "{searchTerm}"
-                                                        <button onClick={() => setSearchTerm('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setSearchTerm(''); navigateWithFilters({ search: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -400,7 +351,7 @@ export default function Index({ ovas, filters, areas }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Área: {selectedArea}
-                                                        <button onClick={() => setSelectedArea('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setSelectedArea(''); navigateWithFilters({ area: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -409,7 +360,7 @@ export default function Index({ ovas, filters, areas }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Estado: {selectedStatus === 'active' ? 'Activo' : 'Inactivo'}
-                                                        <button onClick={() => setSelectedStatus('')} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setSelectedStatus(''); navigateWithFilters({ status: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -468,8 +419,7 @@ export default function Index({ ovas, filters, areas }) {
                                                                 : { backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' }}>
                                                             <div className={`w-2 h-2 rounded-full ${ova.is_active ? 'animate-pulse' : ''}`}
                                                                 style={{ backgroundColor: ova.is_active ? '#0EAD69' : '#9CA3AF' }} />
-                                                            <span className="text-sm font-medium"
-                                                                style={{ color: ova.is_active ? '#0EAD69' : '#6B7280' }}>
+                                                            <span className="text-sm font-medium" style={{ color: ova.is_active ? '#0EAD69' : '#6B7280' }}>
                                                                 {ova.is_active ? 'Activo' : 'Inactivo'}
                                                             </span>
                                                         </div>
@@ -492,7 +442,7 @@ export default function Index({ ovas, filters, areas }) {
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = '#2BA88E'}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#3BCEAC'}
                                                             >
-                                                                <Eye className="w-4 h-4" /> 
+                                                                <Eye className="w-4 h-4" />
                                                             </Link>
                                                             <Link
                                                                 href={route('admin.ovas.edit', ova.id)}
@@ -501,7 +451,7 @@ export default function Index({ ovas, filters, areas }) {
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = '#F5C000'}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#FFD23F'}
                                                             >
-                                                                <Edit2 className="w-4 h-4" /> 
+                                                                <Edit2 className="w-4 h-4" />
                                                             </Link>
                                                             <button
                                                                 onClick={() => handleDeleteClick(ova)}
@@ -510,7 +460,7 @@ export default function Index({ ovas, filters, areas }) {
                                                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = '#DC2F55'}
                                                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}
                                                             >
-                                                                <Trash2 className="w-4 h-4" /> 
+                                                                <Trash2 className="w-4 h-4" />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -565,7 +515,6 @@ export default function Index({ ovas, filters, areas }) {
                                         <span className="font-bold" style={{ color: "#540D6E" }}>{total}</span>
                                         {" "}OVAs
                                     </p>
-
                                     <div className="flex items-center gap-1 order-1 sm:order-2">
                                         <button
                                             onClick={() => goToPage(links[0]?.url)}
@@ -584,17 +533,11 @@ export default function Index({ ovas, filters, areas }) {
                                                         goToPage(link?.url ?? null);
                                                     }}
                                                     className="min-w-[36px] h-9 px-2 rounded-lg border text-sm font-semibold transition-all"
-                                                    style={
-                                                        page === currentPage
-                                                            ? { backgroundColor: "#540D6E", borderColor: "#540D6E", color: "#fff" }
-                                                            : { backgroundColor: "#fff", borderColor: "#E5E7EB", color: "#374151" }
-                                                    }
-                                                    onMouseEnter={e => {
-                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#F3E8FF";
-                                                    }}
-                                                    onMouseLeave={e => {
-                                                        if (page !== currentPage) e.currentTarget.style.backgroundColor = "#fff";
-                                                    }}>
+                                                    style={page === currentPage
+                                                        ? { backgroundColor: "#540D6E", borderColor: "#540D6E", color: "#fff" }
+                                                        : { backgroundColor: "#fff", borderColor: "#E5E7EB", color: "#374151" }}
+                                                    onMouseEnter={e => { if (page !== currentPage) e.currentTarget.style.backgroundColor = "#F3E8FF"; }}
+                                                    onMouseLeave={e => { if (page !== currentPage) e.currentTarget.style.backgroundColor = "#fff"; }}>
                                                     {page}
                                                 </button>
                                             )
@@ -613,7 +556,7 @@ export default function Index({ ovas, filters, areas }) {
                 </div>
             </main>
 
-            {/* ── Modal Eliminación ──────────────────────────────────────── */}
+            {/* Modal Eliminación */}
             {showDeleteModal && ovaToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
@@ -629,12 +572,10 @@ export default function Index({ ovas, filters, areas }) {
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900">Confirmar Eliminación</h3>
                             </div>
-                            
                             <p className="text-gray-600 mb-4">
                                 ¿Estás seguro de eliminar permanentemente el OVA{" "}
                                 <span className="font-semibold text-gray-900">{ovaToDelete.tematica}</span>?
                             </p>
-
                             <div className="p-4 rounded-lg mb-6 flex gap-3" style={{ backgroundColor: '#FEE2E2', borderLeft: '4px solid #EE4266' }}>
                                 <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#EE4266' }} />
                                 <div>
@@ -642,22 +583,16 @@ export default function Index({ ovas, filters, areas }) {
                                     <p className="text-xs text-gray-600">El OVA será eliminado de todos los cursos donde esté asignado.</p>
                                 </div>
                             </div>
-
                             <div className="flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowDeleteModal(false)}
-                                    className="flex-1 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all"
-                                >
+                                <button type="button" onClick={() => setShowDeleteModal(false)}
+                                    className="flex-1 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all">
                                     Cancelar
                                 </button>
-                                <button
-                                    onClick={confirmDelete}
+                                <button onClick={confirmDelete}
                                     className="flex-1 py-2.5 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                                     style={{ backgroundColor: '#EE4266' }}
                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = '#DC2F55'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}
-                                >
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#EE4266'}>
                                     Eliminar OVA
                                 </button>
                             </div>
@@ -666,7 +601,7 @@ export default function Index({ ovas, filters, areas }) {
                 </div>
             )}
 
-            {/* ── Modal Activar ─────────────────────────────────────────── */}
+            {/* Modal Activar */}
             {showActivateModal && ovaToToggle && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowActivateModal(false)} />
@@ -710,7 +645,7 @@ export default function Index({ ovas, filters, areas }) {
                 </div>
             )}
 
-            {/* ── Modal Desactivar ──────────────────────────────────────── */}
+            {/* Modal Desactivar */}
             {showDeactivateModal && ovaToToggle && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeactivateModal(false)} />
@@ -761,18 +696,9 @@ export default function Index({ ovas, filters, areas }) {
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                 }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateY(30px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
                 .animate-fade-in { animation: fadeIn 0.3s ease-out; }
                 .animate-slide-up { animation: slideUp 0.3s ease-out; }
                 .animate-slide-down { animation: slideDown 0.3s ease-out; }

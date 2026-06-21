@@ -155,30 +155,6 @@ export default function Register() {
 
                                     <div className="absolute left-0 right-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#540D6E]/20 to-transparent" />
                                 </div>
-
-                                {/* Estadísticas sutiles - centradas */}
-                                <div className="flex items-center justify-center gap-6 pt-2">
-                                    <div className="text-center">
-                                        <p className="text-xl font-bold bg-gradient-to-r from-[#540D6E] to-[#EE4266] bg-clip-text text-transparent">
-                                            +2,500
-                                        </p>
-                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Docentes Activos</p>
-                                    </div>
-                                    <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
-                                    <div className="text-center">
-                                        <p className="text-xl font-bold bg-gradient-to-r from-[#540D6E] to-[#EE4266] bg-clip-text text-transparent">
-                                            +180
-                                        </p>
-                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Instituciones</p>
-                                    </div>
-                                    <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
-                                    <div className="text-center">
-                                        <p className="text-xl font-bold bg-gradient-to-r from-[#540D6E] to-[#EE4266] bg-clip-text text-transparent">
-                                            99%
-                                        </p>
-                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Satisfacción</p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 

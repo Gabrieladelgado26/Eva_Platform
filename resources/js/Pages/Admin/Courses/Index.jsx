@@ -90,21 +90,50 @@ export default function Index({ courses, teachers, filters }) {
         }
     }, [flash]);
 
+    // ── Navegación con filtros automáticos ──────────────────────────────
+    const navigateWithFilters = (overrides = {}) => {
+        const params = {};
+        
+        // Usar valores de estado o overrides
+        const search = 'search' in overrides ? overrides.search : searchTerm;
+        const teacher_id = 'teacher_id' in overrides ? overrides.teacher_id : filterTeacherId;
+        const status = 'status' in overrides ? overrides.status : filterStatus;
+
+        // Solo agregar parámetros que tengan valor
+        if (search && search.trim() !== '') params.search = search.trim();
+        if (teacher_id && teacher_id !== '') params.teacher_id = teacher_id;
+        if (status && status !== '') params.status = status;
+
+        // Navegar a la ruta con los parámetros
+        router.get(route('admin.courses.index'), params, { preserveState: true, preserveScroll: true });
+    };
+
+    // ── Handlers para filtros automáticos ────────────────────────────────
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        navigateWithFilters({ search: value });
+    };
+
+    const handleTeacherChange = (e) => {
+        const value = e.target.value;
+        setFilterTeacherId(value);
+        navigateWithFilters({ teacher_id: value });
+    };
+
+    const handleStatusChange = (e) => {
+        const value = e.target.value;
+        setFilterStatus(value);
+        navigateWithFilters({ status: value });
+    };
+
     const hasActiveFilters = searchTerm || filterTeacherId || filterStatus;
 
     const clearFilters = () => {
         setSearchTerm("");
         setFilterTeacherId("");
         setFilterStatus("");
-        router.get(route('admin.courses.index'), {}, { preserveScroll: true });
-    };
-
-    const applyFilters = () => {
-        const params = {};
-        if (searchTerm) params.search = searchTerm;
-        if (filterTeacherId) params.teacher_id = filterTeacherId;
-        if (filterStatus) params.status = filterStatus;
-        router.get(route('admin.courses.index'), params, { preserveScroll: true });
+        router.get(route('admin.courses.index'), {}, { preserveState: true, preserveScroll: true });
     };
 
     const goToPage = (url) => {
@@ -285,7 +314,7 @@ export default function Index({ courses, teachers, filters }) {
                             </div>
                         </div>
 
-                        {/* Filtros */}
+                        {/* Filtros con búsqueda automática */}
                         <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                             <div className="flex flex-col lg:flex-row gap-4">
                                 <div className="relative flex-1">
@@ -294,15 +323,20 @@ export default function Index({ courses, teachers, filters }) {
                                         type="text"
                                         placeholder="Buscar por grado, sección o docente..."
                                         value={searchTerm}
-                                        onChange={e => setSearchTerm(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && applyFilters()}
+                                        onChange={handleSearchChange}
                                         className="w-full pl-12 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300"
                                         style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
                                         onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
                                     />
                                     {searchTerm && (
-                                        <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                                        <button 
+                                            onClick={() => {
+                                                setSearchTerm("");
+                                                navigateWithFilters({ search: '' });
+                                            }} 
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                                        >
                                             <X className="w-4 h-4" />
                                         </button>
                                     )}
@@ -310,7 +344,7 @@ export default function Index({ courses, teachers, filters }) {
                                 <div className="relative">
                                     <select
                                         value={filterTeacherId}
-                                        onChange={e => setFilterTeacherId(e.target.value)}
+                                        onChange={handleTeacherChange}
                                         className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
                                         style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
@@ -328,7 +362,7 @@ export default function Index({ courses, teachers, filters }) {
                                 <div className="relative">
                                     <select
                                         value={filterStatus}
-                                        onChange={e => setFilterStatus(e.target.value)}
+                                        onChange={handleStatusChange}
                                         className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
                                         style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
                                         onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
@@ -342,15 +376,17 @@ export default function Index({ courses, teachers, filters }) {
                                         <ChevronDown className="w-4 h-4 text-gray-400" />
                                     </div>
                                 </div>
-                                <button
-                                    onClick={applyFilters}
-                                    className="px-6 py-3 text-sm font-bold text-white rounded-lg transition-all shadow-sm hover:shadow-md"
-                                    style={{ backgroundColor: "#540D6E" }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
-                                >
-                                    <Search className="w-5 h-5" />
-                                </button>
+                                {hasActiveFilters && (
+                                    <button
+                                        onClick={clearFilters}
+                                        className="px-4 py-3 text-sm font-bold text-white rounded-lg transition-all shadow-sm hover:shadow-md"
+                                        style={{ backgroundColor: "#540D6E" }}
+                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#6B1689"}
+                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "#540D6E"}
+                                    >
+                                        <RotateCcw className="w-5 h-5" />
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -369,7 +405,7 @@ export default function Index({ courses, teachers, filters }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Búsqueda: "{searchTerm}"
-                                                        <button onClick={() => setSearchTerm("")} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setSearchTerm(""); navigateWithFilters({ search: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -378,7 +414,7 @@ export default function Index({ courses, teachers, filters }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Docente: {teachers.find(t => t.id == filterTeacherId)?.name}
-                                                        <button onClick={() => setFilterTeacherId("")} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setFilterTeacherId(""); navigateWithFilters({ teacher_id: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -387,7 +423,7 @@ export default function Index({ courses, teachers, filters }) {
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-medium"
                                                         style={{ backgroundColor: "#F3E8FF", borderColor: "#540D6E", color: "#540D6E" }}>
                                                         Estado: {filterStatus === "active" ? "Activo" : "Inactivo"}
-                                                        <button onClick={() => setFilterStatus("")} className="hover:bg-white/50 p-0.5 rounded">
+                                                        <button onClick={() => { setFilterStatus(""); navigateWithFilters({ status: '' }); }} className="hover:bg-white/50 p-0.5 rounded">
                                                             <X className="w-3 h-3" />
                                                         </button>
                                                     </span>
@@ -473,7 +509,7 @@ export default function Index({ courses, teachers, filters }) {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                                         <div className="flex items-center justify-end gap-2">
-                                                            {/* Botón Estudiantes (segundo) */}
+                                                            {/* Botón Estudiantes */}
                                                             <Link
                                                                 href={route("admin.courses.students", course.id)}
                                                                 className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"
@@ -485,7 +521,7 @@ export default function Index({ courses, teachers, filters }) {
                                                                 <Users className="w-4 h-4 text-white" />
                                                             </Link>
                                                             
-                                                            {/* Botón Activar/Desactivar (primero) */}
+                                                            {/* Botón Activar/Desactivar */}
                                                             <button
                                                                 onClick={() => handleToggleClick(course)}
                                                                 className="p-2 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center"

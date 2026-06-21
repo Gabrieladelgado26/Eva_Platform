@@ -534,7 +534,7 @@ class CourseController extends Controller
                 ->first();
             $avgScore = $avgScoreResult ? (int)round($avgScoreResult->avg_score ?? 0) : 0;
 
-            // CORREGIDO: Progreso = (estudiantes que han hecho al menos 1 evaluación) / (total estudiantes) × 100
+            // Progreso = (estudiantes que han hecho al menos 1 evaluación) / (total estudiantes) × 100
             $avgProgress = $totalStudents > 0
                 ? (int)round(($startedActivities / $totalStudents) * 100)
                 : 0;

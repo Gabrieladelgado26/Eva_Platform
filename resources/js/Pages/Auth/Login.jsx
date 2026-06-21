@@ -751,7 +751,7 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                                         <span>¿Necesita ayuda?</span>
                                         <a
-                                            href="#"
+                                            href="mailto:evaplatformservice@gmail.com"
                                             className="font-semibold hover:underline transition-colors"
                                             style={{ color: "#540D6E" }}
                                         >

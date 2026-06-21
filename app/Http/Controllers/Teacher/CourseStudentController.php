@@ -271,13 +271,23 @@ class CourseStudentController extends Controller
             ])
             ->withCount(['enrolledCourses as courses_count' => fn($q) => $q->whereIn('courses.id', $courseIds)]);
 
-        // Search
+        // Search filter
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(fn($q) => $q->where('name', 'like', "%$s%")->orWhere('username', 'like', "%$s%")->orWhere('email', 'like', "%$s%"));
         }
 
-        $students = $query->orderBy('name')->paginate(20)->withQueryString()->through(function ($student) {
+        // Status filter - FIX: Added status filter
+        if ($request->filled('status')) {
+            $status = $request->status;
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $students = $query->orderBy('name')->paginate(10)->withQueryString()->through(function ($student) {
             return [
                 'id'            => $student->getRouteKey(),
                 'name'          => $student->name,
@@ -293,7 +303,10 @@ class CourseStudentController extends Controller
 
         return Inertia::render('Teacher/Students/Index', [
             'students' => $students,
-            'filters'  => ['search' => $request->search],
+            'filters'  => [
+                'search' => $request->search,
+                'status' => $request->status,
+            ],
             'courses'  => $user->courses()->select('id', 'grade', 'section')->get(),
         ]);
     }

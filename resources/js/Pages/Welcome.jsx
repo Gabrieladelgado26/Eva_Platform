@@ -44,7 +44,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
     const stats = [
         { value: '1,200+', label: 'Estudiantes Activos', color: '#540D6E' },
-        { value: '150+', label: 'OVAs Disponibles', color: '#EE4266' },
+        { value: '4+', label: 'OVAs Disponibles', color: '#EE4266' },
         { value: '45+', label: 'Docentes', color: '#0EAD69' },
         { value: '6', label: 'Regiones de Nariño', color: '#FFD23F' }
     ];
@@ -170,7 +170,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 style={{ fontFamily: "'Quicksand', sans-serif" }}
                             >
                                 Una plataforma interactiva diseñada para potenciar el aprendizaje 
-                                de estudiantes de primaria y secundaria a través de Objetos Virtuales 
+                                de estudiantes de primaria a través de Objetos Virtuales 
                                 de Aprendizaje contextualizados en las regiones de Nariño.
                             </p>
 

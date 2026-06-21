@@ -49,6 +49,16 @@ class OvaSeeder extends Seeder
                 'is_active' => true,
                 'created_at' => '2026-05-02 17:45:25',
                 'updated_at' => '2026-05-02 17:45:25'
+            ],
+            [
+                'id' => 4,
+                'area' => 'Ciencias Sociales',
+                'tematica' => 'Patrimonio Cultural',
+                'description' => 'Reconocer la importancia del patrimonio cultural de Nariño',
+                'url' => '/ovas/ciencias-sociales/patrimonio-cultural/inicio',
+                'is_active' => true,
+                'created_at' => '2026-05-02 17:50:47',
+                'updated_at' => '2026-05-02 17:50:47'
             ]
         ];
 

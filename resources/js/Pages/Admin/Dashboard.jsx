@@ -511,9 +511,9 @@ export default function Dashboard() {
                                     <p className="text-5xl font-bold mb-2">{dashboardStats.avgProgress}%</p>
                                     <p className="text-sm">del contenido completado</p>
                                 </div>
-                                <div className="mt-4 h-2 bg-purple-900 rounded-full overflow-hidden">
+                                <div className="mt-4 h-2 bg-white rounded-full overflow-hidden">
                                     <div 
-                                        className="h-full bg-white rounded-full transition-all duration-500"
+                                        className="h-full bg-purple-900 rounded-full transition-all duration-500"
                                         style={{ width: `${dashboardStats.avgProgress}%` }}
                                     ></div>
                                 </div>

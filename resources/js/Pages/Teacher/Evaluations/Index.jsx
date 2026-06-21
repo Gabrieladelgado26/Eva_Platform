@@ -337,25 +337,6 @@ export default function EvaluationsIndex({ evaluations, courses = [], teachers =
                                     </select>
                                 </div>
 
-                                {/* Filtro por profesor (solo admin) */}
-                                {isAdmin && teachers && teachers.length > 0 && (
-                                    <div className="relative">
-                                        <select
-                                            value={teacherId}
-                                            onChange={e => { setTeacherId(e.target.value); applyFilters({ teacher_id: e.target.value }); }}
-                                            className="px-4 pr-10 py-3 bg-white border-2 border-gray-200 rounded-lg text-gray-700 focus:ring-2 focus:ring-offset-2 outline-none transition-all hover:border-gray-300 appearance-none"
-                                            style={{ "--tw-ring-color": "rgba(84, 13, 110, 0.2)" }}
-                                            onFocus={e => e.currentTarget.style.borderColor = "#540D6E"}
-                                            onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
-                                        >
-                                            <option value="">Todos los profesores</option>
-                                            {teachers.map(t => (
-                                                <option key={t.id} value={t.id}>{t.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
-
                                 {/* Botón Buscar */}
                                 <button
                                     onClick={() => applyFilters()}
